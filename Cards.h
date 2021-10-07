@@ -1,28 +1,31 @@
 #ifndef TEST1_CARDS_H
 #define TEST1_CARDS_H
 #include <vector>
+#include <iosfwd>
 
 class Card
 {
 public:
     enum Card_Type
     {
-        bomb,
-        reinforcement,
-        blockage,
-        airlift,
-        diplomacy
+        bomb=1,
+        reinforcement=2,
+        blockade=3,
+        airlift=4,
+        diplomacy=5
     };
     Card(Card_Type&);
     // Copy constructor
     Card(const Card&);
     // Assignment operator
-    void operator= (Const Card&);
+    Card& operator= (const Card&);
     // Stream output operator
-    friend std:ostream& operator<< (std:ostream&, const Card&);
+    friend std::ostream& operator<< (std::ostream&, const Card&);
     void play();
+    Card_Type& getType();
+    static constexpr std::initializer_list<Card_Type> ALL_Card_Type = {bomb, reinforcement, blockade, airlift, diplomacy};
 private:
-    Card_Type type;
+    Card_Type *type;
 };
 
 class Hand
@@ -30,31 +33,29 @@ class Hand
 public:
     Hand();
     // Copy constructor
-    Hand(Const Hand&);
+    Hand(const Hand&);
     // Assignment operator
-    void operator= (Const Card&);
+    Hand& operator= (const Hand&);
     // Stream output operator
-    friend std:ostream& operator<< (std:ostream&, const Hand&);
-    void addCard();
-    void removeCard();
+    friend std::ostream& operator<< (std::ostream&, const Hand&);
+    void addCard(Card&);
+    void removeCard(Card&);
 private:
-    std::vector<Card> cards;
+    std::vector<Card> *cards;
 };
 
 class Deck{
 public:
     Deck();
     // Copy constructor
-    Deck(Const Deck&);
+    Deck(const Deck&);
     // Assignment operator
-    void operator= (Const Deck&);
+    Deck& operator= (const Deck&);
     // Stream output operator
-    friend std:ostream& operator<< (std:ostream&, const Deck&);
-    void draw();
-    void addCard();
-    void removeCard();
+    friend std::ostream& operator<< (std::ostream&, const Deck&);
+    Card& draw();
 private:
-    std::vector<Card> cards;
-
+    std::vector<Card> *cards;
+    std::default_random_engine randomEngine;
 };
 #endif //TEST1_CARDS_H
