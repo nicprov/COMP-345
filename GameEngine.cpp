@@ -49,7 +49,7 @@ vector<GameEngine::Game_Command> GameEngine::getAvailableCommands()
             break;
         case execute_orders:
             availableCommands.push_back(Game_Command::execute_order);
-            availableCommands.push_back(Game_Command::end_issue_orders);
+            availableCommands.push_back(Game_Command::end_execute_order);
             availableCommands.push_back(Game_Command::win_game);
             break;
         case win:
@@ -123,7 +123,7 @@ ostream& operator<< (ostream &stream, const GameEngine &gameEngine)
     return stream << "Current state (" << gameEngine.current_state << ")";
 }
 
-ostream &operator<<(ostream &stream, const GameEngine::Game_Command &gameCommand) {
+ostream &operator<< (ostream &stream, const GameEngine::Game_Command &gameCommand) {
     switch (gameCommand) {
         case GameEngine::Game_Command::load_map:
             stream << "Load Map";
