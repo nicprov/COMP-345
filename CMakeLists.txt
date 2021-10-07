@@ -3,4 +3,4 @@ project(comp354)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(main Cards.h Cards.cpp CardsDriver.cpp)
+add_executable(main Cards.h Cards.cpp CardsDriver.cpp GameEngine.h GameEngine.cpp GameEngineDriver.cpp)
