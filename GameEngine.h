@@ -34,8 +34,8 @@ public:
     // Assignment operator
     void operator= (const GameEngine&);
     // Stream output operator
-    friend ostream& operator<< (std::ostream&, const GameEngine&);
-    friend ostream& operator<< (std::ostream&, const Game_Command&);
+    friend ostream& operator<< (ostream&, const GameEngine&);
+    friend ostream& operator<< (ostream&, const Game_Command&);
     Game_State& getGameState();
     vector<Game_Command> getAvailableCommands();
     void transition(Game_Command&);

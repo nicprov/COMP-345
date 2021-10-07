@@ -118,7 +118,7 @@ void GameEngine::transition(Game_Command &gameCommand)
         cout << endl << "\x1B[31m" << "Invalid input" << "\033[0m" << endl << endl;
 }
 
-std::ostream& operator<< (ostream &stream, const GameEngine &gameEngine)
+ostream& operator<< (ostream &stream, const GameEngine &gameEngine)
 {
     return stream << "Current state (" << gameEngine.current_state << ")";
 }
