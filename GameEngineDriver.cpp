@@ -4,7 +4,9 @@ using namespace std;
 
 void listAvailableCommands(GameEngine &gameEngine){
     cout << "Available commands:" << endl;
-    for (GameEngine::Game_Command command: gameEngine.getAvailableCommands()){
+    vector<GameEngine::Game_Command> commands;
+    gameEngine.getAvailableCommands(commands);
+    for (GameEngine::Game_Command command: commands){
         cout << static_cast<int>(command) << ". " << command << endl;
     }
     cout << "Choice: ";

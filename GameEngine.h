@@ -37,7 +37,7 @@ public:
     friend ostream& operator<< (ostream&, const GameEngine&);
     friend ostream& operator<< (ostream&, const Game_Command&);
     Game_State& getGameState();
-    vector<Game_Command> getAvailableCommands();
+    void getAvailableCommands(vector<Game_Command>&);
     void transition(Game_Command&);
 private:
     Game_State current_state;

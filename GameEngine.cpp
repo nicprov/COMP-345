@@ -22,9 +22,8 @@ GameEngine::Game_State& GameEngine::getGameState()
     return current_state;
 }
 
-vector<GameEngine::Game_Command> GameEngine::getAvailableCommands()
+void GameEngine::getAvailableCommands(vector<GameEngine::Game_Command> &availableCommands)
 {
-    vector<GameEngine::Game_Command> availableCommands;
     switch (current_state) {
         case start:
             availableCommands.push_back(Game_Command::load_map);
@@ -57,13 +56,14 @@ vector<GameEngine::Game_Command> GameEngine::getAvailableCommands()
             availableCommands.push_back(Game_Command::end);
             break;
     }
-    return availableCommands;
 }
 
 void GameEngine::transition(Game_Command &gameCommand)
 {
     bool foundCommand = false;
-    for (Game_Command gameCommand_: getAvailableCommands()){
+    vector<Game_Command> commands;
+    getAvailableCommands(commands);
+    for (Game_Command gameCommand_: commands){
         if (gameCommand_ == gameCommand) {
             foundCommand = true;
             // Perform move
