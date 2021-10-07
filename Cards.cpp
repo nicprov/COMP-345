@@ -154,10 +154,13 @@ void Deck::operator=(const Deck &deck)
 
 Card& Deck::draw()
 {
-    shuffle(cards->begin(), cards->end(), random_device {});
-    Card* card = new Card(cards->front());
-    cards->erase(cards->begin());
-    return *card;
+    if (this->cards->size() > 0){
+        shuffle(cards->begin(), cards->end(), random_device {});
+        Card* card = new Card(cards->front());
+        cards->erase(cards->begin());
+        return *card;
+    } else
+        throw runtime_error("No more cards to draw");
 }
 
 std::ostream& operator<< (std::ostream &stream, const Deck &deck)
