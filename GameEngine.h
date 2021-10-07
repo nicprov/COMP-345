@@ -1,6 +1,8 @@
 #ifndef COMP354_GAMEENGINE_H
 #define COMP354_GAMEENGINE_H
 #include <vector>
+using namespace std;
+
 class GameEngine{
 public:
     enum Game_State{
@@ -30,12 +32,13 @@ public:
     // Copy constructor
     GameEngine(const GameEngine&);
     // Assignment operator
-    GameEngine& operator= (const GameEngine&);
+    void operator= (const GameEngine&);
     // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const GameEngine&);
+    friend ostream& operator<< (std::ostream&, const GameEngine&);
+    friend ostream& operator<< (std::ostream&, const Game_Command&);
     Game_State& getGameState();
-    std::vector<Game_Command>& getAvailableCommands();
-    bool transition(Game_Command&);
+    vector<Game_Command> getAvailableCommands();
+    void transition(Game_Command&);
 private:
     Game_State current_state;
 };
