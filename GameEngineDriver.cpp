@@ -12,7 +12,7 @@ void listAvailableCommands(GameEngine &gameEngine){
     cout << "Choice: ";
 }
 
-int main() {
+void gameEngineDriver() {
     GameEngine gameEngine = GameEngine();
 
     cout << "==========================" << endl;
