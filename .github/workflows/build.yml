@@ -1,6 +1,6 @@
-name: C/C++ CI
+name: Build and Test
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   ubuntu-build:
@@ -10,7 +10,5 @@ jobs:
         uses: actions/checkout@v2.0.0
       - name: Build project
         uses: nicledomaS/cmake_build_action@v1.4
-        with:
-          submodule_update: ON
-          run_tests: ON
-          unit_test_build: -Dtest=ON
+      - name: Run tests
+        run: tests
