@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: "debian:stretch"
+      - image: "debian:bullseye"
     resource_class: small
     steps:
       - checkout
@@ -24,4 +24,4 @@ jobs:
           command: 'cmake --build build'
       - run:
           name: Point Unit Testing
-          command: './bin/tests'
+          command: './bin/tests' 
