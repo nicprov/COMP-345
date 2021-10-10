@@ -17,6 +17,9 @@ jobs:
           name: Install CMAKE
           command: 'apt-get update && apt-get install -y cmake'
       - run:
+          name: Install GIT
+          command: 'apt-get update && sudo apt-get install -y git'
+      - run:
           name: Creating Build Files
           command: 'cmake -H. -Bbuild'
       - run:
