@@ -13,6 +13,9 @@ jobs:
           name: Installing GCC
           command: 'apt-get update && apt-get install -y gcc g++'
       - run:
+          name: Install WGET
+          command: 'apt-get update && apt-get install wget'
+      - run:
           name: Install CMAKE 3.5
           command: |
             wget https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz --no-check-certificate
