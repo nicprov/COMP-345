@@ -4,17 +4,18 @@ using namespace std;
 
 GameEngine::GameEngine()
 {
-    current_state = Game_State::start;
+    this->current_state = Game_State::start;
 }
 
 GameEngine::GameEngine(const GameEngine &gameEngine)
 {
-    current_state = gameEngine.current_state;
+    this->current_state = gameEngine.current_state;
 }
 
-void GameEngine::operator=(const GameEngine &gameEngine)
+GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 {
-    current_state = gameEngine.current_state;
+    this->current_state = gameEngine.current_state;
+    return *this;
 }
 
 GameEngine::Game_State& GameEngine::getGameState()

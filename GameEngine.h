@@ -32,7 +32,7 @@ public:
     // Copy constructor
     GameEngine(const GameEngine&);
     // Assignment operator
-    void operator= (const GameEngine&);
+    GameEngine& operator= (const GameEngine&);
     // Stream output operator
     friend ostream& operator<< (ostream&, const GameEngine&);
     friend ostream& operator<< (ostream&, const Game_Command&);
