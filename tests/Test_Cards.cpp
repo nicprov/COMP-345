@@ -21,7 +21,7 @@ TEST_CASE("Deck throws exception when out of cards"){
     Deck deck = Deck();
     for (int i=0; i<(Deck::NUM_CARDS_PER_TYPE*5)+1; i++){
         if (i == (Deck::NUM_CARDS_PER_TYPE*5))
-            REQUIRE_THROWS_AS(deck.draw(), runtime_error);
+            REQUIRE_THROWS_AS(deck.draw(), std::runtime_error);
         else
             deck.draw();
     }

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <random>
 #include "Cards.h"
-using namespace std;
 
 // Card methods
 Card::Card(Card_Type type)
@@ -18,9 +17,10 @@ Card::Card(const Card &card)
     this->type = card.type;
 }
 
-void Card::operator=(const Card &card)
+Card& Card::operator=(const Card &card)
 {
     this->type = card.type;
+    return *this;
 }
 
 void Card::play()
@@ -30,19 +30,19 @@ void Card::play()
     // Show action
     switch (type) {
         case bomb:
-            cout << "Playing bomb card";
+            std::cout << "Playing bomb card";
             break;
         case reinforcement:
-            cout << "Playing reinforcement card";
+            std::cout << "Playing reinforcement card";
             break;
         case blockade:
-            cout << "Playing blockade card";
+            std::cout << "Playing blockade card";
             break;
         case airlift:
-            cout << "Playing airlift card";
+            std::cout << "Playing airlift card";
             break;
         case diplomacy:
-            cout << "Playing diplomacy card";
+            std::cout << "Playing diplomacy card";
             break;
     }
 }
@@ -86,7 +86,7 @@ Card::Card_Type& Card::getType()
  * Hand is empty initially, so not need to initialize anything with constructor
  */
 Hand::Hand() {
-    this->cards = new vector<Card>;
+    this->cards = new std::vector<Card>;
 }
 
 Hand::Hand(const Hand &hand)
@@ -94,9 +94,10 @@ Hand::Hand(const Hand &hand)
     this->cards = hand.cards;
 }
 
-void Hand::operator=(const Hand &hand)
+Hand& Hand::operator=(const Hand &hand)
 {
     this->cards = hand.cards;
+    return *this;
 }
 
 void Hand::addCard(Card &card)
@@ -131,7 +132,7 @@ std::ostream& operator<< (std::ostream &stream, const Hand &hand)
 // Deck methods
 Deck::Deck()
 {
-    this->cards = new vector<Card>;
+    this->cards = new std::vector<Card>;
     // Generates 50 cards (10 cards of each type)
     for (Card::Card_Type cardType: Card::ALL_Card_Type)
     {
@@ -147,20 +148,21 @@ Deck::Deck(const Deck &deck)
     this->cards = deck.cards;
 }
 
-void Deck::operator=(const Deck &deck)
+Deck& Deck::operator=(const Deck &deck)
 {
-    cards = deck.cards;
+    this->cards = deck.cards;
+    return *this;
 }
 
 Card& Deck::draw()
 {
     if (this->cards->size() > 0){
-        shuffle(cards->begin(), cards->end(), random_device {});
+        shuffle(cards->begin(), cards->end(), std::random_device {});
         Card* card = new Card(cards->front());
         cards->erase(cards->begin());
         return *card;
     } else
-        throw runtime_error("No more cards to draw");
+        throw std::runtime_error("No more cards to draw");
 }
 
 std::ostream& operator<< (std::ostream &stream, const Deck &deck)

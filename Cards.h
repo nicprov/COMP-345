@@ -2,7 +2,6 @@
 #define TEST1_CARDS_H
 #include <vector>
 #include <iosfwd>
-using namespace std;
 
 class Card
 {
@@ -20,13 +19,13 @@ public:
     // Copy constructor
     Card(const Card&);
     // Assignment operator
-    void operator= (const Card&);
+    Card& operator= (const Card&);
     // Stream output operator
-    friend ostream& operator<< (ostream&, const Card&);
-    friend ostream& operator<< (ostream&, const Card_Type&);
+    friend std::ostream& operator<< (std::ostream&, const Card&);
+    friend std::ostream& operator<< (std::ostream&, const Card_Type&);
     void play();
     Card_Type& getType();
-    static constexpr initializer_list<Card_Type> ALL_Card_Type = {bomb, reinforcement, blockade, airlift, diplomacy};
+    static constexpr std::initializer_list<Card_Type> ALL_Card_Type = {bomb, reinforcement, blockade, airlift, diplomacy};
 private:
     Card_Type type;
 };
@@ -38,13 +37,13 @@ public:
     // Copy constructor
     Hand(const Hand&);
     // Assignment operator
-    void operator= (const Hand&);
+    Hand& operator= (const Hand&);
     // Stream output operator
-    friend ostream& operator<< (std::ostream&, const Hand&);
+    friend std::ostream& operator<< (std::ostream&, const Hand&);
     void addCard(Card&);
     void removeCard(Card&);
 private:
-    vector<Card> *cards;
+    std::vector<Card> *cards;
 };
 
 class Deck{
@@ -53,12 +52,12 @@ public:
     // Copy constructor
     Deck(const Deck&);
     // Assignment operator
-    void operator= (const Deck&);
+    Deck& operator= (const Deck&);
     // Stream output operator
-    friend ostream& operator<< (ostream&, const Deck&);
+    friend std::ostream& operator<< (std::ostream&, const Deck&);
     Card& draw();
     static constexpr int NUM_CARDS_PER_TYPE = 10;
 private:
-    vector<Card> *cards;
+    std::vector<Card> *cards;
 };
 #endif //TEST1_CARDS_H
