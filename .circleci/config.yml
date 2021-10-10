@@ -17,6 +17,16 @@ jobs:
           name: Install CMAKE
           command: 'apt-get update && apt-get install -y cmake'
       - run:
+          name: Install GIT
+          command: 'apt-get update && apt-get install -y git'
+      - run:
+          name: Install CATCH2
+          command: |
+            git clone https://github.com/catchorg/Catch2.git
+            cd Catch2
+            cmake -Bbuild -H. -DBUILD_TESTING=OFF
+            cmake --build build/ --target install
+      - run:
           name: Creating Build Files
           command: 'cmake -H. -Bbuild'
       - run:
