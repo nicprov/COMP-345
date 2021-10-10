@@ -3,16 +3,21 @@ version: 2
 jobs:
   build:
     docker:
-      - image: "debian:bullseye"
-    resource_class: small
+      - image: "debian:stretch"
     steps:
       - checkout
       - run:
           name: Installing SUDO
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
-          name: Installing GCC G++ CMAKE GIT
-          command: 'apt-get install -y gcc g++ git cmake'
+          name: Installing GCC
+          command: 'apt-get update && apt-get install -y gcc g++'
+      - run:
+          name: Install CMAKE
+          command: 'apt-get update && sudo apt-get install -y cmake'
+      - run:
+          name: Install GIT
+          command: 'apt-get update && sudo apt-get install -y git'
       - run:
           name: Creating Build Files
           command: 'cmake -H. -Bbuild'
@@ -21,4 +26,4 @@ jobs:
           command: 'cmake --build build'
       - run:
           name: Point Unit Testing
-          command: './bin/tests'  
+          command: './bin/tests'
