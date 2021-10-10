@@ -1,164 +1,169 @@
 #include <iostream>
 #include "GameEngine.h"
-using namespace std;
 
 GameEngine::GameEngine()
 {
-    this->current_state = Game_State::start;
+    this->current_state = new GameState(GameState::start);
 }
 
-GameEngine::GameEngine(const GameEngine &gameEngine)
+GameEngine::GameEngine(const GameEngine *gameEngine)
 {
-    this->current_state = gameEngine.current_state;
+    this->current_state = new GameState(*gameEngine->current_state);
 }
 
 GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 {
-    this->current_state = gameEngine.current_state;
+    this->current_state = new GameState(*gameEngine.current_state);
     return *this;
 }
 
-GameEngine::Game_State& GameEngine::getGameState()
+GameEngine::GameState& GameEngine::getGameState()
 {
-    return current_state;
+    return *current_state;
 }
 
-void GameEngine::getAvailableCommands(vector<GameEngine::Game_Command> &availableCommands)
+void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &availableCommands)
 {
-    switch (current_state) {
+    switch (*current_state) {
         case start:
-            availableCommands.push_back(Game_Command::load_map);
+            availableCommands.push_back(GameCommand::load_map);
             break;
         case map_loaded:
-            availableCommands.push_back(Game_Command::load_map);
-            availableCommands.push_back(Game_Command::validate_map);
+            availableCommands.push_back(GameCommand::load_map);
+            availableCommands.push_back(GameCommand::validate_map);
             break;
         case map_validated:
-            availableCommands.push_back(Game_Command::add_player);
+            availableCommands.push_back(GameCommand::add_player);
             break;
         case players_added:
-            availableCommands.push_back(Game_Command::add_player);
-            availableCommands.push_back(Game_Command::assign_countries);
+            availableCommands.push_back(GameCommand::add_player);
+            availableCommands.push_back(GameCommand::assign_countries);
             break;
         case assign_reinforcement:
-            availableCommands.push_back(Game_Command::issue_order);
+            availableCommands.push_back(GameCommand::issue_order);
             break;
         case issue_orders:
-            availableCommands.push_back(Game_Command::issue_order);
-            availableCommands.push_back(Game_Command::end_issue_orders);
+            availableCommands.push_back(GameCommand::issue_order);
+            availableCommands.push_back(GameCommand::end_issue_orders);
             break;
         case execute_orders:
-            availableCommands.push_back(Game_Command::execute_order);
-            availableCommands.push_back(Game_Command::end_execute_order);
-            availableCommands.push_back(Game_Command::win_game);
+            availableCommands.push_back(GameCommand::execute_order);
+            availableCommands.push_back(GameCommand::end_execute_order);
+            availableCommands.push_back(GameCommand::win_game);
             break;
         case win:
-            availableCommands.push_back(Game_Command::play);
-            availableCommands.push_back(Game_Command::end);
+            availableCommands.push_back(GameCommand::play);
+            availableCommands.push_back(GameCommand::end);
             break;
     }
 }
 
-void GameEngine::transition(Game_Command &gameCommand)
+void GameEngine::transition(GameCommand &gameCommand)
 {
     bool foundCommand = false;
-    vector<Game_Command> commands;
+    std::vector<GameCommand> commands;
     getAvailableCommands(commands);
-    for (Game_Command gameCommand_: commands){
+    for (GameCommand gameCommand_: commands){
         if (gameCommand_ == gameCommand) {
             foundCommand = true;
             // Perform move
             switch (gameCommand){
                 case load_map:
-                    cout << endl << "\x1B[32m" << "Map loaded" << "\033[0m" << endl << endl;
-                    current_state = map_loaded;
+                    std::cout << std::endl << "\x1B[32m" << "Map loaded" << "\033[0m" << std::endl << std::endl;
+                    *current_state = map_loaded;
                     break;
                 case validate_map:
-                    cout << endl << "\x1B[32m" << "Map validated" << "\033[0m" << endl << endl;
-                    current_state = map_validated;
+                    std::cout << std::endl << "\x1B[32m" << "Map validated" << "\033[0m" << std::endl << std::endl;
+                    *current_state = map_validated;
                     break;
                 case add_player:
-                    cout << endl << "\x1B[32m" << "Players added" << "\033[0m" << endl << endl;
-                    current_state = players_added;
+                    std::cout << std::endl << "\x1B[32m" << "Players added" << "\033[0m" << std::endl << std::endl;
+                    *current_state = players_added;
                     break;
                 case assign_countries:
-                    cout << endl << "\x1B[32m" << "Assign reinforcement" << "\033[0m" << endl << endl;
-                    current_state = assign_reinforcement;
+                    std::cout << std::endl << "\x1B[32m" << "Assign reinforcement" << "\033[0m" << std::endl << std::endl;
+                    *current_state = assign_reinforcement;
                     break;
                 case issue_order:
-                    cout << endl << "\x1B[32m" << "Issue orders" << "\033[0m" << endl << endl;
-                    current_state = issue_orders;
+                    std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
+                    *current_state = issue_orders;
                     break;
                 case end_issue_orders:
-                    cout << endl << "\x1B[32m" << "End issue orders" << "\033[0m" << endl << endl;
-                    current_state = execute_orders;
+                    std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
+                    *current_state = execute_orders;
                     break;
                 case execute_order:
-                    cout << endl << "\x1B[32m" << "Execute orders" << "\033[0m" << endl << endl;
-                    current_state = execute_orders;
+                    std::cout << std::endl << "\x1B[32m" << "Execute orders" << "\033[0m" << std::endl << std::endl;
+                    *current_state = execute_orders;
                     break;
                 case end_execute_order:
-                    cout << endl << "\x1B[32m" << "End execute orders" << "\033[0m" << endl << endl;
-                    current_state = assign_reinforcement;
+                    std::cout << std::endl << "\x1B[32m" << "End execute orders" << "\033[0m" << std::endl << std::endl;
+                    *current_state = assign_reinforcement;
                     break;
                 case win_game:
-                    cout << endl << "\x1B[32m" << "Win game" << "\033[0m" << endl << endl;
-                    current_state = win;
+                    std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
+                    *current_state = win;
                     break;
                 case play:
-                    cout << endl << "\x1B[32m" << "Play game" << "\033[0m" << endl << endl;
-                    current_state = start;
+                    std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
+                    *current_state = start;
                     break;
                 case end:
-                    cout << endl << "\x1B[32m" << "Exiting game" << "\033[0m" << endl << endl;
+                    std::cout << std::endl << "\x1B[32m" << "Exiting game" << "\033[0m" << std::endl << std::endl;
                     exit(0);
             }
         }
     }
     if (!foundCommand)
-        cout << endl << "\x1B[31m" << "Invalid input" << "\033[0m" << endl << endl;
+        std::cout << std::endl << "\x1B[31m" << "Invalid input" << "\033[0m" << std::endl << std::endl;
 }
 
-ostream& operator<< (ostream &stream, const GameEngine &gameEngine)
+std::ostream& operator<< (std::ostream &stream, const GameEngine &gameEngine)
 {
     return stream << "Current state (" << gameEngine.current_state << ")";
 }
 
-ostream &operator<< (ostream &stream, const GameEngine::Game_Command &gameCommand) {
+std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &gameCommand)
+{
     switch (gameCommand) {
-        case GameEngine::Game_Command::load_map:
+        case GameEngine::GameCommand::load_map:
             stream << "Load Map";
             break;
-        case GameEngine::Game_Command::validate_map:
+        case GameEngine::GameCommand::validate_map:
             stream << "Validate Map";
             break;
-        case GameEngine::Game_Command::add_player:
+        case GameEngine::GameCommand::add_player:
             stream << "Add player";
             break;
-        case GameEngine::Game_Command::assign_countries:
+        case GameEngine::GameCommand::assign_countries:
             stream << "Assign countries";
             break;
-        case GameEngine::Game_Command::issue_order:
+        case GameEngine::GameCommand::issue_order:
             stream << "Issue order";
             break;
-        case GameEngine::Game_Command::end_issue_orders:
+        case GameEngine::GameCommand::end_issue_orders:
             stream << "End issue order";
             break;
-        case GameEngine::Game_Command::execute_order:
+        case GameEngine::GameCommand::execute_order:
             stream << "Execute order";
             break;
-        case GameEngine::Game_Command::end_execute_order:
+        case GameEngine::GameCommand::end_execute_order:
             stream << "End execute order";
             break;
-        case GameEngine::Game_Command::win_game:
+        case GameEngine::GameCommand::win_game:
             stream << "Win game";
             break;
-        case GameEngine::Game_Command::play:
+        case GameEngine::GameCommand::play:
             stream << "Play game";
             break;
-        case GameEngine::Game_Command::end:
+        case GameEngine::GameCommand::end:
             stream << "End";
             break;
     }
     return stream;
+}
+
+bool GameEngine::operator==(const GameEngine &gameEngine) const
+{
+    return this->current_state == gameEngine.current_state;
 }

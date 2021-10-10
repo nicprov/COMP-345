@@ -1,11 +1,10 @@
 #ifndef COMP354_GAMEENGINE_H
 #define COMP354_GAMEENGINE_H
 #include <vector>
-using namespace std;
 
 class GameEngine{
 public:
-    enum Game_State{
+    enum GameState{
         start=1,
         map_loaded=2,
         map_validated=3,
@@ -15,7 +14,7 @@ public:
         execute_orders=7,
         win=8
     };
-    enum Game_Command{
+    enum GameCommand{
         load_map=1,
         validate_map=2,
         add_player=3,
@@ -30,16 +29,17 @@ public:
     };
     GameEngine();
     // Copy constructor
-    GameEngine(const GameEngine&);
+    GameEngine(const GameEngine*);
     // Assignment operator
     GameEngine& operator= (const GameEngine&);
     // Stream output operator
-    friend ostream& operator<< (ostream&, const GameEngine&);
-    friend ostream& operator<< (ostream&, const Game_Command&);
-    Game_State& getGameState();
-    void getAvailableCommands(vector<Game_Command>&);
-    void transition(Game_Command&);
+    friend std::ostream& operator<< (std::ostream&, const GameEngine&);
+    friend std::ostream& operator<< (std::ostream&, const GameCommand&);
+    bool operator== (const GameEngine&) const;
+    GameState& getGameState();
+    void getAvailableCommands(std::vector<GameCommand>&);
+    void transition(GameCommand&);
 private:
-    Game_State current_state;
+    GameState *current_state;
 };
 #endif //COMP354_GAMEENGINE_H
