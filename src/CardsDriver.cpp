@@ -13,5 +13,14 @@ void cardsDriver(){
     hand.addCard(deck.draw());
     hand.addCard(deck.draw());
     hand.addCard(deck.draw());
-    cout << hand;
+    cout << hand << endl;
+
+    // Call play method on all cards in hand
+    for (Card card: hand.getCards()){
+        card.play();
+        cout << endl;
+        hand.removeCard(card);
+    }
+    cout << hand.getCards().size();
+
 }
