@@ -49,3 +49,9 @@ TEST_CASE("OrderList assignment operator initializes")
     OrderList orderList2 = orderList;
     REQUIRE(orderList == orderList2);
 }
+
+TEST_CASE("OrderList remove order out of range")
+{
+    OrderList orderList;
+    REQUIRE_THROWS_AS(orderList.remove(1), std::runtime_error);
+}

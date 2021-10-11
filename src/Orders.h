@@ -26,6 +26,30 @@ private:
     OrderType* orderType;
 };
 
+class Deploy: Order {
+
+};
+
+class Advance: Order {
+
+};
+
+class Bomb: Order {
+
+};
+
+class Blockade: Order {
+
+};
+
+class Airlift: Order {
+
+};
+
+class Negotiate: Order {
+
+};
+
 class OrderList{
 public:
     OrderList();
