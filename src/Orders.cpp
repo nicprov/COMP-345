@@ -27,50 +27,6 @@ Order::OrderType &Order::getOrderType()
     return *this->orderType;
 }
 
-void Order::execute()
-{
-    switch (*this->orderType) {
-        case deploy:
-            std::cout << "Deploy order";
-            break;
-        case advance:
-            std::cout << "Advance order";
-            break;
-        case bomb:
-            std::cout << "Bomb order";
-            break;
-        case blockade:
-            std::cout << "Blockade order";
-            break;
-        case airlift:
-            std::cout << "Airlift order";
-            break;
-        case negotiate:
-            std::cout << "Negotiate order";
-            break;
-        default:
-            std::cout << "Invalid order";
-            break;
-    }
-}
-
-void Order::validate()
-{
-    switch (*this->orderType) {
-        case deploy:
-        case advance:
-        case bomb:
-        case blockade:
-        case airlift:
-        case negotiate:
-            std::cout << "Valid order";
-            break;
-        default:
-            std::cout << "Invalid order";
-            break;
-    }
-}
-
 std::ostream &operator<<(std::ostream &stream, const Order::OrderType &orderType) {
     switch (orderType) {
         case Order::OrderType::bomb:
@@ -99,6 +55,108 @@ bool Order::operator==(const Order &order) const {
     return this->orderType == order.orderType;
 }
 
+bool Order::validate() {
+    switch (*this->orderType) {
+        case deploy:
+        case advance:
+        case bomb:
+        case blockade:
+        case airlift:
+        case negotiate:
+            std::cout << "Valid order";
+            break;
+        default:
+            std::cout << "Invalid order";
+            break;
+    }
+}
+
+void Order::execute() {
+    switch (*this->orderType) {
+        case deploy:
+            std::cout << "Executing Deploy";
+            break;
+        case advance:
+            std::cout << "Executing Advance";
+            break;
+        case bomb:
+            std::cout << "Executing Bomb";
+            break;
+        case blockade:
+            std::cout << "Executing Blockade";
+            break;
+        case airlift:
+            std::cout << "Executing Airlift";
+            break;
+        case negotiate:
+            std::cout << "Executing Negotiate";
+            break;
+        default:
+            std::cout << "Invalid order";
+            break;
+    }
+}
+
+Deploy::Deploy(const Order::OrderType orderType) : Order(orderType){}
+
+void Deploy::execute() {
+    std::cout << "Executing Deploy";
+}
+
+bool Deploy::validate() {
+    return this->getOrderType() == OrderType::deploy;
+}
+
+Blockade::Blockade(const Order::OrderType orderType) : Order(orderType){}
+
+void Blockade::execute() {
+    std::cout << "Executing Blockade";
+}
+
+bool Blockade::validate() {
+    return this->getOrderType() == OrderType::blockade;
+}
+
+Advance::Advance(const Order::OrderType orderType) : Order(orderType){}
+
+void Advance::execute() {
+    std::cout << "Executing Advance";
+}
+
+bool Advance::validate() {
+    return this->getOrderType() == OrderType::advance;
+}
+
+Bomb::Bomb(const Order::OrderType orderType) : Order(orderType){}
+
+void Bomb::execute() {
+    std::cout << "Executing Validate";
+}
+
+bool Bomb::validate() {
+    return this->getOrderType() == OrderType::bomb;
+}
+
+Airlift::Airlift(const Order::OrderType orderType) : Order(orderType){}
+
+void Airlift::execute() {
+    std::cout << "Executing Airlift";
+}
+
+bool Airlift::validate() {
+    return this->getOrderType() == OrderType::airlift;
+}
+
+Negotiate::Negotiate(const Order::OrderType orderType) : Order(orderType){}
+
+void Negotiate::execute() {
+    std::cout << "Executing Negotiate";
+}
+
+bool Negotiate::validate() {
+    return this->getOrderType() == OrderType::negotiate;
+}
+
 // OrderList methods
 OrderList::OrderList()
 {
@@ -118,7 +176,7 @@ OrderList &OrderList::operator=(const OrderList &orderList)
 
 std::ostream &operator<<(std::ostream &stream, const OrderList &orderList)
 {
-    stream << "Order List[";
+    stream << "OrderList[";
     int counter = 1;
     for (Order order: *orderList.orders){
         if (counter++ < orderList.orders->size())

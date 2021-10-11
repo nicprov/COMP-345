@@ -19,11 +19,53 @@ public:
     friend std::ostream& operator<< (std::ostream&, const OrderType&); // Stream output operator
     bool operator== (const Order&) const;
     OrderType& getOrderType();
-    void execute();
-    void validate();
+    virtual void execute();
+    virtual bool validate();
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = {deploy, advance, bomb, blockade, airlift, negotiate};
 private:
     OrderType* orderType;
+};
+
+class Deploy: public Order {
+public:
+    Deploy(const OrderType);
+    void execute();
+    bool validate();
+};
+
+class Advance: public Order {
+public:
+    Advance(const OrderType);
+    void execute();
+    bool validate();
+};
+
+class Bomb: public Order {
+public:
+    Bomb(const OrderType);
+    void execute();
+    bool validate();
+};
+
+class Blockade: public Order {
+public:
+    Blockade(const OrderType);
+    void execute();
+    bool validate();
+};
+
+class Airlift: public Order {
+public:
+    Airlift(const OrderType);
+    void execute();
+    bool validate();
+};
+
+class Negotiate: public Order {
+public:
+    Negotiate(const OrderType);
+    void execute();
+    bool validate();
 };
 
 class OrderList{
