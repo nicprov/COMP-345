@@ -1,13 +1,19 @@
-version: 2
+version: 2.1
+
 workflows:
   default:
     jobs:
-      - build-and-test
+      - build-and-test:
+          filters:
+            branches:
+              only: 
+                - dev-nick
+                - master
 jobs:
   build-and-test:
     docker:
       - image: "debian:bullseye"
-    resources_class: small
+    resource_class: small
     steps:
       - checkout
       - run:
