@@ -1,7 +1,10 @@
 version: 2
-
+workflows:
+  default:
+    jobs:
+      - build-and-test:
 jobs:
-  build:
+  build-and-test:
     docker:
       - image: "debian:bullseye"
     resources_class: small
