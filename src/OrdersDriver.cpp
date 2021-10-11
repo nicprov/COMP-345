@@ -1,43 +1,50 @@
 #include <iostream>
 #include "Orders.h"
-using namespace std;
 
 void ordersDriver() {
 
-    OrderList list = OrderList();
-    DeployOrder deploy;
-    deploy.Order::orderName = "deploy";
-    list.orderLists.push_back(&deploy);
-    cout << deploy << endl;
-    cout << list << endl;
-    AdvanceOrder advance;
-    advance.Order::orderName = "advance";
-    list.orderLists.push_back(&advance);
-    cout << advance << endl;
-    cout << list << endl;
-    BombOrder bomb;
-    bomb.Order::orderName = "bomb";
-    list.orderLists.push_back(&bomb);
-    cout << bomb << endl;
-    cout <<  list << endl;
-    BlockadeOrder blockade;
-    blockade.Order::orderName = "blockade";
-    list.orderLists.push_back(&blockade);
-    cout << blockade << endl;
-    cout <<  list << endl;
-    AirliftOrder airlift;
-    airlift.Order::orderName = "airlift";
-    list.orderLists.push_back(&airlift);
-    cout << airlift << endl;
-    cout << list << endl;
-    NegotiateOrder negotiate;
-    negotiate.Order::orderName = "negotiate";
-    list.orderLists.push_back(&negotiate);
-    cout <<  negotiate << endl;
-    cout << list << endl;
+    // Add all order types
+    OrderList orderList = OrderList();
+    Order* deploy = new Deploy(Order::OrderType::deploy);
+    Order* advance = new Advance(Order::OrderType::advance);
+    Order* bomb = new Bomb(Order::OrderType::bomb);
+    Order* blockade = new Blockade(Order::OrderType::blockade);
+    Order* airlift = new Airlift(Order::OrderType::airlift);
+    Order* negotiate = new Negotiate(Order::OrderType::negotiate);
+    orderList.add(deploy);
+    orderList.add(advance);
+    orderList.add(bomb);
+    orderList.add(blockade);
+    orderList.add(airlift);
+    orderList.add(negotiate);
 
-    list.remove(list.orderLists, 1);
-    cout <<  list << endl;
-    list.move(list.orderLists, bomb, 4, 2);
-    cout <<  list << endl;
+    // Show orders
+    cout << orderList << endl;
+
+    // Execute all orders
+    cout << endl;
+    if (deploy->validate())
+        deploy->execute();
+    cout << endl;
+    if (advance->validate())
+        advance->execute();
+    cout << endl;
+    if (bomb->validate())
+        bomb->execute();
+    cout << endl;
+    if (blockade->validate())
+        blockade->execute();
+    cout << endl;
+    if (airlift->validate())
+        airlift->execute();
+    cout << endl;
+    if (negotiate->validate())
+        negotiate->execute();
+    cout << endl << endl;
+
+    // Remove order
+    cout <<  "Removing order: " << orderList.remove(1) << endl;
+
+    // Move order
+    orderList.move(airlift, 1, 4);
 }
