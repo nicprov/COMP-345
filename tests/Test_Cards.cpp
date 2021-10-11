@@ -37,8 +37,8 @@ TEST_CASE("Card get type function returns proper type")
  */
 TEST_CASE("Hand constructor initializes")
 {
-    Hand hand = Hand();
-    REQUIRE(hand.getCards() == std::vector<Card> {});
+    Hand* hand = new Hand();
+    REQUIRE(hand->getCards() == std::vector<Card*> {});
 }
 
 TEST_CASE("Hand copy constructor initializes")
@@ -58,29 +58,29 @@ TEST_CASE("Hand assignment operator initializes")
 TEST_CASE("Hand can add card")
 {
     Hand hand;
-    Card card = Card::CardType::blockade;
+    Card* card = new Card(Card::CardType::blockade);
     hand.addCard(card);
-    std::vector<Card> cards = hand.getCards();
+    std::vector<Card*> cards = hand.getCards();
     REQUIRE(std::find(cards.begin(), cards.end(), card) != cards.end());
 }
 
 TEST_CASE("Hand can remove card")
 {
     Hand hand;
-    Card card = Card::CardType::reinforcement;
+    Card* card = new Card(Card::CardType::reinforcement);
     hand.addCard(card);
     hand.removeCard(card);
-    std::vector<Card> cards = hand.getCards();
+    std::vector<Card*> cards = hand.getCards();
     REQUIRE(!(std::find(cards.begin(), cards.end(), card) != cards.end()));
 }
 
 TEST_CASE("Hand can get cards")
 {
-    Hand hand;
-    Card card = Card::CardType::blockade;
-    hand.addCard(card);
-    hand.addCard(card);
-    std::vector<Card> cards = hand.getCards();
+    Hand* hand = new Hand();
+    Card* card = new Card(Card::CardType::blockade);
+    hand->addCard(card);
+    hand->addCard(card);
+    std::vector<Card*> cards = hand->getCards();
     REQUIRE(cards.size() == 2);
 }
 
@@ -97,7 +97,7 @@ TEST_CASE("Deck constructor initializes")
     {
         for (int i=0+incrementor; i < Deck::NUM_CARDS_PER_TYPE+incrementor; i++)
         {
-            REQUIRE(deck.getCards().at(i).getType() == cardType);
+            REQUIRE(deck.getCards().at(i)->getType() == cardType);
         }
         incrementor += Deck::NUM_CARDS_PER_TYPE;
     }

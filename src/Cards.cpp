@@ -19,18 +19,18 @@ Card& Card::operator=(const Card &card)
     return *this;
 }
 
-void Card::play(OrderList &orderList, Hand &hand, Deck &deck)
+void Card::play(OrderList *orderList, Hand *hand, Deck *deck)
 {
     // Add card back to deck
-    deck.returnCard(*this);
-    hand.removeCard(*this);
+    deck->returnCard(this);
+    hand->removeCard(this);
 
     // Show action and create order
     switch (*this->type) {
         case bomb: {
             std::cout << "Playing bomb card";
             Order* bomb = new Bomb(Order::OrderType::bomb);
-            orderList.add(bomb);
+            orderList->add(bomb);
             break;
         }
         case reinforcement: {
@@ -40,13 +40,13 @@ void Card::play(OrderList &orderList, Hand &hand, Deck &deck)
         case blockade: {
             std::cout << "Playing blockade card";
             Order* blockade = new Blockade(Order::OrderType::blockade);
-            orderList.add(blockade);
+            orderList->add(blockade);
             break;
         }
         case airlift:{
             std::cout << "Playing airlift card";
             Order* airlift = new Airlift(Order::OrderType::airlift);
-            orderList.add(airlift);
+            orderList->add(airlift);
             break;
         }
         case diplomacy: {
@@ -58,7 +58,7 @@ void Card::play(OrderList &orderList, Hand &hand, Deck &deck)
 
 std::ostream& operator<< (std::ostream &stream, const Card &card)
 {
-    return stream << "Card(" << *card.type << ")";
+    return stream << "Card(" << card.type << ")";
 }
 
 std::ostream& operator<< (std::ostream &stream, const Card::CardType &cardType)
@@ -96,11 +96,15 @@ bool Card::operator==(const Card &card) const
 // Hand methods
 Hand::~Hand()
 {
+    for (Card* card: *this->cards)
+    {
+        delete card;
+    }
     delete this->cards;
 }
 
 Hand::Hand() {
-    this->cards = new std::vector<Card>;
+    this->cards = new std::vector<Card*>;
 }
 
 Hand::Hand(const Hand *hand)
@@ -114,16 +118,16 @@ Hand& Hand::operator=(const Hand &hand)
     return *this;
 }
 
-void Hand::addCard(Card &card)
+void Hand::addCard(Card *card)
 {
     this->cards->push_back(card);
 }
 
-void Hand::removeCard(Card &card)
+void Hand::removeCard(Card *card)
 {
     for (int i=this->cards->size()-1; i >= 0; i--)
     {
-        if (this->cards->at(i).getType() == card.getType())
+        if (this->cards->at(i)->getType() == card->getType())
         {
             this->cards->erase(this->cards->cbegin()+i);
             break;
@@ -131,13 +135,13 @@ void Hand::removeCard(Card &card)
     }
 }
 
-std::ostream& operator<< (std::ostream &stream, const Hand &hand)
+std::ostream& operator<< (std::ostream &stream, const Hand *hand)
 {
     stream << "Hand[";
     int counter = 1;
-    for (Card card: *hand.cards)
+    for (Card card: *hand->cards)
     {
-        if (counter++ < hand.cards->size())
+        if (counter++ < hand->cards->size())
             stream << card.getType() << ",";
         else
             stream << card.getType();
@@ -146,7 +150,7 @@ std::ostream& operator<< (std::ostream &stream, const Hand &hand)
     return stream;
 }
 
-std::vector<Card> Hand::getCards()
+std::vector<Card*> Hand::getCards()
 {
     return *this->cards;
 }
@@ -159,12 +163,16 @@ bool Hand::operator==(const Hand &hand) const
 // Deck methods
 Deck::~Deck()
 {
+    for (Card* card: *this->cards)
+    {
+        delete card;
+    }
     delete this->cards;
 }
 
 Deck::Deck()
 {
-    this->cards = new std::vector<Card>;
+    this->cards = new std::vector<Card*>;
     // Generates 50 cards (10 cards of each type)
     for (Card::CardType cardType: Card::ALL_Card_Type)
     {
@@ -187,25 +195,25 @@ Deck& Deck::operator=(const Deck &deck)
     return *this;
 }
 
-Card& Deck::draw()
+Card* Deck::draw()
 {
     if (this->cards->size() > 0)
     {
         shuffle(cards->begin(), cards->end(), std::random_device {});
         Card* card = new Card(cards->front());
         cards->erase(cards->begin());
-        return *card;
+        return card;
     } else
         throw std::runtime_error("No more cards to draw");
 }
 
-std::ostream& operator<< (std::ostream &stream, const Deck &deck)
+std::ostream& operator<< (std::ostream &stream, const Deck *deck)
 {
     stream << "Deck[";
     int counter = 1;
-    for (Card card: *deck.cards)
+    for (Card card: *deck->cards)
     {
-        if (counter++ < deck.cards->size())
+        if (counter++ < deck->cards->size())
             stream << card.getType() << ",";
         else
             stream << card.getType();
@@ -214,7 +222,7 @@ std::ostream& operator<< (std::ostream &stream, const Deck &deck)
     return stream;
 }
 
-std::vector<Card> Deck::getCards()
+std::vector<Card*> Deck::getCards()
 {
     return *this->cards;
 }
@@ -224,7 +232,7 @@ bool Deck::operator==(const Deck &deck) const
     return *this->cards == *deck.cards;
 }
 
-void Deck::returnCard(Card &card)
+void Deck::returnCard(Card *card)
 {
     this->cards->push_back(card);
 }
