@@ -4,9 +4,9 @@ using namespace std;
 
 void listAvailableCommands(GameEngine &gameEngine){
     cout << "Available commands:" << endl;
-    vector<GameEngine::Game_Command> commands;
+    vector<GameEngine::GameCommand> commands;
     gameEngine.getAvailableCommands(commands);
-    for (GameEngine::Game_Command command: commands){
+    for (GameEngine::GameCommand command: commands){
         cout << static_cast<int>(command) << ". " << command << endl;
     }
     cout << "Choice: ";
@@ -27,7 +27,7 @@ void gameEngineDriver() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "\x1B[31m" << "Invalid input, try again: " << "\033[0m";
         }
-        auto command = static_cast<GameEngine::Game_Command>(choice);
+        auto command = static_cast<GameEngine::GameCommand>(choice);
         gameEngine.transition(command);
     }
 }
