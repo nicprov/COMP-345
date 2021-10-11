@@ -22,13 +22,16 @@ public:
     virtual void execute();
     virtual bool validate();
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = {deploy, advance, bomb, blockade, airlift, negotiate};
-private:
+protected:
     OrderType* orderType;
 };
 
 class Deploy: public Order {
 public:
     Deploy(const OrderType);
+    Deploy(const Deploy*);
+    Deploy& operator= (const Deploy&);
+    friend std::ostream& operator<< (std::ostream&, const Deploy&); // Stream output operator
     void execute();
     bool validate();
 };
@@ -36,6 +39,9 @@ public:
 class Advance: public Order {
 public:
     Advance(const OrderType);
+    Advance(const Advance*);
+    Advance& operator= (const Advance&);
+    friend std::ostream& operator<< (std::ostream&, const Advance&); // Stream output operator
     void execute();
     bool validate();
 };
@@ -43,6 +49,9 @@ public:
 class Bomb: public Order {
 public:
     Bomb(const OrderType);
+    Bomb(const Bomb*);
+    Bomb& operator= (const Bomb&);
+    friend std::ostream& operator<< (std::ostream&, const Bomb&); // Stream output operator
     void execute();
     bool validate();
 };
@@ -50,6 +59,9 @@ public:
 class Blockade: public Order {
 public:
     Blockade(const OrderType);
+    Blockade(const Blockade*);
+    Blockade& operator= (const Blockade&);
+    friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
     void execute();
     bool validate();
 };
@@ -57,6 +69,9 @@ public:
 class Airlift: public Order {
 public:
     Airlift(const OrderType);
+    Airlift(const Airlift*);
+    Airlift& operator= (const Airlift&);
+    friend std::ostream& operator<< (std::ostream&, const Airlift&); // Stream output operator
     void execute();
     bool validate();
 };
@@ -64,6 +79,9 @@ public:
 class Negotiate: public Order {
 public:
     Negotiate(const OrderType);
+    Negotiate(const Negotiate*);
+    Negotiate& operator= (const Negotiate&);
+    friend std::ostream& operator<< (std::ostream&, const Negotiate&); // Stream output operator
     void execute();
     bool validate();
 };

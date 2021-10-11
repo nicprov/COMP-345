@@ -5,52 +5,46 @@ void ordersDriver() {
 
     // Add all order types
     OrderList orderList = OrderList();
-    Order deploy = Deploy(Order::OrderType::deploy);
-    Order advance = Advance(Order::OrderType::advance);
-    Order bomb = Bomb(Order::OrderType::bomb);
-    Order blockade = Blockade(Order::OrderType::blockade);
-    Order airlift = Airlift(Order::OrderType::airlift);
-    Order negotiate = Negotiate(Order::OrderType::negotiate);
-    orderList.add(&deploy);
-    orderList.add(&advance);
-    orderList.add(&bomb);
-    orderList.add(&blockade);
-    orderList.add(&airlift);
-    orderList.add(&negotiate);
+    Order* deploy = new Deploy(Order::OrderType::deploy);
+    Order* advance = new Advance(Order::OrderType::advance);
+    Order* bomb = new Bomb(Order::OrderType::bomb);
+    Order* blockade = new Blockade(Order::OrderType::blockade);
+    Order* airlift = new Airlift(Order::OrderType::airlift);
+    Order* negotiate = new Negotiate(Order::OrderType::negotiate);
+    orderList.add(deploy);
+    orderList.add(advance);
+    orderList.add(bomb);
+    orderList.add(blockade);
+    orderList.add(airlift);
+    orderList.add(negotiate);
 
     // Show orders
     cout << orderList << endl;
 
     // Execute all orders
     cout << endl;
-    deploy.execute();
-    cout << " | ";
-    deploy.validate();
+    if (deploy->validate())
+        deploy->execute();
     cout << endl;
-    advance.execute();
-    cout << " | ";
-    advance.validate();
+    if (advance->validate())
+        advance->execute();
     cout << endl;
-    bomb.execute();
-    cout << " | ";
-    bomb.validate();
+    if (bomb->validate())
+        bomb->execute();
     cout << endl;
-    blockade.execute();
-    cout << " | ";
-    blockade.validate();
+    if (blockade->validate())
+        blockade->execute();
     cout << endl;
-    airlift.execute();
-    cout << " | ";
-    airlift.validate();
+    if (airlift->validate())
+        airlift->execute();
     cout << endl;
-    negotiate.execute();
-    cout << " | ";
-    negotiate.validate();
+    if (negotiate->validate())
+        negotiate->execute();
     cout << endl << endl;
 
     // Remove order
     cout <<  "Removing order: " << orderList.remove(1) << endl;
 
     // Move order
-    orderList.move(&airlift, 1, 4);
+    orderList.move(airlift, 1, 4);
 }

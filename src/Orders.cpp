@@ -27,7 +27,8 @@ Order::OrderType &Order::getOrderType()
     return *this->orderType;
 }
 
-std::ostream &operator<<(std::ostream &stream, const Order::OrderType &orderType) {
+std::ostream &operator<<(std::ostream &stream, const Order::OrderType &orderType)
+{
     switch (orderType) {
         case Order::OrderType::bomb:
             stream << "Bomb";
@@ -51,11 +52,13 @@ std::ostream &operator<<(std::ostream &stream, const Order::OrderType &orderType
     return stream;
 }
 
-bool Order::operator==(const Order &order) const {
+bool Order::operator==(const Order &order) const
+{
     return this->orderType == order.orderType;
 }
 
-bool Order::validate() {
+bool Order::validate()
+{
     switch (*this->orderType) {
         case deploy:
         case advance:
@@ -64,14 +67,15 @@ bool Order::validate() {
         case airlift:
         case negotiate:
             std::cout << "Valid order";
-            break;
+            return true;
         default:
             std::cout << "Invalid order";
-            break;
+            return false;
     }
 }
 
-void Order::execute() {
+void Order::execute()
+{
     switch (*this->orderType) {
         case deploy:
             std::cout << "Executing Deploy";
@@ -99,15 +103,43 @@ void Order::execute() {
 
 Deploy::Deploy(const Order::OrderType orderType) : Order(orderType){}
 
-void Deploy::execute() {
+Deploy::Deploy(const Deploy *deploy): Order(deploy){}
+
+Deploy &Deploy::operator= (const Deploy &deploy)
+{
+    this->orderType = new OrderType(*deploy.orderType);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Deploy &deploy)
+{
+    return stream << "Deploy(" << *deploy.orderType << ")";
+}
+
+void Deploy::execute()
+{
     std::cout << "Executing Deploy";
 }
 
-bool Deploy::validate() {
+bool Deploy::validate()
+{
     return this->getOrderType() == OrderType::deploy;
 }
 
 Blockade::Blockade(const Order::OrderType orderType) : Order(orderType){}
+
+Blockade::Blockade(const Blockade *blockade): Order(blockade){}
+
+Blockade &Blockade::operator= (const Blockade &blockade)
+{
+    this->orderType = new OrderType(*blockade.orderType);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Blockade &blockade)
+{
+    return stream << "Deploy(" << *blockade.orderType << ")";
+}
 
 void Blockade::execute() {
     std::cout << "Executing Blockade";
@@ -119,15 +151,43 @@ bool Blockade::validate() {
 
 Advance::Advance(const Order::OrderType orderType) : Order(orderType){}
 
-void Advance::execute() {
+Advance::Advance(const Advance *advance): Order(advance){}
+
+Advance &Advance::operator= (const Advance &advance)
+{
+    this->orderType = new OrderType(*advance.orderType);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Advance &advance)
+{
+    return stream << "Deploy(" << *advance.orderType << ")";
+}
+
+void Advance::execute()
+{
     std::cout << "Executing Advance";
 }
 
-bool Advance::validate() {
+bool Advance::validate()
+{
     return this->getOrderType() == OrderType::advance;
 }
 
 Bomb::Bomb(const Order::OrderType orderType) : Order(orderType){}
+
+Bomb::Bomb(const Bomb *bomb): Order(bomb){}
+
+Bomb &Bomb::operator= (const Bomb &bomb)
+{
+    this->orderType = new OrderType(*bomb.orderType);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Bomb &bomb)
+{
+    return stream << "Deploy(" << *bomb.orderType << ")";
+}
 
 void Bomb::execute() {
     std::cout << "Executing Validate";
@@ -139,6 +199,19 @@ bool Bomb::validate() {
 
 Airlift::Airlift(const Order::OrderType orderType) : Order(orderType){}
 
+Airlift::Airlift(const Airlift *airlift): Order(airlift){}
+
+Airlift &Airlift::operator= (const Airlift &airlift)
+{
+    this->orderType = new OrderType(*airlift.orderType);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Airlift &airlift)
+{
+    return stream << "Deploy(" << *airlift.orderType << ")";
+}
+
 void Airlift::execute() {
     std::cout << "Executing Airlift";
 }
@@ -149,11 +222,26 @@ bool Airlift::validate() {
 
 Negotiate::Negotiate(const Order::OrderType orderType) : Order(orderType){}
 
-void Negotiate::execute() {
+Negotiate::Negotiate(const Negotiate *negotiate): Order(negotiate){}
+
+Negotiate &Negotiate::operator= (const Negotiate &negotiate)
+{
+    this->orderType = new OrderType(*negotiate.orderType);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Negotiate &negotiate)
+{
+    return stream << "Deploy(" << *negotiate.orderType << ")";
+}
+
+void Negotiate::execute()
+{
     std::cout << "Executing Negotiate";
 }
 
-bool Negotiate::validate() {
+bool Negotiate::validate()
+{
     return this->getOrderType() == OrderType::negotiate;
 }
 
