@@ -9,6 +9,7 @@ workflows:
               only: 
                 - dev-nick
                 - master
+                - devAdrienne
 jobs:
   build-and-test:
     docker:
