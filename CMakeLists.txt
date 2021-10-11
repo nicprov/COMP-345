@@ -15,4 +15,4 @@ FetchContent_MakeAvailable(Catch2)
 add_executable(tests Cards.cpp GameEngine.cpp tests/Test_Cards.cpp tests/Test_GameEngine.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
-add_executable(main MainDriver.cpp Cards.cpp GameEngine.cpp)
+add_executable(main MainDriver.cpp Cards.cpp GameEngine.cpp Orders.cpp)

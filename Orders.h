@@ -1,66 +1,66 @@
-#include <iostream>  // for cin,cout,fixed,showpoint,setw()
-#include <string>    // for to_string()
-#include <list>
+#include <iostream>  
+#include <string>    
+#include <vector>
 using namespace std;
 
 class Order{
     public:
         Order();
+        Order(string orderName);
+        Order(Order*);;
         Order(const Order&);
-        void operator = (Const Order&);
-        string orderEffect;
+        void operator = (const Order&);
+        friend ostream& operator<< (ostream&, const Order&);
         string orderName;
-        void output();
-        friend ostream &operator<<( ostream &output, const Order &O )
-}
+};
 
-class deploy: public Order{
+class DeployOrder: public Order{
     public:
-        void executed();
+        void execute();
         void validate();
-}
+};
 
-class advance: public Order{
+class AdvanceOrder: public Order{
     public:
-        void executed();
+        void execute();
         void validate();
-}
+};
 
-class bomb: public Order{
+class BombOrder: public Order{
     public:
-        void executed();
+        void execute();
         void validate();    
-}
+};
 
-class blockade: public Order{
+class BlockadeOrder: public Order{
     public:
-        void executed();
+        void execute();
         void validate();    
-}
+};
 
-class airlift: public Order{
+class AirliftOrder: public Order{
     public:
-        void executed();
+        void execute();
         void validate();  
-}
+};
 
-class negotiate: public Order{
+class NegotiateOrder: public Order{
     public:
-        void executed();
+        void execute();
         void validate();    
-}
+};
 
 class OrderList{
     
     public:
         OrderList();
+        OrderList(OrderList*);;
         OrderList(const OrderList&);
         void operator = (const OrderList&);
-        void remove(Order toRemove);
-        void move(Order moved);
-        friend ostream &operator<<( ostream &output, const OrderList &OL )
-    private:
-        list<Order> orderLists;
+        friend ostream& operator<< (ostream&, const OrderList&);
+        void remove(vector<Order*>&, int);
+        void move(vector<Order*>& list, Order order, int newIndex, int oldIndex);
+        vector<Order*> orderLists;
 
 
-}
+};
