@@ -1,4 +1,7 @@
-#include <iostream>  
+#ifndef TEST1_ORDERS_H
+#define TEST1_ORDERS_H
+
+#include <iostream>
 #include <string>    
 #include <vector>
 
@@ -100,3 +103,4 @@ public:
 private:
     std::vector<Order>* orders;
 };
+#endif //TEST1_ORDERS_H
