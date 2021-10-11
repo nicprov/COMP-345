@@ -137,8 +137,11 @@ void OrderList::add(Order *order)
 
 Order& OrderList::remove(int index)
 {
-    auto* order = new Order(*this->orders->erase(this->orders->begin() + index));
-    return *order;
+    if (index > 0 && index < this->orders->size()){
+        auto* order = new Order(*this->orders->erase(this->orders->begin() + index));
+        return *order;
+    } else
+        throw std::runtime_error("Cannot remove order, index out of range");
 }
 
 void OrderList::move(Order *order, int newIndex, int oldIndex)
