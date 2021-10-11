@@ -22,5 +22,4 @@ void cardsDriver(){
         hand.removeCard(card);
     }
     cout << hand.getCards().size();
-
 }
