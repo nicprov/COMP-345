@@ -8,7 +8,8 @@ Card::Card(CardType type)
     this->type = new CardType(type);
 }
 
-Card::Card(const Card *card) {
+Card::Card(const Card *card)
+{
     this->type = new CardType(*card->type);
 }
 
@@ -18,27 +19,40 @@ Card& Card::operator=(const Card &card)
     return *this;
 }
 
-void Card::play()
+void Card::play(OrderList &orderList, Hand &hand, Deck &deck)
 {
-    // TODO Create order
+    // Add card back to deck
+    deck.returnCard(*this);
+    hand.removeCard(*this);
 
-    // Show action
-    switch (*type) {
-        case bomb:
+    // Show action and create order
+    switch (*this->type) {
+        case bomb: {
             std::cout << "Playing bomb card";
+            Order* bomb = new Bomb(Order::OrderType::bomb);
+            orderList.add(bomb);
             break;
-        case reinforcement:
+        }
+        case reinforcement: {
             std::cout << "Playing reinforcement card";
             break;
-        case blockade:
+        }
+        case blockade: {
             std::cout << "Playing blockade card";
+            Order* blockade = new Blockade(Order::OrderType::blockade);
+            orderList.add(blockade);
             break;
-        case airlift:
+        }
+        case airlift:{
             std::cout << "Playing airlift card";
+            Order* airlift = new Airlift(Order::OrderType::airlift);
+            orderList.add(airlift);
             break;
-        case diplomacy:
+        }
+        case diplomacy: {
             std::cout << "Playing diplomacy card";
             break;
+        }
     }
 }
 
@@ -80,11 +94,11 @@ bool Card::operator==(const Card &card) const
 }
 
 // Hand methods
+Hand::~Hand()
+{
+    delete this->cards;
+}
 
-/**
- * Hand Constructor
- * Hand is empty initially, so not need to initialize anything with constructor
- */
 Hand::Hand() {
     this->cards = new std::vector<Card>;
 }
@@ -107,8 +121,10 @@ void Hand::addCard(Card &card)
 
 void Hand::removeCard(Card &card)
 {
-    for (int i=this->cards->size()-1; i >= 0; i--){
-        if (this->cards->at(i).getType() == card.getType()){
+    for (int i=this->cards->size()-1; i >= 0; i--)
+    {
+        if (this->cards->at(i).getType() == card.getType())
+        {
             this->cards->erase(this->cards->cbegin()+i);
             break;
         }
@@ -119,7 +135,8 @@ std::ostream& operator<< (std::ostream &stream, const Hand &hand)
 {
     stream << "Hand[";
     int counter = 1;
-    for (Card card: *hand.cards){
+    for (Card card: *hand.cards)
+    {
         if (counter++ < hand.cards->size())
             stream << card.getType() << ",";
         else
@@ -136,10 +153,15 @@ std::vector<Card> Hand::getCards()
 
 bool Hand::operator==(const Hand &hand) const
 {
-    return this->cards == hand.cards;
+    return *hand.cards == *this->cards;
 }
 
 // Deck methods
+Deck::~Deck()
+{
+    delete this->cards;
+}
+
 Deck::Deck()
 {
     this->cards = new std::vector<Card>;
@@ -148,7 +170,8 @@ Deck::Deck()
     {
         for (int i=0; i < Deck::NUM_CARDS_PER_TYPE; i++)
         {
-            this->cards->push_back(Card(cardType));
+            Card* card = new Card(cardType);
+            this->cards->push_back(card);
         }
     }
 }
@@ -166,7 +189,8 @@ Deck& Deck::operator=(const Deck &deck)
 
 Card& Deck::draw()
 {
-    if (this->cards->size() > 0){
+    if (this->cards->size() > 0)
+    {
         shuffle(cards->begin(), cards->end(), std::random_device {});
         Card* card = new Card(cards->front());
         cards->erase(cards->begin());
@@ -179,7 +203,8 @@ std::ostream& operator<< (std::ostream &stream, const Deck &deck)
 {
     stream << "Deck[";
     int counter = 1;
-    for (Card card: *deck.cards){
+    for (Card card: *deck.cards)
+    {
         if (counter++ < deck.cards->size())
             stream << card.getType() << ",";
         else
@@ -196,5 +221,10 @@ std::vector<Card> Deck::getCards()
 
 bool Deck::operator==(const Deck &deck) const
 {
-    return this->cards == deck.cards;
+    return *this->cards == *deck.cards;
+}
+
+void Deck::returnCard(Card &card)
+{
+    this->cards->push_back(card);
 }

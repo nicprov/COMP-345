@@ -15,11 +15,13 @@ void cardsDriver(){
     hand.addCard(deck.draw());
     cout << hand << endl;
 
+    OrderList* orderList = new OrderList();
+
     // Call play method on all cards in hand
     for (Card card: hand.getCards()){
-        card.play();
+        card.play(*orderList, hand, deck);
         cout << endl;
         hand.removeCard(card);
     }
-    cout << hand.getCards().size();
+    cout << "Hand size after removing all cards: " << hand.getCards().size();
 }

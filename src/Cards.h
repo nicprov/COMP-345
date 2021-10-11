@@ -2,6 +2,10 @@
 #define TEST1_CARDS_H
 #include <vector>
 #include <iosfwd>
+#include "Orders.h"
+
+class Hand;
+class Deck;
 
 class Card
 {
@@ -23,7 +27,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Card&);
     friend std::ostream& operator<< (std::ostream&, const CardType&);
     bool operator== (const Card&) const;
-    void play();
+    void play(OrderList&, Hand&, Deck&);
     CardType& getType();
     static constexpr std::initializer_list<CardType> ALL_Card_Type = {bomb, reinforcement, blockade, airlift, diplomacy};
 private:
@@ -33,6 +37,7 @@ private:
 class Hand
 {
 public:
+    ~Hand();
     Hand();
     // Copy constructor
     Hand(const Hand*);
@@ -50,6 +55,7 @@ private:
 
 class Deck{
 public:
+    ~Deck();
     Deck();
     // Copy constructor
     Deck(const Deck*);
@@ -59,6 +65,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Deck&);
     bool operator== (const Deck&) const;
     Card& draw();
+    void returnCard(Card&);
     std::vector<Card> getCards();
     static constexpr int NUM_CARDS_PER_TYPE = 10;
 private:

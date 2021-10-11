@@ -43,15 +43,15 @@ TEST_CASE("Hand constructor initializes")
 
 TEST_CASE("Hand copy constructor initializes")
 {
-    Hand hand;
-    Hand hand2 = Hand(hand);
-    REQUIRE(hand == hand2);
+    Hand* hand = new Hand();
+    Hand* hand2 = new Hand(hand);
+    REQUIRE(*hand == *hand2);
 }
 
 TEST_CASE("Hand assignment operator initializes")
 {
-    Hand hand;
-    Hand hand2 = hand;
+    Hand* hand = new Hand();
+    Hand hand2 = new Hand(hand);
     REQUIRE(hand == hand2);
 }
 
@@ -105,29 +105,29 @@ TEST_CASE("Deck constructor initializes")
 
 TEST_CASE("Deck copy constructor initializes")
 {
-    Deck deck;
-    Deck deck2 = Deck(deck);
-    REQUIRE(deck == deck2);
+    Deck* deck = new Deck();
+    Deck* deck2 = new Deck(deck);
+    REQUIRE(*deck == *deck2);
 }
 
 TEST_CASE("Deck assignment operator initializes")
 {
-    Deck deck;
-    Deck deck2 = deck;
-    REQUIRE(deck == deck2);
+    Deck* deck = new Deck();
+    Deck* deck2 = new Deck(deck);
+    REQUIRE(*deck == *deck2);
 }
 
 TEST_CASE("Deck draw removes card from deck")
 {
-    Deck deck;
-    deck.draw();
-    REQUIRE(deck.getCards().size() == 49);
+    Deck* deck = new Deck();
+    deck->draw();
+    REQUIRE(deck->getCards().size() == 49);
 }
 
 TEST_CASE("Deck get cards")
 {
-    Deck deck;
-    REQUIRE(deck.getCards().size() == 50);
+    Deck* deck = new Deck();
+    REQUIRE(deck->getCards().size() == 50);
 }
 
 TEST_CASE("Deck throws exception when out of cards")
