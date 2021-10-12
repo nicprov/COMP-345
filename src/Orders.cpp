@@ -6,9 +6,9 @@ Order::Order(const OrderType orderType)
     this->orderType = new OrderType(orderType);
 }
 
-Order::Order(const Order *order)
+Order::Order(const Order &order)
 {
-    this->orderType = new OrderType(*order->orderType);
+    this->orderType = new OrderType(*order.orderType);
 }
 
 Order &Order::operator= (const Order &order)
@@ -43,7 +43,7 @@ std::ostream &operator<<(std::ostream &stream, const Order::OrderType &orderType
             stream << "Blockade";
             break;
         case Order::OrderType::deploy:
-            stream << "Depoy";
+            stream << "Deploy";
             break;
         case Order::OrderType::advance:
             stream << "Advance";
@@ -54,7 +54,7 @@ std::ostream &operator<<(std::ostream &stream, const Order::OrderType &orderType
 
 bool Order::operator==(const Order &order) const
 {
-    return this->orderType == order.orderType;
+    return *this->orderType == *order.orderType;
 }
 
 bool Order::validate()
@@ -103,7 +103,7 @@ void Order::execute()
 
 Deploy::Deploy(const Order::OrderType orderType) : Order(orderType){}
 
-Deploy::Deploy(const Deploy *deploy): Order(deploy){}
+Deploy::Deploy(const Deploy &deploy): Order(deploy){}
 
 Deploy &Deploy::operator= (const Deploy &deploy)
 {
@@ -128,7 +128,7 @@ bool Deploy::validate()
 
 Blockade::Blockade(const Order::OrderType orderType) : Order(orderType){}
 
-Blockade::Blockade(const Blockade *blockade): Order(blockade){}
+Blockade::Blockade(const Blockade &blockade): Order(blockade){}
 
 Blockade &Blockade::operator= (const Blockade &blockade)
 {
@@ -151,7 +151,7 @@ bool Blockade::validate() {
 
 Advance::Advance(const Order::OrderType orderType) : Order(orderType){}
 
-Advance::Advance(const Advance *advance): Order(advance){}
+Advance::Advance(const Advance &advance): Order(advance){}
 
 Advance &Advance::operator= (const Advance &advance)
 {
@@ -176,7 +176,7 @@ bool Advance::validate()
 
 Bomb::Bomb(const Order::OrderType orderType) : Order(orderType){}
 
-Bomb::Bomb(const Bomb *bomb): Order(bomb){}
+Bomb::Bomb(const Bomb &bomb): Order(bomb){}
 
 Bomb &Bomb::operator= (const Bomb &bomb)
 {
@@ -199,7 +199,7 @@ bool Bomb::validate() {
 
 Airlift::Airlift(const Order::OrderType orderType) : Order(orderType){}
 
-Airlift::Airlift(const Airlift *airlift): Order(airlift){}
+Airlift::Airlift(const Airlift &airlift): Order(airlift){}
 
 Airlift &Airlift::operator= (const Airlift &airlift)
 {
@@ -222,7 +222,7 @@ bool Airlift::validate() {
 
 Negotiate::Negotiate(const Order::OrderType orderType) : Order(orderType){}
 
-Negotiate::Negotiate(const Negotiate *negotiate): Order(negotiate){}
+Negotiate::Negotiate(const Negotiate &negotiate): Order(negotiate){}
 
 Negotiate &Negotiate::operator= (const Negotiate &negotiate)
 {
@@ -246,14 +246,23 @@ bool Negotiate::validate()
 }
 
 // OrderList methods
-OrderList::OrderList()
+OrderList::~OrderList()
 {
-    this->orders = new std::vector<Order>;
+    for (Order* order: *this->orders)
+    {
+        delete order;
+    }
+    delete this->orders;
 }
 
-OrderList::OrderList(const OrderList *orderList)
+OrderList::OrderList()
 {
-    this->orders = new std::vector(*orderList->orders);
+    this->orders = new std::vector<Order*>;
+}
+
+OrderList::OrderList(const OrderList &orderList)
+{
+    this->orders = new std::vector(*orderList.orders);
 }
 
 OrderList &OrderList::operator=(const OrderList &orderList)
@@ -266,11 +275,11 @@ std::ostream &operator<<(std::ostream &stream, const OrderList &orderList)
 {
     stream << "OrderList[";
     int counter = 1;
-    for (Order order: *orderList.orders){
+    for (Order* order: *orderList.orders){
         if (counter++ < orderList.orders->size())
-            stream << order.getOrderType() << ",";
+            stream << order->getOrderType() << ",";
         else
-            stream << order.getOrderType();
+            stream << order->getOrderType();
     }
     stream << "]";
     return stream;
@@ -281,11 +290,12 @@ void OrderList::add(Order *order)
     this->orders->push_back(order);
 }
 
-Order& OrderList::remove(int index)
+void OrderList::remove(int index)
 {
     if (index > 0 && index < this->orders->size()){
-        auto* order = new Order(*this->orders->erase(this->orders->begin() + index));
-        return *order;
+        Order* order = this->orders->at(index);
+        this->orders->erase(this->orders->begin() + index);
+        delete order;
     } else
         throw std::runtime_error("Cannot remove order, index out of range");
 }
@@ -293,17 +303,17 @@ Order& OrderList::remove(int index)
 void OrderList::move(Order *order, int newIndex, int oldIndex)
 {
     if(newIndex < this->orders->size()) {
-        this->orders->insert(this->orders->begin() + newIndex, order);
+        this->orders->insert(this->orders->begin() + newIndex, new Order(*order));
         this->orders->erase(this->orders->begin() + (oldIndex - 1));
     }
     else
         throw std::runtime_error("Invalid index");
 }
 
-std::vector<Order> OrderList::getOrders() {
+std::vector<Order*> OrderList::getOrders() {
     return *this->orders;
 }
 
 bool OrderList::operator==(const OrderList &orderList) const {
-    return this->orders == orderList.orders;
+    return *this->orders == *orderList.orders;
 }

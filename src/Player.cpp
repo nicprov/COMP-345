@@ -3,8 +3,12 @@
 //Player methods
 Player::~Player()
 {
-    delete this->name;
+    delete this->name;          //deallocate memory
+    name = NULL;                //prevents dangling pointer errors
     delete this->hand;
+    hand = NULL;                
+    delete this ->orderList;
+    orderList = NULL;
 }
 
 Player::Player(const std::string &name) {
