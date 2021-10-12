@@ -11,6 +11,10 @@ Player::~Player()
     orderList = NULL;
 }
 
+/**
+ *
+ * @param name
+ */
 Player::Player(const std::string &name) {
     this->name = new std::string(name);
     this->hand = new Hand();
@@ -52,7 +56,6 @@ bool Player::operator==(const Player &player) const {
     return *this->name == *player.name && *this->orderList == *player.orderList && *this->hand == *player.hand;
 }
 
-/*
 std::vector<Territory *>* Player::toDefend() {
     auto* territoriesToDefend = new std::vector<Territory*>;
     return territoriesToDefend;
@@ -62,7 +65,6 @@ std::vector<Territory *>* Player::toAttack() {
     auto* territoriesToDefend = new std::vector<Territory*>;
     return territoriesToDefend;
 }
-*/
 
 std::string &Player::getName()
 {
