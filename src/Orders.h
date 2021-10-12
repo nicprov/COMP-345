@@ -15,7 +15,7 @@ public:
         negotiate=6
     };
     Order(const OrderType);
-    Order(const Order*); // Copy constructor
+    Order(const Order&); // Copy constructor
     Order& operator= (const Order&); // Assignment operator
     friend std::ostream& operator<< (std::ostream&, const Order&); // Stream output operator
     friend std::ostream& operator<< (std::ostream&, const OrderType&); // Stream output operator
@@ -31,7 +31,7 @@ protected:
 class Deploy: public Order {
 public:
     Deploy(const OrderType);
-    Deploy(const Deploy*);
+    Deploy(const Deploy&);
     Deploy& operator= (const Deploy&);
     friend std::ostream& operator<< (std::ostream&, const Deploy&); // Stream output operator
     void execute();
@@ -41,7 +41,7 @@ public:
 class Advance: public Order {
 public:
     Advance(const OrderType);
-    Advance(const Advance*);
+    Advance(const Advance&);
     Advance& operator= (const Advance&);
     friend std::ostream& operator<< (std::ostream&, const Advance&); // Stream output operator
     void execute();
@@ -51,7 +51,7 @@ public:
 class Bomb: public Order {
 public:
     Bomb(const OrderType);
-    Bomb(const Bomb*);
+    Bomb(const Bomb&);
     Bomb& operator= (const Bomb&);
     friend std::ostream& operator<< (std::ostream&, const Bomb&); // Stream output operator
     void execute();
@@ -61,7 +61,7 @@ public:
 class Blockade: public Order {
 public:
     Blockade(const OrderType);
-    Blockade(const Blockade*);
+    Blockade(const Blockade&);
     Blockade& operator= (const Blockade&);
     friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
     void execute();
@@ -71,7 +71,7 @@ public:
 class Airlift: public Order {
 public:
     Airlift(const OrderType);
-    Airlift(const Airlift*);
+    Airlift(const Airlift&);
     Airlift& operator= (const Airlift&);
     friend std::ostream& operator<< (std::ostream&, const Airlift&); // Stream output operator
     void execute();
@@ -81,7 +81,7 @@ public:
 class Negotiate: public Order {
 public:
     Negotiate(const OrderType);
-    Negotiate(const Negotiate*);
+    Negotiate(const Negotiate&);
     Negotiate& operator= (const Negotiate&);
     friend std::ostream& operator<< (std::ostream&, const Negotiate&); // Stream output operator
     void execute();
@@ -90,15 +90,16 @@ public:
 
 class OrderList{
 public:
+    ~OrderList();
     OrderList();
-    OrderList(const OrderList*); // Copy constructor
+    OrderList(const OrderList&); // Copy constructor
     OrderList& operator = (const OrderList&); // Assignment operator
     friend std::ostream& operator<< (std::ostream&, const OrderList&); // Stream output operator
     bool operator== (const OrderList&) const;
     void add(Order*);
-    Order& remove(int);
+    void remove(int);
     void move(Order*, int newIndex, int oldIndex);
-    std::vector<Order> getOrders();
+    std::vector<Order*> getOrders();
 private:
-    std::vector<Order>* orders;
+    std::vector<Order*>* orders;
 };
