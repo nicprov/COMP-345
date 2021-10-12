@@ -131,14 +131,7 @@ ostream &operator<<(ostream &out, const vector<Territory*> *territoryList) {
         return out << "No territories in list";
 
     for (Territory* territory: *territoryList){
-        out << "The Territory name is '" << territory->getTerrName() << "'\n\n";
-        cout << "Adjacent Territories of '" << territory->getTerrName() << "':";
-        for (int i = 0; i < territory->listOfAdjTerr.size(); i++)
-        {
-            cout << territory->listOfAdjTerr.at(i)->getTerrName() << " -> ";
-        }
-        cout << "\nContinent " << territory->getContIndex() << ", Territory " << territory->getTerrIndex() << endl;
-        return out;
+        out << territory;
     }
 }
 
