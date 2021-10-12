@@ -20,7 +20,7 @@ public:
     };
     Card(CardType);
     // Copy constructor
-    Card(const Card*);
+    Card(const Card&);
     // Assignment operator
     Card& operator= (const Card&);
     // Stream output operator
@@ -40,11 +40,11 @@ public:
     ~Hand();
     Hand();
     // Copy constructor
-    Hand(const Hand*);
+    Hand(const Hand&);
     // Assignment operator
     Hand& operator= (const Hand&);
     // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const Hand*);
+    friend std::ostream& operator<< (std::ostream&, const Hand&);
     bool operator== (const Hand&) const;
     void addCard(Card*);
     void removeCard(Card*);
@@ -58,11 +58,11 @@ public:
     ~Deck();
     Deck();
     // Copy constructor
-    Deck(const Deck*);
+    Deck(const Deck&);
     // Assignment operator
     Deck& operator= (const Deck&);
     // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const Deck*);
+    friend std::ostream& operator<< (std::ostream&, const Deck&);
     bool operator== (const Deck&) const;
     Card* draw();
     void returnCard(Card*);

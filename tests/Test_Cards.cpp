@@ -13,15 +13,15 @@ TEST_CASE("Card constructor initializes")
 
 TEST_CASE("Card copy constructor initializes")
 {
-    Card card = Card(Card::CardType::reinforcement);
-    Card card2 = Card(card);
-    REQUIRE(card == card2);
+    Card* card = new Card(Card::CardType::reinforcement);
+    Card* card2 = new Card(*card);
+    REQUIRE(*card == *card2);
 }
 
 TEST_CASE("Card assignment operator initializes")
 {
-    Card card = Card(Card::CardType::reinforcement);
-    Card card2 = card;
+    Card* card = new Card(Card::CardType::reinforcement);
+    Card* card2 = card;
     REQUIRE(card == card2);
 }
 
@@ -44,15 +44,15 @@ TEST_CASE("Hand constructor initializes")
 TEST_CASE("Hand copy constructor initializes")
 {
     Hand* hand = new Hand();
-    Hand* hand2 = new Hand(hand);
+    Hand* hand2 = new Hand(*hand);
     REQUIRE(*hand == *hand2);
 }
 
 TEST_CASE("Hand assignment operator initializes")
 {
     Hand* hand = new Hand();
-    Hand hand2 = new Hand(hand);
-    REQUIRE(hand == hand2);
+    Hand* hand2 = hand;
+    REQUIRE(*hand == *hand2);
 }
 
 TEST_CASE("Hand can add card")
@@ -106,14 +106,14 @@ TEST_CASE("Deck constructor initializes")
 TEST_CASE("Deck copy constructor initializes")
 {
     Deck* deck = new Deck();
-    Deck* deck2 = new Deck(deck);
+    Deck* deck2 = new Deck(*deck);
     REQUIRE(*deck == *deck2);
 }
 
 TEST_CASE("Deck assignment operator initializes")
 {
     Deck* deck = new Deck();
-    Deck* deck2 = new Deck(deck);
+    Deck* deck2 = new Deck(*deck);
     REQUIRE(*deck == *deck2);
 }
 
