@@ -54,9 +54,8 @@ Territory::~Territory()
 {
     for (int i = 0; i < this->listOfAdjTerr.size(); i++)
     {
-        this->listOfAdjTerr[i] = nullptr;
+        delete this->listOfAdjTerr[i];
     }
-    this->listOfAdjTerr.clear();
 }
 
 int Territory::getTerrIndex()
@@ -96,6 +95,7 @@ Territory* Territory::getAdjTerritoryByName(string name)
         if (this->listOfAdjTerr.at(i)->getTerrName() == name)
             return this->listOfAdjTerr.at(i);
     }
+    return 0;
 }
 
 void Territory::printAdjTerritory()
@@ -184,15 +184,12 @@ Continent::~Continent()
     for (int i = 0; i < this->listOfTerritories.size(); i++)
     {
         delete this->listOfTerritories[i];
-        this->listOfTerritories[i] = nullptr;
     }
-    this->listOfTerritories.clear();
 
     for (int i = 0; i < this->listOfAdjCont.size(); i++)
     {
-        this->listOfAdjCont[i] = nullptr;
+        delete this->listOfAdjCont[i];
     }
-    this->listOfAdjCont.clear();
 }
 
 int Continent::getCIndex()
@@ -300,15 +297,12 @@ Map::~Map()
     for (int i = 0; i < this->listOfContinents.size(); i++)
     {
         delete this->listOfContinents[i];
-        this->listOfContinents[i] = nullptr;
     }
-    this->listOfContinents.clear();
 
     for (int i = 0; i < this->listOfTerritories.size(); i++)
     {
-        this->listOfTerritories[i] = nullptr;
+        delete this->listOfTerritories[i];
     }
-    this->listOfTerritories.clear();
 }
 
 string Map::getMapName()
@@ -358,7 +352,7 @@ void Map::traverse(Territory* current, bool visitedT[], bool visitedC[])
     {
         visitedT[current->getTerrIndex() - 1] = true;
 
-        if (current->getContIndex() != NULL && !visitedC[current->getContIndex() - 1])
+        if (current->getContIndex() != 0 && !visitedC[current->getContIndex() - 1])
         {
             visitedC[current->getContIndex() - 1] = true;
         }
@@ -528,7 +522,7 @@ MapLoader& MapLoader:: operator = (const MapLoader& map)
 //Destructor
 MapLoader::~MapLoader()
 {
-    delete mapFileName;
+    delete this->mapFileName;
 }
 
 //Parameterized constructor
@@ -658,6 +652,8 @@ Map* MapLoader::ReadMap(Map* map, string mapFileName)
         return nullptr;
         cerr << "An Error has occured! \n";
     }
+
+    return nullptr;
 }
 
 // Code taken from ideone.com/R9RJCf
