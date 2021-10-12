@@ -1,27 +1,47 @@
 #include <iostream>
 #include "GameEngine.h"
 
+/**
+ * Game Engine constructor
+ */
 GameEngine::GameEngine()
 {
     this->current_state = new GameState(GameState::start);
 }
 
-GameEngine::GameEngine(const GameEngine *gameEngine)
+/**
+ * Game Engine copy constructor
+ * @param gameEngine Game Engine to copy
+ */
+GameEngine::GameEngine(const GameEngine &gameEngine)
 {
-    this->current_state = new GameState(*gameEngine->current_state);
+    this->current_state = new GameState(*gameEngine.current_state);
 }
 
+/**
+ * Game Engine assignment operator
+ * @param gameEngine Game engine to copy
+ * @return Newly copied game engine
+ */
 GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
     return *this;
 }
 
+/**
+ * Get current game state
+ * @return current game state
+ */
 GameEngine::GameState& GameEngine::getGameState()
 {
     return *current_state;
 }
 
+/**
+ * Get a list of available commands based on the current game state
+ * @param availableCommands list of available commands to run
+ */
 void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &availableCommands)
 {
     switch (*current_state) {
@@ -58,6 +78,10 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
     }
 }
 
+/**
+ * Transition game state based on command
+ * @param gameCommand Game command to run
+ */
 void GameEngine::transition(GameCommand &gameCommand)
 {
     bool foundCommand = false;
@@ -118,11 +142,23 @@ void GameEngine::transition(GameCommand &gameCommand)
         std::cout << std::endl << "\x1B[31m" << "Invalid input" << "\033[0m" << std::endl << std::endl;
 }
 
+/**
+ * Game Engine stream insertion operator
+ * @param stream Output stream
+ * @param gameEngine Game engine to print
+ * @return Output stream
+ */
 std::ostream& operator<< (std::ostream &stream, const GameEngine &gameEngine)
 {
     return stream << "Current state (" << gameEngine.current_state << ")";
 }
 
+/**
+ * Game command stream insertion operator
+ * @param stream Output stream
+ * @param gameCommand Game command to print
+ * @return Output stream
+ */
 std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &gameCommand)
 {
     switch (gameCommand) {
@@ -163,7 +199,12 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
     return stream;
 }
 
+/**
+ * Compares game engine by looking at the current state
+ * @param gameEngine Game engine to compare
+ * @return True (if the game states match), False otherwise
+ */
 bool GameEngine::operator==(const GameEngine &gameEngine) const
 {
-    return this->current_state == gameEngine.current_state;
+    return *this->current_state == *gameEngine.current_state;
 }

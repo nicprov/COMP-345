@@ -29,7 +29,7 @@ public:
     };
     GameEngine();
     // Copy constructor
-    GameEngine(const GameEngine*);
+    GameEngine(const GameEngine&);
     // Assignment operator
     GameEngine& operator= (const GameEngine&);
     // Stream output operator
