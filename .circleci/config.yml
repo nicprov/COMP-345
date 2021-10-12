@@ -10,6 +10,7 @@ workflows:
                 - dev-nick
                 - master
                 - devAdrienne
+                - Maps
 jobs:
   build-and-test:
     docker:
