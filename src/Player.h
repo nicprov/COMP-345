@@ -4,7 +4,7 @@
 #include <string>
 #include "Orders.h"
 #include "Cards.h"
-#include "Map.h"
+
 class Player
 {
 public:
@@ -18,8 +18,8 @@ public:
     // Stream output operator
     friend std::ostream& operator<< (std::ostream&, const Player&);
     bool operator== (const Player&) const;
-    std::vector<Territory*>* toDefend();
-    std::vector<Territory*>* toAttack();
+    //std::vector<Territory*>* toDefend();
+    //std::vector<Territory*>* toAttack();
     void issueOrder(Order*);
     std::string& getName();
     OrderList& getOrderList();

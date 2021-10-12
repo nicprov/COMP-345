@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include "Player.h"
 
 using namespace std;
 
@@ -28,7 +29,7 @@ public:
 
 	vector<Territory*> listOfAdjTerr;
 	
-	//Player* player;
+	Player* player;
 
 private:
 	int terrIndex;

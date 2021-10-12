@@ -13,8 +13,4 @@ void PlayerDriver(){
     Order* deploy = new Deploy(Order::OrderType::deploy);
     player->issueOrder(deploy);
     cout << *player << endl;
-
-    cout << player->toAttack() << endl;
-    cout << player->toDefend();
-
 }

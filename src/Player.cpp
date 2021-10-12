@@ -7,31 +7,31 @@ Player::~Player()
     delete this->hand;
 }
 
-Player::Player(const string &name) {
+Player::Player(const std::string &name) {
     this->name = new std::string(name);
     this->hand = new Hand();
     this->orderList = new OrderList();
 }
 
-Player::Player(const Hand &hand, const OrderList &orderlist, const string &name)
+Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name)
 {
     this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
-    this->name = new string(name);
+    this->name = new std::string(name);
 }
 
 Player::Player(const Player &player)
 {
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
-    this->name = new string(*player.name);
+    this->name = new std::string(*player.name);
 }
 
 Player& Player::operator= (const Player &player)
 {
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
-    this->name = new string(*player.name);
+    this->name = new std::string(*player.name);
     return *this;
 }
 
@@ -48,6 +48,7 @@ bool Player::operator==(const Player &player) const {
     return *this->name == *player.name && *this->orderList == *player.orderList && *this->hand == *player.hand;
 }
 
+/*
 std::vector<Territory *>* Player::toDefend() {
     auto* territoriesToDefend = new std::vector<Territory*>;
     return territoriesToDefend;
@@ -57,6 +58,7 @@ std::vector<Territory *>* Player::toAttack() {
     auto* territoriesToDefend = new std::vector<Territory*>;
     return territoriesToDefend;
 }
+*/
 
 std::string &Player::getName()
 {
