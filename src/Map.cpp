@@ -126,11 +126,11 @@ bool Territory::operator==(const Territory &territory) const {
     return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->player == territory.player && this->name == territory.name && this->army == territory.army;
 }
 
-ostream &operator<<(ostream &out, const vector<Territory*> *territoryList) {
-    if (territoryList->empty())
+ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
+    if (territoryList.empty())
         return out << "No territories in list";
 
-    for (Territory* territory: *territoryList){
+    for (Territory* territory: territoryList){
         out << territory;
     }
 }
