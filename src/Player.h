@@ -1,31 +1,30 @@
 #pragma once
 
-#include "Orders.h"
-#include "Cards.h"
 #include <vector>
 #include <string>
-
+#include "Orders.h"
+#include "Cards.h"
 
 class Player
 {
 public:
-
-    Player(Hand, OrderList);
+    ~Player();
+    Player(const std::string&);
+    Player(const Hand&, const OrderList&, const std::string&);
     // Copy constructor
-    Player(const Player*);
+    Player(const Player&);
     // Assignment operator
     Player& operator= (const Player&);
     // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const Player*);
-
+    friend std::ostream& operator<< (std::ostream&, const Player&);
     bool operator== (const Player&) const;
-
-//    std::vector<string> toDefend();                                                    //***REPLACE VOID WITH TERRITORY
- //   std::vector<string> toAttack();                                                    //***REPLACE VOID WITH TERRITORY
+    //std::vector<Territory*>* toDefend();
+    //std::vector<Territory*>* toAttack();
     void issueOrder(Order*);
-
+    std::string& getName();
+    OrderList& getOrderList();
     Hand* hand;
- //   string territory;
     OrderList* orderList;
-
+private:
+    std::string* name;
 };

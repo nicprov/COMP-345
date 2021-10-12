@@ -1,11 +1,8 @@
-#include "Map.h"
 #include <iostream>
 #include <string>
-#include <any>
+#include "Map.h"
 
-using namespace std;
-
-int main()
+void mapDriver()
 {
 	//Read map file
 	string mapName;
