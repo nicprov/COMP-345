@@ -131,7 +131,7 @@ ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
         return out << "No territories in list";
 
     for (Territory* territory: territoryList){
-        out << territory;
+        out << *territory;
     }
 }
 
