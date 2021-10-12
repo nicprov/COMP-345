@@ -1,10 +1,10 @@
 #include "Player.h"
 
 //Player methods
-Player::Player(const Hand hands, const OrderList orderlist )
+Player::Player(const Hand hand, const OrderList orderlist)
 {
    // this->territory = new string(territory);
-    this->hand = new Hand(hands);
+    this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
 }
 
@@ -23,10 +23,10 @@ Player &Player::operator= (const Player &player)
     return *this;
 }
 
-std::ostream& operator<< (std::ostream &stream, const Player &player) {
+std::ostream& operator<< (std::ostream &stream, const Player *player) {
     stream << "Player[" << std::endl;
-    stream << "Player hand: " << player.hand << std::endl;
-    stream << "Player orderlist: " << player.orderList << std::endl;
+    //stream << "Player hand: " << player->hand << std::endl;
+    stream << "Player orderlist: " << *player->orderList << std::endl;
 //    stream << "Player territories: " << Player.territories << endl;
     stream << "]";
     return stream;

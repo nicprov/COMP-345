@@ -16,7 +16,7 @@ public:
     // Assignment operator
     Player& operator= (const Player&);
     // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const Player&);
+    friend std::ostream& operator<< (std::ostream&, const Player*);
 
     bool operator== (const Player&) const;
 
