@@ -4,11 +4,13 @@
 using namespace std;
 
 void PlayerDriver(){
-    OrderList* orderlist = new OrderList();
+    auto* orderlist = new OrderList();
     Hand* hand = new Hand();
-    string territory = "";
-    Player* p = new Player(*hand, *orderlist);
+    auto* name = new std::string("Jonathan");
+    auto* player = new Player(*hand, *orderlist, *name);
+    cout << *player << endl;
+
     Order* deploy = new Deploy(Order::OrderType::deploy);
-    p->issueOrder(deploy);
-    cout << p;
+    player->issueOrder(deploy);
+    cout << *player << endl;
 }

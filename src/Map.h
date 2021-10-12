@@ -2,14 +2,9 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include "Player.h"
 
 using namespace std;
-
-class Player
-{
-
-};
-
 
 class Territory
 {
