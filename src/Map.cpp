@@ -126,6 +126,22 @@ bool Territory::operator==(const Territory &territory) const {
     return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->player == territory.player && this->name == territory.name && this->army == territory.army;
 }
 
+ostream &operator<<(ostream &out, const vector<Territory*> *territoryList) {
+    if (territoryList->empty())
+        return out << "No territories in list";
+
+    for (Territory* territory: *territoryList){
+        out << "The Territory name is '" << territory->getTerrName() << "'\n\n";
+        cout << "Adjacent Territories of '" << territory->getTerrName() << "':";
+        for (int i = 0; i < territory->listOfAdjTerr.size(); i++)
+        {
+            cout << territory->listOfAdjTerr.at(i)->getTerrName() << " -> ";
+        }
+        cout << "\nContinent " << territory->getContIndex() << ", Territory " << territory->getTerrIndex() << endl;
+        return out;
+    }
+}
+
 //*********************************** CONTINENT *****************************************
 
 //Default Constructor

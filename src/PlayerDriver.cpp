@@ -16,5 +16,4 @@ void PlayerDriver(){
 
     cout << player->toAttack() << endl;
     cout << player->toDefend();
-
 }
