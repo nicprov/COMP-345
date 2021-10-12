@@ -43,7 +43,7 @@ std::ostream &operator<<(std::ostream &stream, const Order::OrderType &orderType
             stream << "Blockade";
             break;
         case Order::OrderType::deploy:
-            stream << "Depoy";
+            stream << "Deploy";
             break;
         case Order::OrderType::advance:
             stream << "Advance";
