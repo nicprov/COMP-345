@@ -14,6 +14,6 @@ void PlayerDriver(){
     player->issueOrder(deploy);
     cout << *player << endl;
 
-    cout << player->toAttack() << endl;
-    cout << player->toDefend();
+    cout << "To Attack: " << player->toAttack() << endl;
+    cout << "To Defend: " << player->toDefend();
 }

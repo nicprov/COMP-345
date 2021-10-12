@@ -54,13 +54,18 @@ bool Player::operator==(const Player &player) const {
 
 std::vector<Territory *> Player::toDefend() {
     auto* territoriesToDefend = new std::vector<Territory*>;
+    Territory* territory = new Territory(1,"Alabama",2);
+    territoriesToDefend->push_back(territory);
     return *territoriesToDefend;
 }
 
 std::vector<Territory *> Player::toAttack() {
-    auto* territoriesToDefend = new std::vector<Territory*>;
-    return *territoriesToDefend;
+    auto* territoriesToAttack = new std::vector<Territory*>;
+    Territory* territory = new Territory(1,"Alabama",2);
+    territoriesToAttack->push_back(territory);
+    return *territoriesToAttack;
 }
+
 
 std::string &Player::getName()
 {
