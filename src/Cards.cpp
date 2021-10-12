@@ -51,6 +51,8 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck)
         }
         case diplomacy: {
             std::cout << "Playing diplomacy card";
+            Order* negotiate = new Negotiate(Order::OrderType::negotiate);
+            orderList->add(negotiate);
             break;
         }
     }

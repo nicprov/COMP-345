@@ -111,15 +111,7 @@ void Territory::printAdjTerritory()
 //Output Stream
 ostream& operator << (ostream& out, const Territory& t)
 {
-    out << "The Territory name is '" << t.terrName << "'\n\n";
-    cout << "Adjacent Territories of '" << t.terrName << "':";
-    for (int i = 0; i < t.listOfAdjTerr.size(); i++)
-    {
-        cout << t.listOfAdjTerr.at(i)->terrName << " -> ";
-    }
-    cout << "\nContinent " << t.contIndex << ", Territory " << t.terrIndex << endl;
-
-    return out;
+    return out << "Territory [" << t.terrName << ", " << t.terrIndex << "]"<<endl;
 }
 
 bool Territory::operator==(const Territory &territory) const {
