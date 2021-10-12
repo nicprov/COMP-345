@@ -1,12 +1,12 @@
 #include "Player.h"
 
 //Player methods
-Player::Player(const vector<Territory> territory, const Hand hand, const OrderList orderlist, const string name)
+Player::Player( vector<Territory> territory, const Hand hand, const OrderList orderlist, const string name)
 {
-    this->territory = new std::vector<Territory>;
+    this->territory =  std::vector<Territory>;
     this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
-    this->name = new string(name);
+    this->name = string(name);
 }
 
 Player::Player(const Player *player)
@@ -14,7 +14,7 @@ Player::Player(const Player *player)
     this->territory = new Territory(*player->territory );
     this->hand = new Hand(*player->hand);
     this->orderList = new OrderList(*player->orderList);
-    this->name = new string(*player->name);
+    this->name =  string(*player->name);
 }
 
 Player &Player::operator= (const Player &player)
@@ -22,7 +22,7 @@ Player &Player::operator= (const Player &player)
     this->territory = new Territory(*player.territory );
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
-    this->name = new string(*player->name);
+    this->name = string(*player.name);
     return *this;
 }
 
@@ -47,11 +47,15 @@ std::vector<Territory*> toAttack(){
 
 }
 
+//Descructor
 Hand::~Player()
 {
-    for (Card* card: *this->cards)
+    Player.clear
+    for (Player* hand: *this->hand)         //for loop for territory?
     {
-        delete card;
+        delete ;
     }
-    delete this->hand;
+    delete hand;
+    delete oderlist;
+
 }

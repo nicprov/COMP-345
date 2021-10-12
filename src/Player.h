@@ -20,8 +20,8 @@ public:
 
     bool operator== (const Player&) const;
 
-    std::vector<Territory*> toDefend();                                                    //***REPLACE VOID WITH TERRITORY
-    std::vector<Territory*> toAttack();                                                    //***REPLACE VOID WITH TERRITORY
+    std::vector<Territory*> toDefend();          //***REPLACE VOID WITH TERRITORY
+    std::vector<Territory*> toAttack();          //***REPLACE VOID WITH TERRITORY
     void issueOrder(Order*);
 
     vector<Territory*> territory;
