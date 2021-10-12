@@ -24,7 +24,6 @@ public:
  //   std::vector<string> toAttack();                                                    //***REPLACE VOID WITH TERRITORY
     void issueOrder(Order*);
 
-private:
     Hand* hand;
  //   string territory;
     OrderList* orderList;
