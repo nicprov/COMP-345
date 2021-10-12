@@ -25,8 +25,8 @@ Player &Player::operator= (const Player &player)
 
 std::ostream& operator<< (std::ostream &stream, const Player &player) {
     stream << "Player[" << std::endl;
-    stream << "Player hand: " << *player.hand << std::endl;
-    stream << "Player orderlist: " << *player.orderList << std::endl;
+    stream << "Player hand: " << player.hand << std::endl;
+    stream << "Player orderlist: " << player.orderList << std::endl;
 //    stream << "Player territories: " << Player.territories << endl;
     stream << "]";
     return stream;
