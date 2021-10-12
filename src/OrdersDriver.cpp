@@ -43,8 +43,10 @@ void ordersDriver() {
     cout << endl << endl;
 
     // Remove order
-    cout <<  "Removing order: " << orderList.remove(1) << endl;
+    orderList.remove(1);
 
     // Move order
     orderList.move(airlift, 1, 4);
+
+    cout << orderList;
 }
