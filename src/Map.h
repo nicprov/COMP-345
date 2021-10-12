@@ -5,12 +5,6 @@
 
 using namespace std;
 
-class Player
-{
-
-};
-
-
 class Territory
 {
 public:
@@ -34,7 +28,7 @@ public:
 
 	vector<Territory*> listOfAdjTerr;
 	
-	Player* player;
+	//Player* player;
 
 private:
 	int terrIndex;

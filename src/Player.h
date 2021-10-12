@@ -4,13 +4,13 @@
 #include "Cards.h"
 #include <vector>
 #include <string>
-
+#include "Map.h"
 
 class Player
 {
 public:
 
-    Player(Hand, OrderList);
+    Player(vector<Territory>, Hand, OrderList, string);
     // Copy constructor
     Player(const Player*);
     // Assignment operator
@@ -20,12 +20,15 @@ public:
 
     bool operator== (const Player&) const;
 
-//    std::vector<string> toDefend();                                                    //***REPLACE VOID WITH TERRITORY
- //   std::vector<string> toAttack();                                                    //***REPLACE VOID WITH TERRITORY
+    std::vector<Territory*> toDefend();                                                    //***REPLACE VOID WITH TERRITORY
+    std::vector<Territory*> toAttack();                                                    //***REPLACE VOID WITH TERRITORY
     void issueOrder(Order*);
 
+    vector<Territory*> territory;
     Hand* hand;
- //   string territory;
     OrderList* orderList;
+
+private:
+    std::string name;
 
 };

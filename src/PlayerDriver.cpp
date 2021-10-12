@@ -6,8 +6,8 @@ using namespace std;
 void PlayerDriver(){
     OrderList* orderlist = new OrderList();
     Hand* hand = new Hand();
-    string territory = "";
-    Player* p = new Player( hand, orderlist);
+    Territory territory =  Territory();
+    Player* p = new Player(territory, hand, orderlist);
     Order* deploy = new Deploy(Order::OrderType::deploy);
     p->issueOrder(deploy);
     cout << p;

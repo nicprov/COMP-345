@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int main()
+void MapDriver()
 {
 	//Read map file
 	string mapName;
