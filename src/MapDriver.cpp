@@ -16,17 +16,25 @@ void mapDriver()
 		cout << "\nMap details: \n\n";
 		Map* map = new Map(mapName);
 		MapLoader* mapLoader = new MapLoader(mapName);
-		map = mapLoader->GetMap(map, mapName);
 
-		if (map->validate())
-            isValid = true;
+        map = mapLoader->GetMap(map, mapName);
+        if(map!= nullptr){
+            if (map->validate())
+                isValid = true;
 
-		cout << "\nTotal Number of Continents: " << map->listOfContinents.size() << endl;
-		cout << "Total Number of Territories: " << map->listOfTerritories.size() << endl;
+            cout << "\nTotal Number of Continents: " << map->listOfContinents.size() << endl;
+            cout << "Total Number of Territories: " << map->listOfTerritories.size() << endl;
 
-		Territory* terr1 = map->getTerritory(1);
+            Territory* terr1 = map->getTerritory(1);
 
-		terr1->printAdjTerritory();
+            terr1->printAdjTerritory();
+        }
+        else{
+            cerr << "Invalid Map File";
+        }
+
+
+
 	} while (!isValid);
 
 }
