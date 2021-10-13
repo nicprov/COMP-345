@@ -107,7 +107,7 @@ std::vector<Territory *> Player::toDefend() {
  */
 std::vector<Territory *> Player::toAttack() {
     auto* territoriesToAttack = new std::vector<Territory*>;
-    Territory* territory = new Territory(1,"Alabama",2);
+    Territory* territory = new Territory(2,"Alabama",2);
     territoriesToAttack->push_back(territory);
     return *territoriesToAttack;
 }

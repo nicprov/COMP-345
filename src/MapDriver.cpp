@@ -8,7 +8,6 @@ void mapDriver()
 	string mapName;
 
 	bool isValid = false;
-	Map* map = nullptr;
 	do
 	{
 		cout << "Enter the name of the map file you wish to play with: \n";
@@ -19,16 +18,15 @@ void mapDriver()
 		MapLoader* mapLoader = new MapLoader(mapName);
 		map = mapLoader->GetMap(map, mapName);
 
-		map->validate();
+		if (map->validate())
+            isValid = true;
 
 		cout << "\nTotal Number of Continents: " << map->listOfContinents.size() << endl;
 		cout << "Total Number of Territories: " << map->listOfTerritories.size() << endl;
-		
+
 		Territory* terr1 = map->getTerritory(1);
 
 		terr1->printAdjTerritory();
-		
-		exit(0);
-	} while (map == NULL || !isValid);
+	} while (!isValid);
 
 }

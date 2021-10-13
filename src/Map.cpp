@@ -132,7 +132,7 @@ void Territory::printAdjTerritory()
  */
 ostream& operator << (ostream& out, const Territory& t)
 {
-    return out << "Territory [" << t.terrName << ", " << t.terrIndex << "]"<<endl;
+    return out << "Territory [" << t.terrName << ", " << t.terrIndex << "]";
 }
 
 bool Territory::operator==(const Territory &territory) const {
@@ -146,6 +146,7 @@ ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
     for (Territory* territory: territoryList){
         out << *territory;
     }
+    return out;
 }
 
 //*********************************** CONTINENT *****************************************
