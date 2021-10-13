@@ -21,7 +21,7 @@ void ordersDriver() {
     // Show orders
     cout << orderList << endl;
 
-    // Execute all orders
+    // Validate then execute all orders
     cout << endl;
     if (deploy->validate())
         deploy->execute();
@@ -48,5 +48,6 @@ void ordersDriver() {
     // Move order
     orderList.move(airlift, 1, 4);
 
+    //Show orderList again after changes
     cout << orderList;
 }
