@@ -46,7 +46,7 @@ void ordersDriver() {
     orderList.remove(1);
 
     // Move order
-    orderList.move(airlift, 1, 4);
+    orderList.move(airlift, 1, 3);
 
     //Show orderList again after changes
     cout << orderList;
