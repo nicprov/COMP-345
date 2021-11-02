@@ -2,6 +2,11 @@
 
 // Order methods
 
+/*
+ * Order destructor, gets overwritten by subclasses
+ */
+Order::~Order() = default;
+
 /**
  * Order parameterized constructor
  *
@@ -91,56 +96,12 @@ bool Order::operator==(const Order &order) const
 {
     return *this->orderType == *order.orderType;
 }
-/**
- * Validate method for order
- * @return True if order is from OrderType list, false otherwise
- */
-bool Order::validate()
-{
-    switch (*this->orderType) {
-        case deploy:
-        case advance:
-        case bomb:
-        case blockade:
-        case airlift:
-        case negotiate:
-            std::cout << "Valid order";
-            return true;
-        default:
-            std::cout << "Invalid order";
-            return false;
-    }
-}
 
 /**
- * Execute method that prints out when an order has been executed
+ * Deploy destructor (overwrites Order destructor)
  */
-void Order::execute()
-{
-    switch (*this->orderType) {
-        case deploy:
-            std::cout << "Executing Deploy";
-            break;
-        case advance:
-            std::cout << "Executing Advance";
-            break;
-        case bomb:
-            std::cout << "Executing Bomb";
-            break;
-        case blockade:
-            std::cout << "Executing Blockade";
-            break;
-        case airlift:
-            std::cout << "Executing Airlift";
-            break;
-        case negotiate:
-            std::cout << "Executing Negotiate";
-            break;
-        default:
-            std::cout << "Invalid order";
-            break;
-    }
-}
+Deploy::~Deploy() = default;
+
 /**
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Deploy Order
@@ -191,6 +152,11 @@ bool Deploy::validate()
 }
 
 /**
+ * Blockade destructor (overwrites Order destructor)
+ */
+Blockade::~Blockade() = default;
+
+/**
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Blockade Order
  */
@@ -234,6 +200,11 @@ void Blockade::execute() {
 bool Blockade::validate() {
     return this->getOrderType() == OrderType::blockade;
 }
+
+/**
+ * Advance destructor (overwrites Order destructor)
+ */
+Advance::~Advance() = default;
 
 /**
  * Parameterized constructor that calls superclass constructor
@@ -287,6 +258,11 @@ bool Advance::validate()
 }
 
 /**
+ * Bomb destructor (overwrites Order destructor)
+ */
+Bomb::~Bomb() = default;
+
+/**
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Bomb Order
  */
@@ -332,6 +308,11 @@ bool Bomb::validate() {
 }
 
 /**
+ * Airlift destructor (overwrites Order destructor)
+ */
+Airlift::~Airlift() = default;
+
+/**
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Airlift Order
  */
@@ -375,6 +356,11 @@ void Airlift::execute() {
 bool Airlift::validate() {
     return this->getOrderType() == OrderType::airlift;
 }
+
+/**
+ * Negotiate destructor (overwrites Order destructor)
+ */
+Negotiate::~Negotiate() = default;
 
 /**
  * Parameterized constructor that calls superclass constructor
@@ -516,8 +502,29 @@ void OrderList::remove(int index)
 void OrderList::move(Order *order, int newIndex, int oldIndex)
 {
     if(newIndex < this->orders->size()) {
-        this->orders->insert(this->orders->begin() + newIndex, new Order(*order));
-        this->orders->erase(this->orders->begin() + (oldIndex - 1));
+        switch (order->getOrderType()) {
+            case 1:
+                this->orders->insert(this->orders->begin() + newIndex, dynamic_cast<Deploy*>(order));
+                break;
+            case 2:
+                this->orders->insert(this->orders->begin() + newIndex, dynamic_cast<Advance*>(order));
+                break;
+            case 3:
+                this->orders->insert(this->orders->begin() + newIndex, dynamic_cast<Bomb*>(order));
+                break;
+            case 4:
+                this->orders->insert(this->orders->begin() + newIndex, dynamic_cast<Blockade*>(order));
+                break;
+            case 5:
+                this->orders->insert(this->orders->begin() + newIndex, dynamic_cast<Airlift*>(order));
+                break;
+            case 6:
+                this->orders->insert(this->orders->begin() + newIndex, dynamic_cast<Negotiate*>(order));
+                break;
+            default:
+                throw std::runtime_error("Invalid Order Type");
+        }
+        this->orders->erase(this->orders->begin() + (oldIndex + 1));
     }
     else
         throw std::runtime_error("Invalid index");

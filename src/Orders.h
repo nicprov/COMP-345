@@ -20,6 +20,7 @@ public:
         airlift=5,
         negotiate=6
     };
+    virtual ~Order();
     Order(const OrderType); //Parameterized constructor
     Order(const Order&); // Copy constructor
     Order& operator= (const Order&); // Assignment operator
@@ -27,8 +28,8 @@ public:
     friend std::ostream& operator<< (std::ostream&, const OrderType&); // Stream output operator
     bool operator== (const Order&) const; //equals operator
     OrderType& getOrderType(); //accessor for OrderType
-    virtual void execute(); //execute order method, virtual to avoid ambiguity with subclass methods
-    virtual bool validate(); //validate order method, irtual to avoid ambiguity with subclass methods
+    virtual void execute() = 0; //execute order method, virtual to avoid ambiguity with subclass methods
+    virtual bool validate() = 0; //validate order method, irtual to avoid ambiguity with subclass methods
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = {deploy, advance, bomb, blockade, airlift, negotiate}; //array of const OrderType with 1 of each type
 protected:
     OrderType* orderType; //pointer to ordertype of order
@@ -37,6 +38,7 @@ protected:
 //subclass of order for deploy Orders
 class Deploy: public Order {
 public:
+    ~Deploy();
     Deploy(const OrderType); //parameterized constructor
     Deploy(const Deploy&); //copy constructor
     Deploy& operator= (const Deploy&); //assignment operator
@@ -48,6 +50,7 @@ public:
 //subclass of order for advance Orders
 class Advance: public Order {
 public:
+    ~Advance();
     Advance(const OrderType); //parameterized constructor
     Advance(const Advance&); //copy constructor
     Advance& operator= (const Advance&); //assignement operator
@@ -59,6 +62,7 @@ public:
 //subclass of order for bomb Orders
 class Bomb: public Order {
 public:
+    ~Bomb();
     Bomb(const OrderType); //parameterized constructor
     Bomb(const Bomb&); //copy constructor
     Bomb& operator= (const Bomb&); //assignment operator
@@ -70,6 +74,7 @@ public:
 //subclass of order for blockade Orders
 class Blockade: public Order {
 public:
+    ~Blockade();
     Blockade(const OrderType); //parameterized constructor
     Blockade(const Blockade&); //copy constructors
     Blockade& operator= (const Blockade&); //assignment operator
@@ -81,6 +86,7 @@ public:
 //subclass of order for airlift Orders
 class Airlift: public Order {
 public:
+    ~Airlift();
     Airlift(const OrderType); // parameterized constructor
     Airlift(const Airlift&); //copy constructor
     Airlift& operator= (const Airlift&); //assignment operator
@@ -92,6 +98,7 @@ public:
 //subclass of order for negotiate Orders
 class Negotiate: public Order {
 public:
+    ~Negotiate();
     Negotiate(const OrderType);  //parameterized constructor
     Negotiate(const Negotiate&); //copy constructor
     Negotiate& operator= (const Negotiate&); //assignemnt operator
