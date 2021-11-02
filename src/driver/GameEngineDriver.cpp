@@ -1,5 +1,5 @@
 #include <iostream>
-#include "GameEngine.h"
+#include "../core/GameEngine.h"
 using namespace std;
 
 void listAvailableCommands(GameEngine &gameEngine){

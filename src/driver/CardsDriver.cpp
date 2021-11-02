@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Cards.h"
+#include "../core/Cards.h"
 
 using namespace std;
 

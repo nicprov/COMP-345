@@ -34,15 +34,15 @@ public:
 
     vector<Territory*> listOfAdjTerr;
 
-    Player* player;
+    Player* player{};
 
 private:
     int terrIndex;
     string terrName;
     int contIndex;
 
-    string* name;
-    int* army;
+    string* name{};
+    int* army{};
 };
 
 

@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
-#include "../src/Cards.h"
+#include "../src/core/Cards.h"
 
 /**
  * CARD Test cases

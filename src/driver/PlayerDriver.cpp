@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Player.h"
+#include "../core/Player.h"
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "Map.h"
+#include "../core/Map.h"
 
 void mapDriver()
 {
