@@ -26,7 +26,16 @@ cmake --build . --target all
 ```
 
 ## Parts
+
+### A1
 Juhi/Anita: Part 1  
 Adrienne: Part 2  
 Rosie: Part 3  
 Nicolas: Part 4 and 5
+
+### A2
+Nicolas: Part 1  
+Jason: Part 2  
+Adrienne: Part 3  
+Juhi/Anita: Part 4  
+Rosie: Part 5  
