@@ -24,7 +24,7 @@ public:
         execute_order=7,
         end_execute_order=8,
         win_game=9,
-        play=10,
+        replay=10,
         end=11
     };
     GameEngine();

@@ -72,7 +72,7 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
             availableCommands.push_back(GameCommand::win_game);
             break;
         case win:
-            availableCommands.push_back(GameCommand::play);
+            availableCommands.push_back(GameCommand::replay);
             availableCommands.push_back(GameCommand::end);
             break;
     }
@@ -128,7 +128,7 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
                     break;
-                case play:
+                case replay:
                     std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
                     break;
@@ -189,7 +189,7 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
         case GameEngine::GameCommand::win_game:
             stream << "Win game";
             break;
-        case GameEngine::GameCommand::play:
+        case GameEngine::GameCommand::replay:
             stream << "Play game";
             break;
         case GameEngine::GameCommand::end:
