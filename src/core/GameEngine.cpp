@@ -1,6 +1,11 @@
 #include <iostream>
 #include "GameEngine.h"
 
+const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gameCommandMapping = boost::assign::map_list_of("loadmap", GameEngine::GameCommand::load_map)
+        ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
+        ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
+        ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit);
+
 /**
  * Game Engine constructor
  */
@@ -57,14 +62,14 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
             break;
         case players_added:
             availableCommands.push_back(GameCommand::add_player);
-            availableCommands.push_back(GameCommand::assign_countries);
+            availableCommands.push_back(GameCommand::game_start);
             break;
         case assign_reinforcement:
             availableCommands.push_back(GameCommand::issue_order);
             break;
         case issue_orders:
             availableCommands.push_back(GameCommand::issue_order);
-            availableCommands.push_back(GameCommand::end_issue_orders);
+            availableCommands.push_back(GameCommand::end_issue_order);
             break;
         case execute_orders:
             availableCommands.push_back(GameCommand::execute_order);
@@ -72,8 +77,8 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
             availableCommands.push_back(GameCommand::win_game);
             break;
         case win:
-            availableCommands.push_back(GameCommand::play);
-            availableCommands.push_back(GameCommand::end);
+            availableCommands.push_back(GameCommand::replay);
+            availableCommands.push_back(GameCommand::quit);
             break;
     }
 }
@@ -104,7 +109,7 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Players added" << "\033[0m" << std::endl << std::endl;
                     *current_state = players_added;
                     break;
-                case assign_countries:
+                case game_start:
                     std::cout << std::endl << "\x1B[32m" << "Assign reinforcement" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
                     break;
@@ -112,7 +117,7 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = issue_orders;
                     break;
-                case end_issue_orders:
+                case end_issue_order:
                     std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
                     break;
@@ -128,11 +133,11 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
                     break;
-                case play:
+                case replay:
                     std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
                     break;
-                case end:
+                case quit:
                     std::cout << std::endl << "\x1B[32m" << "Exiting game" << "\033[0m" << std::endl << std::endl;
                     exit(0);
             }
@@ -171,13 +176,13 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
         case GameEngine::GameCommand::add_player:
             stream << "Add player";
             break;
-        case GameEngine::GameCommand::assign_countries:
+        case GameEngine::GameCommand::game_start:
             stream << "Assign countries";
             break;
         case GameEngine::GameCommand::issue_order:
             stream << "Issue order";
             break;
-        case GameEngine::GameCommand::end_issue_orders:
+        case GameEngine::GameCommand::end_issue_order:
             stream << "End issue order";
             break;
         case GameEngine::GameCommand::execute_order:
@@ -189,10 +194,10 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
         case GameEngine::GameCommand::win_game:
             stream << "Win game";
             break;
-        case GameEngine::GameCommand::play:
+        case GameEngine::GameCommand::replay:
             stream << "Play game";
             break;
-        case GameEngine::GameCommand::end:
+        case GameEngine::GameCommand::quit:
             stream << "End";
             break;
     }
