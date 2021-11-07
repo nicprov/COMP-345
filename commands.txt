@@ -1,0 +1,2 @@
+loadmap a
+loadmap 1

@@ -1,6 +1,9 @@
 #ifndef COMP354_GAMEENGINE_H
 #define COMP354_GAMEENGINE_H
 #include <vector>
+#include <map>
+#include <boost/assign/list_of.hpp>
+#include <boost/unordered_map.hpp>
 
 class GameEngine{
 public:
@@ -18,14 +21,14 @@ public:
         load_map=1,
         validate_map=2,
         add_player=3,
-        assign_countries=4,
+        game_start=4,
         issue_order=5,
-        end_issue_orders=6,
+        end_issue_order=6,
         execute_order=7,
         end_execute_order=8,
         win_game=9,
         replay=10,
-        end=11
+        quit=11
     };
     GameEngine();
     // Copy constructor
@@ -39,6 +42,7 @@ public:
     GameState& getGameState();
     void getAvailableCommands(std::vector<GameCommand>&);
     void transition(GameCommand&);
+    static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 private:
     GameState *current_state;
 };
