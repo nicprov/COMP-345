@@ -44,16 +44,31 @@ std::string FileLineReader::readLineFromFile()
 }
 
 // Command class
-Command::Command(GameEngine::GameCommand &gameCommand, const std::string& effect)
+Command::Command(GameEngine::GameCommand &gameCommand)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
-    this->effect = effect;
+    this->param = "";
+    this->effect = "";
 }
 
+Command::Command(GameEngine::GameCommand &gameCommand, const std::string& param)
+{
+    this->command = new GameEngine::GameCommand(gameCommand);
+    this->param = param;
+    this->effect = "";
+}
+
+Command::Command(GameEngine::GameCommand &gameCommand, const std::string& param, const std::string& effect)
+{
+    this->command = new GameEngine::GameCommand(gameCommand);
+    this->param = param;
+    this->effect = effect;
+}
 
 Command::Command(const Command &_command)
 {
     this->command = _command.command;
+    this->param = _command.param;
     this->effect = _command.effect;
 }
 
@@ -69,14 +84,22 @@ std::ostream &operator<<(std::ostream &stream, const Command &_command)
     return stream << "Command (" << _command.command << "), Effect (" << _command.effect << " )";
 }
 
-void Command::safeEffect()
+void Command::saveEffect(const std::string& effect)
 {
-
+    this->effect = effect;
 }
 
 GameEngine::GameCommand* Command::getCommand()
 {
     return this->command;
+}
+
+std::string Command::getParam() {
+    return this->param;
+}
+
+std::string Command::getEffect() {
+    return this->effect;
 }
 
 // CommandProcessor class
@@ -102,21 +125,21 @@ void CommandProcessor::getCommand()
     this->saveCommand(command);
 }
 
-Command* CommandProcessor::validate(const std::string& command, const std::string& effect)
+Command* CommandProcessor::validate(const std::string& command, const std::string& param)
 {
     try {
         std::vector<GameEngine::GameCommand> validCommands;
         auto* gameCommand = new GameEngine::GameCommand(GameEngine::gameCommandMapping.at(command));
         this->gameEngine.getAvailableCommands(validCommands);
         bool isValid = false;
-        if ((command == "loadmap" || command == "addplayer") && effect.empty())
+        if ((command == "loadmap" || command == "addplayer") && param.empty())
             return nullptr;
         for (GameEngine::GameCommand validCommand: validCommands) {
             if (*gameCommand == validCommand)
                 isValid = true;
         }
         if (isValid)
-            return new Command(*gameCommand, effect);
+            return new Command(*gameCommand, param);
     } catch (boost::wrapexcept<std::out_of_range>&) {}
     return nullptr;
 }
@@ -131,7 +154,7 @@ Command* CommandProcessor::readCommand()
 {
     std::string inputCommand;
     std::string _command;
-    std::string _effect;
+    std::string _param;
     bool isValid = false;
     while (!isValid) {
         std::cout << "Enter command: ";
@@ -140,10 +163,10 @@ Command* CommandProcessor::readCommand()
         boost::split(inputSplit, inputCommand, boost::is_any_of("\t "));
         _command = boost::algorithm::to_lower_copy(inputSplit.at(0));
         if ((_command == "loadmap" || _command == "addplayer") && inputSplit.size() == 2) // Get effect only if command is loadmap or addplayer
-            _effect = boost::algorithm::to_lower_copy(inputSplit.at(1));
+            _param = boost::algorithm::to_lower_copy(inputSplit.at(1));
         else
-            _effect = "";
-        Command* command = this->validate(_command, _effect);
+            _param = "";
+        Command* command = this->validate(_command, _param);
         if (command == nullptr){
             std::cout << "\x1B[31m" << "Invalid command, try again... " << "\033[0m" << std::endl;
         } else {

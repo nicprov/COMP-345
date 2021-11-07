@@ -21,14 +21,19 @@ private:
 
 class Command{
 public:
+    Command(GameEngine::GameCommand&);
     Command(GameEngine::GameCommand&, const std::string&);
+    Command(GameEngine::GameCommand&, const std::string&, const std::string&);
     Command(const Command&);
     Command& operator= (const Command&);
     friend std::ostream& operator<< (std::ostream&, const Command&);
-    void safeEffect();
+    void saveEffect(const std::string&);
     GameEngine::GameCommand* getCommand();
+    std::string getParam();
+    std::string getEffect();
 private:
     GameEngine::GameCommand* command;
+    std::string param;
     std::string effect;
 };
 
