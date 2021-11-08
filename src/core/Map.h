@@ -2,12 +2,11 @@
 #include <string>
 #include <vector>
 #include <fstream>
-
-class Player;
-
 #include "Player.h"
 
 using namespace std;
+
+class Player;
 
 class Territory
 {
@@ -32,14 +31,23 @@ public:
     friend ostream& operator << (ostream& out, const std::vector<Territory*>);
     bool operator== (const Territory&) const;
 
+
+    Player* getOwner(); // get owner of this Territory
+    void setOwner(Player* p); //set owner of a Territory
+    Player* getOwnerOfAdj(string name); //get the owner of an adjacent Territory
+    bool addTroops(int numTroops); //add armies to a Territory
+    bool removeTroops(int numTroops); //remove armies from a Territory
+
     vector<Territory*> listOfAdjTerr;
 
-    Player* player{};
 
 private:
     int terrIndex;
     string terrName;
     int contIndex;
+
+    Player* owner; //player that owns a given Territory
+    int numberOfArmies; //number of armies in a given Territory
 
     string* name{};
     int* army{};
