@@ -34,12 +34,12 @@ public:
 
     Player* getOwner(); // get owner of this Territory
     void setOwner(Player* p); //set owner of a Territory
-    Player* getOwnerOfAdj(string name); //get the owner of an adjacent Territory
+    Player* getOwnerOfAdj(string terrName); //get the owner of an adjacent Territory
     bool addTroops(int numTroops); //add armies to a Territory
     bool removeTroops(int numTroops); //remove armies from a Territory
 
     vector<Territory*> listOfAdjTerr;
-
+    int numberOfArmies; //number of armies in a given Territory
 
 private:
     int terrIndex;
@@ -47,10 +47,6 @@ private:
     int contIndex;
 
     Player* owner; //player that owns a given Territory
-    int numberOfArmies; //number of armies in a given Territory
-
-    string* name{};
-    int* army{};
 };
 
 
