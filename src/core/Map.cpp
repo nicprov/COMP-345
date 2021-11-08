@@ -26,11 +26,21 @@ Territory::Territory()
  * @param tn Territory Name
  * @param contID Corresponding continent id to the territory.
  */
+
 Territory::Territory(int tid, string tn, int contID)
 {
     terrIndex = tid;
     terrName = tn;
     contIndex = contID;
+}
+
+Territory::Territory(int tid, string tn, int contID, int numArmies, Player* p)
+{
+    terrIndex = tid;
+    terrName = tn;
+    contIndex = contID;
+    numberOfArmies = numArmies;
+    owner = p;
 }
 
 /**
@@ -42,8 +52,9 @@ Territory::Territory(const Territory& t)
     terrIndex = t.terrIndex;
     terrName = t.terrName;
     contIndex = t.contIndex;
+    numberOfArmies = t.numberOfArmies;
+    owner = t.owner;
     listOfAdjTerr = t.listOfAdjTerr;
-
 }
 
 /**
@@ -57,6 +68,8 @@ Territory& Territory:: operator = (const Territory& t)
         terrIndex = t.terrIndex;
         terrName = t.terrName;
         contIndex = t.contIndex;
+        numberOfArmies = t.numberOfArmies;
+        owner = t.owner;
         listOfAdjTerr = t.listOfAdjTerr;
     }
     return *this;
@@ -89,6 +102,11 @@ int Territory::getContIndex()
     return contIndex;
 }
 
+int Territory::getNumberOfArmies()
+{
+    return numberOfArmies;
+}
+
 void Territory::setTerrIndex(int tid)
 {
     terrIndex = tid;
@@ -102,6 +120,11 @@ void Territory::setTerrName(string tn)
 void Territory::setContIndex(int contID)
 {
     contIndex = contID;
+}
+
+void Territory::setNumberOfArmies(int numArmies)
+{
+    numberOfArmies = numArmies;
 }
 
 Territory* Territory::getAdjTerritoryByName(string name)
@@ -136,7 +159,7 @@ ostream& operator << (ostream& out, const Territory& t)
 }
 
 bool Territory::operator==(const Territory &territory) const {
-    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->player == territory.player && this->name == territory.name && this->army == territory.army;
+    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->owner == territory.owner && this->numberOfArmies == territory.numberOfArmies;
 }
 
 ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
@@ -148,6 +171,61 @@ ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
     }
     return out;
 }
+
+/**
+ * Get the owner of a Territory.
+ */
+Player* Territory::getOwner()
+{
+    return this->owner;
+}
+
+/**
+* Set the owner of a Territory.
+*/
+void Territory::setOwner(Player* p)
+{
+    this->owner = p;
+}
+
+/**
+* Returns the name of the owner of an adjacent Territory.
+*/
+Player* Territory::getOwnerOfAdj(string terrName)
+{
+    for (int i = 0; i < listOfAdjTerr.size(); i++)
+    {
+        if (listOfAdjTerr.at(i)->getTerrName() == terrName)
+            return listOfAdjTerr.at(i)->owner;
+    }
+}
+
+/**
+* Adds armies to a Territory. Returns false if the number entered is negative.
+*/
+bool Territory::addTroops(int numTroops)
+{
+    if (numTroops > 0)
+    {
+        numberOfArmies += numTroops;
+        return true;
+    }
+    return false;
+}
+
+/**
+* Removes armies from a Territory. Returns false if the number entered is negative.
+*/
+bool Territory::removeTroops(int numTroops)
+{
+    if (numTroops > 0)
+    {
+        numberOfArmies -= numTroops;
+        return true;
+    }
+    return false;
+}
+
 
 //*********************************** CONTINENT *****************************************
 

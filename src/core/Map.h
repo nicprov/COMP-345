@@ -2,18 +2,18 @@
 #include <string>
 #include <vector>
 #include <fstream>
-
-class Player;
-
 #include "Player.h"
 
 using namespace std;
+
+class Player;
 
 class Territory
 {
 public:
     Territory();
     Territory(int tid, string tn, int contID);
+    Territory(int tid, string tn, int contID, int numArmies, Player* p);
     Territory(const Territory& t);
     Territory& operator = (const Territory& t);
     ~Territory();
@@ -21,10 +21,12 @@ public:
     int getTerrIndex();
     string getTerrName();
     int getContIndex();
+    int getNumberOfArmies();
 
     void setTerrIndex(int tid);
     void setTerrName(string tn);
     void setContIndex(int contID);
+    void setNumberOfArmies(int numArmies);
 
     void printAdjTerritory();
     Territory* getAdjTerritoryByName(string name);
@@ -32,17 +34,23 @@ public:
     friend ostream& operator << (ostream& out, const std::vector<Territory*>);
     bool operator== (const Territory&) const;
 
-    vector<Territory*> listOfAdjTerr;
 
-    Player* player{};
+    Player* getOwner(); // get owner of this Territory
+    void setOwner(Player* p); //set owner of a Territory
+    Player* getOwnerOfAdj(string terrName); //get the owner of an adjacent Territory
+    bool addTroops(int numTroops); //add armies to a Territory
+    bool removeTroops(int numTroops); //remove armies from a Territory
+
+    vector<Territory*> listOfAdjTerr;
+    
 
 private:
     int terrIndex;
     string terrName;
     int contIndex;
+    int numberOfArmies; //number of armies in a given Territory
 
-    string* name{};
-    int* army{};
+    Player* owner; //player that owns a given Territory
 };
 
 
