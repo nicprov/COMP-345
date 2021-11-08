@@ -4,6 +4,8 @@
 #include <map>
 #include <boost/assign/list_of.hpp>
 #include <boost/unordered_map.hpp>
+#include <vector>
+#include "Player.h"
 
 class GameEngine{
 public:
@@ -43,7 +45,17 @@ public:
     void getAvailableCommands(std::vector<GameCommand>&);
     void transition(GameCommand&);
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
+
+    void addPlayer(Player*);
+
+    void mainGameLoop();
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+
 private:
     GameState *current_state;
+    std::vector<Player*>* players;
+    bool containsOrders(std::map<Player*, bool>);
 };
 #endif //COMP354_GAMEENGINE_H
