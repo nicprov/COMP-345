@@ -26,11 +26,21 @@ Territory::Territory()
  * @param tn Territory Name
  * @param contID Corresponding continent id to the territory.
  */
+
 Territory::Territory(int tid, string tn, int contID)
 {
     terrIndex = tid;
     terrName = tn;
     contIndex = contID;
+}
+
+Territory::Territory(int tid, string tn, int contID, int numArmies, Player* p)
+{
+    terrIndex = tid;
+    terrName = tn;
+    contIndex = contID;
+    numberOfArmies = numArmies;
+    owner = p;
 }
 
 /**
@@ -42,8 +52,9 @@ Territory::Territory(const Territory& t)
     terrIndex = t.terrIndex;
     terrName = t.terrName;
     contIndex = t.contIndex;
+    numberOfArmies = t.numberOfArmies;
+    owner = t.owner;
     listOfAdjTerr = t.listOfAdjTerr;
-
 }
 
 /**
@@ -57,6 +68,8 @@ Territory& Territory:: operator = (const Territory& t)
         terrIndex = t.terrIndex;
         terrName = t.terrName;
         contIndex = t.contIndex;
+        numberOfArmies = t.numberOfArmies;
+        owner = t.owner;
         listOfAdjTerr = t.listOfAdjTerr;
     }
     return *this;
@@ -89,6 +102,11 @@ int Territory::getContIndex()
     return contIndex;
 }
 
+int Territory::getNumberOfArmies()
+{
+    return numberOfArmies;
+}
+
 void Territory::setTerrIndex(int tid)
 {
     terrIndex = tid;
@@ -102,6 +120,11 @@ void Territory::setTerrName(string tn)
 void Territory::setContIndex(int contID)
 {
     contIndex = contID;
+}
+
+void Territory::setNumberOfArmies(int numArmies)
+{
+    numberOfArmies = numArmies;
 }
 
 Territory* Territory::getAdjTerritoryByName(string name)
@@ -172,7 +195,7 @@ Player* Territory::getOwnerOfAdj(string terrName)
 {
     for (int i = 0; i < listOfAdjTerr.size(); i++)
     {
-        if (listOfAdjTerr.at(i)->terrName == terrName)
+        if (listOfAdjTerr.at(i)->getTerrName() == terrName)
             return listOfAdjTerr.at(i)->owner;
     }
 }

@@ -13,6 +13,7 @@ class Territory
 public:
     Territory();
     Territory(int tid, string tn, int contID);
+    Territory(int tid, string tn, int contID, int numArmies, Player* p);
     Territory(const Territory& t);
     Territory& operator = (const Territory& t);
     ~Territory();
@@ -20,10 +21,12 @@ public:
     int getTerrIndex();
     string getTerrName();
     int getContIndex();
+    int getNumberOfArmies();
 
     void setTerrIndex(int tid);
     void setTerrName(string tn);
     void setContIndex(int contID);
+    void setNumberOfArmies(int numArmies);
 
     void printAdjTerritory();
     Territory* getAdjTerritoryByName(string name);
@@ -39,12 +42,13 @@ public:
     bool removeTroops(int numTroops); //remove armies from a Territory
 
     vector<Territory*> listOfAdjTerr;
-    int numberOfArmies; //number of armies in a given Territory
+    
 
 private:
     int terrIndex;
     string terrName;
     int contIndex;
+    int numberOfArmies; //number of armies in a given Territory
 
     Player* owner; //player that owns a given Territory
 };
