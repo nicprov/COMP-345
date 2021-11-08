@@ -121,6 +121,7 @@ public:
     void remove(int); //remove method to remove an Order from an index
     void move(Order*, int newIndex, int oldIndex); //move method to move a specific order from one index to another
     std::vector<Order*> getOrders(); //accessor method for order list
+    int getSize();
 private:
     std::vector<Order*>* orders; //pointer to list of order pointers
 };
