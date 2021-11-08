@@ -7,10 +7,12 @@ workflows:
           filters:
             branches:
               only: 
-                - dev-nick
                 - master
-                - devAdrienne
-                - Maps
+                - dev-adrienne
+                - dev-anita
+                - dev-jason
+                - dev-juhi
+                - dev-nick
                 - dev-rosie
 jobs:
   build-and-test:
