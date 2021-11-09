@@ -289,16 +289,6 @@ bool Continent::operator==(const Continent &continent) const {
     return this->listOfTerritories == continent.listOfTerritories && this->contName == continent.contName && this->armyValue == continent.armyValue && this->cIndex == continent.cIndex && this->listOfAdjCont == continent.listOfAdjCont;
 }
 
-vector<Territory*> Continent::getTerritoriesByPlayer(Player *player) {
-    vector<Territory*> territoriesByPlayer;
-    for (Territory* territory: this->listOfTerritories){
-        if (territory->player == player)
-            territoriesByPlayer.push_back(territory);
-    }
-    return territoriesByPlayer;
-}
-
-
 //*********************************** MAP *****************************************
 
 /**
@@ -570,6 +560,16 @@ ostream& operator << (ostream& out, const Map& m)
 bool Map::operator==(const Map &map) const {
     return this->listOfContinents == map.listOfContinents && this->listOfTerritories == map.listOfTerritories && this->mapName == map.mapName;
 }
+
+vector<Territory*> Map::getTerritoriesByPlayer(Player *player) {
+    vector<Territory*> territoriesByPlayer;
+    for (Territory* territory: this->listOfTerritories){
+        if (territory->player == player)
+            territoriesByPlayer.push_back(territory);
+    }
+    return territoriesByPlayer;
+}
+
 
 //*********************************** MAP LOADER *****************************************
 
