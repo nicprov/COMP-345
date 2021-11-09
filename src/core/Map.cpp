@@ -149,6 +149,64 @@ ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
     return out;
 }
 
+<<<<<<< Updated upstream
+=======
+/**
+ * Get the owner of a Territory.
+ */
+Player* Territory::getOwner()
+{
+    return this->owner;
+}
+
+/**
+* Set the owner of a Territory.
+*/
+void Territory::setOwner(Player * p)
+{
+    this->owner = p;
+}
+
+/**
+* Returns the name of the owner of an adjacent Territory.
+*/
+Player* Territory::getOwnerOfAdj(string terrName)
+{
+    for (int i = 0; i < listOfAdjTerr.size(); i++)
+    {
+        if (listOfAdjTerr.at(i)->getTerrName() == terrName)
+            return listOfAdjTerr.at(i)->owner;
+    }
+}
+
+/**
+* Adds armies to a Territory. Returns false if the number entered is negative.
+*/
+bool Territory::addTroops(int numTroops)
+{
+    if (numTroops > 0)
+    {
+        numberOfArmies += numTroops;
+        return true;
+    }
+    return false;
+}
+
+/**
+* Removes armies from a Territory. Returns false if the number entered is negative.
+*/
+bool Territory::removeTroops(int numTroops)
+{
+    if (numTroops > 0)
+    {
+        numberOfArmies -= numTroops;
+        return true;
+    }
+    return false;
+}
+
+
+>>>>>>> Stashed changes
 //*********************************** CONTINENT *****************************************
 
 /**

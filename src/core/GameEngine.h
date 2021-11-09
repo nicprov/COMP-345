@@ -1,6 +1,17 @@
 #ifndef COMP354_GAMEENGINE_H
 #define COMP354_GAMEENGINE_H
 #include <vector>
+<<<<<<< Updated upstream
+=======
+#include <map>
+#include <boost/assign/list_of.hpp>
+#include <boost/unordered_map.hpp>
+#include <vector>
+#include "Player.h"
+//#include "CommandProcessing.h"
+#include "Map.h"
+#include "Cards.h"
+>>>>>>> Stashed changes
 
 class GameEngine{
 public:
@@ -38,8 +49,33 @@ public:
     bool operator== (const GameEngine&) const;
     GameState& getGameState();
     void getAvailableCommands(std::vector<GameCommand>&);
+    void loadMap();
+    void validateMap();
+    void addPlayers();
+    void gameStart();
     void transition(GameCommand&);
+<<<<<<< Updated upstream
 private:
     GameState *current_state;
+=======
+    static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
+
+    void registerPlayer(Player*);
+
+    void startupPhase(GameEngine& gameEngine);
+    void mainGameLoop();
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+
+private:
+    GameState *current_state;
+    std::vector<Player*>* players;
+    Map* map;
+    Deck* deck;
+    bool containsOrders(std::map<Player*, bool>);
+>>>>>>> Stashed changes
 };
-#endif //COMP354_GAMEENGINE_H
+
+void listAvailableCommands(GameEngine& gameEngine);
+#endif COMP354_GAMEENGINE_H

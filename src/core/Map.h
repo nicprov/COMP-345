@@ -32,6 +32,16 @@ public:
     friend ostream& operator << (ostream& out, const std::vector<Territory*>);
     bool operator== (const Territory&) const;
 
+<<<<<<< Updated upstream
+=======
+
+    Player* getOwner(); // get owner of this Territory
+    void setOwner(Player *); //set owner of a Territory
+    Player* getOwnerOfAdj(string terrName); //get the owner of an adjacent Territory
+    bool addTroops(int numTroops); //add armies to a Territory
+    bool removeTroops(int numTroops); //remove armies from a Territory
+
+>>>>>>> Stashed changes
     vector<Territory*> listOfAdjTerr;
 
     Player* player{};

@@ -23,6 +23,7 @@ Player::Player(const std::string &name) {
     this->name = new std::string(name);
     this->hand = new Hand();
     this->orderList = new OrderList();
+    this->armyPool = 0;
 }
 
 /**

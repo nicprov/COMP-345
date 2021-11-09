@@ -29,6 +29,7 @@ public:
     OrderList& getOrderList();
     Hand* hand;
     OrderList* orderList;
+    int armyPool;
 private:
     std::string* name;
 };
