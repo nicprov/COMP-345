@@ -546,3 +546,7 @@ std::vector<Order*> OrderList::getOrders() {
 bool OrderList::operator==(const OrderList &orderList) const {
     return *this->orders == *orderList.orders;
 }
+
+int OrderList::getSize() {
+    return this->orders->size();
+}
