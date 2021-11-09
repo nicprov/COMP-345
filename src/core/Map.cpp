@@ -198,6 +198,7 @@ Player* Territory::getOwnerOfAdj(string terrName)
         if (listOfAdjTerr.at(i)->getTerrName() == terrName)
             return listOfAdjTerr.at(i)->owner;
     }
+    return nullptr;
 }
 
 /**
@@ -642,7 +643,7 @@ bool Map::operator==(const Map &map) const {
 vector<Territory*> Map::getTerritoriesByPlayer(Player *player) {
     vector<Territory*> territoriesByPlayer;
     for (Territory* territory: this->listOfTerritories){
-        if (territory->player == player)
+        if (territory->getOwner() == player)
             territoriesByPlayer.push_back(territory);
     }
     return territoriesByPlayer;
