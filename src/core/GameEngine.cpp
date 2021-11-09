@@ -189,7 +189,7 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
         case GameEngine::GameCommand::add_player:
             stream << "Add player";
             break;
-        case GameEngine::GameCommand::assign_countries:
+        case GameEngine::GameCommand::game_start:
             stream << "Assign countries";
             break;
         case GameEngine::GameCommand::issue_order:
