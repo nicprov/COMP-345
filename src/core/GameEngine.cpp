@@ -1,8 +1,6 @@
 #include <iostream>
 #include <random>
 #include "GameEngine.h"
-<<<<<<< Updated upstream
-=======
 //#include "Orders.h"
 //#include "Map.h"
 
@@ -10,7 +8,6 @@ const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gam
         ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
         ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
         ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit);
->>>>>>> Stashed changes
 
 /**
  * Game Engine constructor
@@ -124,12 +121,8 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Players added" << "\033[0m" << std::endl << std::endl;
                     *current_state = players_added;
                     break;
-<<<<<<< Updated upstream
-                case assign_countries:
-=======
                 case game_start:
                     this->gameStart();
->>>>>>> Stashed changes
                     std::cout << std::endl << "\x1B[32m" << "Assign reinforcement" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
                     break;
@@ -233,9 +226,6 @@ bool GameEngine::operator==(const GameEngine &gameEngine) const
 {
     return *this->current_state == *gameEngine.current_state;
 }
-<<<<<<< Updated upstream
-=======
-
 /**
 * Startup phase of the game: goes through loadmap, validatemap,
 * addplayer, gamestart through commands
@@ -432,6 +422,3 @@ void GameEngine::gameStart() {
 }
     //
 
-
-
->>>>>>> Stashed changes

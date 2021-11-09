@@ -1,17 +1,14 @@
 #ifndef COMP354_GAMEENGINE_H
 #define COMP354_GAMEENGINE_H
 #include <vector>
-<<<<<<< Updated upstream
-=======
 #include <map>
 #include <boost/assign/list_of.hpp>
 #include <boost/unordered_map.hpp>
 #include <vector>
 #include "Player.h"
-//#include "CommandProcessing.h"
+#include "CommandProcessing.h"
 #include "Map.h"
 #include "Cards.h"
->>>>>>> Stashed changes
 
 class GameEngine{
 public:
@@ -29,7 +26,7 @@ public:
         load_map=1,
         validate_map=2,
         add_player=3,
-        assign_countries=4,
+        game_start=4,
         issue_order=5,
         end_issue_orders=6,
         execute_order=7,
@@ -54,10 +51,7 @@ public:
     void addPlayers();
     void gameStart();
     void transition(GameCommand&);
-<<<<<<< Updated upstream
-private:
-    GameState *current_state;
-=======
+
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 
     void registerPlayer(Player*);
@@ -74,7 +68,7 @@ private:
     Map* map;
     Deck* deck;
     bool containsOrders(std::map<Player*, bool>);
->>>>>>> Stashed changes
+
 };
 
 void listAvailableCommands(GameEngine& gameEngine);

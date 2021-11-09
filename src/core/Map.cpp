@@ -26,11 +26,21 @@ Territory::Territory()
  * @param tn Territory Name
  * @param contID Corresponding continent id to the territory.
  */
+
 Territory::Territory(int tid, string tn, int contID)
 {
     terrIndex = tid;
     terrName = tn;
     contIndex = contID;
+}
+
+Territory::Territory(int tid, string tn, int contID, int numArmies, Player* p)
+{
+    terrIndex = tid;
+    terrName = tn;
+    contIndex = contID;
+    numberOfArmies = numArmies;
+    owner = p;
 }
 
 /**
@@ -42,8 +52,9 @@ Territory::Territory(const Territory& t)
     terrIndex = t.terrIndex;
     terrName = t.terrName;
     contIndex = t.contIndex;
+    numberOfArmies = t.numberOfArmies;
+    owner = t.owner;
     listOfAdjTerr = t.listOfAdjTerr;
-
 }
 
 /**
@@ -57,6 +68,8 @@ Territory& Territory:: operator = (const Territory& t)
         terrIndex = t.terrIndex;
         terrName = t.terrName;
         contIndex = t.contIndex;
+        numberOfArmies = t.numberOfArmies;
+        owner = t.owner;
         listOfAdjTerr = t.listOfAdjTerr;
     }
     return *this;
@@ -89,6 +102,11 @@ int Territory::getContIndex()
     return contIndex;
 }
 
+int Territory::getNumberOfArmies()
+{
+    return numberOfArmies;
+}
+
 void Territory::setTerrIndex(int tid)
 {
     terrIndex = tid;
@@ -102,6 +120,11 @@ void Territory::setTerrName(string tn)
 void Territory::setContIndex(int contID)
 {
     contIndex = contID;
+}
+
+void Territory::setNumberOfArmies(int numArmies)
+{
+    numberOfArmies = numArmies;
 }
 
 Territory* Territory::getAdjTerritoryByName(string name)
@@ -136,7 +159,7 @@ ostream& operator << (ostream& out, const Territory& t)
 }
 
 bool Territory::operator==(const Territory &territory) const {
-    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->player == territory.player && this->name == territory.name && this->army == territory.army;
+    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->owner == territory.owner && this->numberOfArmies == territory.numberOfArmies;
 }
 
 ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
@@ -149,8 +172,6 @@ ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
     return out;
 }
 
-<<<<<<< Updated upstream
-=======
 /**
  * Get the owner of a Territory.
  */
@@ -162,7 +183,7 @@ Player* Territory::getOwner()
 /**
 * Set the owner of a Territory.
 */
-void Territory::setOwner(Player * p)
+void Territory::setOwner(Player* p)
 {
     this->owner = p;
 }
@@ -177,6 +198,7 @@ Player* Territory::getOwnerOfAdj(string terrName)
         if (listOfAdjTerr.at(i)->getTerrName() == terrName)
             return listOfAdjTerr.at(i)->owner;
     }
+    return nullptr;
 }
 
 /**
@@ -206,7 +228,6 @@ bool Territory::removeTroops(int numTroops)
 }
 
 
->>>>>>> Stashed changes
 //*********************************** CONTINENT *****************************************
 
 /**
@@ -346,7 +367,6 @@ ostream& operator << (ostream& out, const Continent& c)
 bool Continent::operator==(const Continent &continent) const {
     return this->listOfTerritories == continent.listOfTerritories && this->contName == continent.contName && this->armyValue == continent.armyValue && this->cIndex == continent.cIndex && this->listOfAdjCont == continent.listOfAdjCont;
 }
-
 
 //*********************************** MAP *****************************************
 
@@ -620,6 +640,16 @@ bool Map::operator==(const Map &map) const {
     return this->listOfContinents == map.listOfContinents && this->listOfTerritories == map.listOfTerritories && this->mapName == map.mapName;
 }
 
+vector<Territory*> Map::getTerritoriesByPlayer(Player *player) {
+    vector<Territory*> territoriesByPlayer;
+    for (Territory* territory: this->listOfTerritories){
+        if (territory->getOwner() == player)
+            territoriesByPlayer.push_back(territory);
+    }
+    return territoriesByPlayer;
+}
+
+
 //*********************************** MAP LOADER *****************************************
 
 /**
@@ -819,4 +849,3 @@ ostream& operator << (std::ostream& o, const MapLoader& ml)
 {
     return o << "This is a domination map: " << ml.mapFileName;
 }
-
