@@ -4,10 +4,9 @@
 #include <string>
 #include "Orders.h"
 #include "Cards.h"
+#include "Map.h"
 
 class Territory;
-
-#include "Map.h"
 
 class Player
 {
