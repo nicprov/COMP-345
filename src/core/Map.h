@@ -109,6 +109,7 @@ public:
     bool validate();
     friend ostream& operator << (ostream& out, const Map& m);
     bool operator== (const Map&) const;
+    vector<Territory*> getTerritoriesByPlayer(Player*);
 
     vector<Continent*> listOfContinents;
     vector<Territory*> listOfTerritories;

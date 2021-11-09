@@ -89,7 +89,12 @@ void Command::saveEffect(const std::string& effect)
     this->effect = effect;
 }
 
-GameEngine::GameCommand* Command::getCommand()
+Command& Command::getCommand()
+{
+    return *this;
+}
+
+GameEngine::GameCommand* Command::getGameCommand()
 {
     return this->command;
 }

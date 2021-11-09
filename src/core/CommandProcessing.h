@@ -28,7 +28,8 @@ public:
     Command& operator= (const Command&);
     friend std::ostream& operator<< (std::ostream&, const Command&);
     void saveEffect(const std::string&);
-    GameEngine::GameCommand* getCommand();
+    Command& getCommand();
+    GameEngine::GameCommand* getGameCommand();
     std::string getParam();
     std::string getEffect();
 private:
