@@ -1,5 +1,6 @@
 #include <iostream>
 #include "GameEngine.h"
+#include "Orders.h"
 
 const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gameCommandMapping = boost::assign::map_list_of("loadmap", GameEngine::GameCommand::load_map)
         ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
@@ -213,3 +214,92 @@ bool GameEngine::operator==(const GameEngine &gameEngine) const
 {
     return *this->current_state == *gameEngine.current_state;
 }
+
+void GameEngine::reinforcementPhase()
+{
+
+}
+
+
+
+void GameEngine::issueOrdersPhase()
+{
+    for(Player* player: *this->players) {
+        Order *order = nullptr;
+
+        while (order == nullptr) {
+            for (Order::OrderType orderType: Order::ALL_ORDER_TYPES) {
+                std::cout << static_cast<int>(orderType) << ": " << orderType;
+            }
+            std::cout << "Choice: ";
+            int orderType;
+            std::cin >> orderType;
+
+            switch (orderType) {
+                case 1:
+                    order = new Deploy(Order::OrderType::deploy);
+                    break;
+                case 2:
+                    order = new Advance(Order::OrderType::advance);
+                    break;
+                case 3:
+                    order = new Bomb(Order::OrderType::bomb);
+                    break;
+                case 4:
+                    order = new Blockade(Order::OrderType::blockade);
+                    break;
+                case 5:
+                    order = new Airlift(Order::OrderType::airlift);
+                    break;
+                case 6:
+                    order = new Negotiate(Order::OrderType::negotiate);
+                    break;
+                default:
+                    cout << "Invalid choice";       //**TO DO: LOOP BACK IF INVALID ORDER CHOICE
+                    break;
+            }
+        }
+
+        player->issueOrder(order);
+    }
+}
+
+void GameEngine::executeOrdersPhase()
+{
+    std::map<Player*, bool>listPlayerOrder;
+    for(Player* player: *this->players) {
+        listPlayerOrder[player] = true;   //orderList has content
+    }
+    while(containsOrders(listPlayerOrder)) {
+        for (Player *player:*this->players) {
+            if (player->orderList->getSize() > 0) {
+                player->orderList->remove(0);
+            }
+        }
+    }
+}
+
+void GameEngine::mainGameLoop()
+{
+    while(true){
+        reinforcementPhase();
+        issueOrdersPhase();
+        executeOrdersPhase();
+    }
+    //for each state (execute orders, issue order, etc. )
+    // for player in player
+    // call method: ie. issueOrdersPhase(player reference)
+}
+
+void GameEngine::addPlayer(Player* player) {
+    this->players->push_back(player);
+}
+
+bool GameEngine::containsOrders(std::map<Player*, bool> map) {
+    for (auto it = map.begin(); it != map.end(); ++it) {
+        if(it->second)
+            return true;    //there is a true value
+    }
+    return false;
+}
+
