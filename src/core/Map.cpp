@@ -289,6 +289,15 @@ bool Continent::operator==(const Continent &continent) const {
     return this->listOfTerritories == continent.listOfTerritories && this->contName == continent.contName && this->armyValue == continent.armyValue && this->cIndex == continent.cIndex && this->listOfAdjCont == continent.listOfAdjCont;
 }
 
+vector<Territory*> Continent::getTerritoriesByPlayer(Player *player) {
+    vector<Territory*> territoriesByPlayer;
+    for (Territory* territory: this->listOfTerritories){
+        if (territory->player == player)
+            territoriesByPlayer.push_back(territory);
+    }
+    return territoriesByPlayer;
+}
+
 
 //*********************************** MAP *****************************************
 
