@@ -147,7 +147,7 @@ ostream& operator << (ostream& out, const Territory& t)
 }
 
 bool Territory::operator==(const Territory& territory) const {
-    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->player == territory.player && this->name == territory.name && this->army == territory.army;
+    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->owner == territory.owner && this->name == territory.name && this->army == territory.army;
 }
 
 ostream& operator<<(ostream& out, const vector<Territory*>* territoryList) {
