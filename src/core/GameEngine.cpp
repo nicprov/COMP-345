@@ -276,10 +276,12 @@ void GameEngine::startupPhase(GameEngine& gameEngine)
 
     std::cout << std::endl << "*Startup Phase*" << std::endl << std::endl;
 
+    listAvailableCommands(gameEngine);
     Command* command = commandProcessor->getCommand();    
     gameEngine.transition(*command->getGameCommand());
 
     while (*command->getGameCommand() != game_start) {
+        listAvailableCommands(gameEngine);
         command = commandProcessor->getCommand();
         gameEngine.transition(*command->getGameCommand());
     }
@@ -476,7 +478,7 @@ void GameEngine::listAvailableCommands(GameEngine &gameEngine){
     for (GameEngine::GameCommand command: commands){
         cout << static_cast<int>(command) << ". " << command << endl;
     }
-    cout << "Choice: ";
+    
 }
 
 
