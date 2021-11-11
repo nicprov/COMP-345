@@ -44,8 +44,6 @@ public:
 
     vector<Territory*> listOfAdjTerr;
 
-    Player* player;
-
 private:
     int terrIndex;
     string terrName;
@@ -141,6 +139,3 @@ public:
 private:
     string* mapFileName;
 };
-
-
-

@@ -19,7 +19,8 @@ void gameEngineDriver() {
     cout << "Welcome to Warzone" << endl;
     cout << "==========================" << endl;
 
-    int choice = 0;
+    gameEngine.startupPhase(gameEngine);
+    /*int choice = 0;
     while (choice != 11){
         listAvailableCommands(gameEngine);
         while(!(cin >> choice)){
@@ -29,5 +30,5 @@ void gameEngineDriver() {
         }
         auto command = static_cast<GameEngine::GameCommand>(choice);
         gameEngine.transition(command);
-    }
+    }*/
 }

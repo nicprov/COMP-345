@@ -33,6 +33,8 @@ public:
     Hand* hand;
     OrderList* orderList;
     bool hasNegotiationWith(Player* enemy);
+    int armyPool;
+
 private:
     std::string* name;
 };
