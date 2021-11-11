@@ -812,13 +812,13 @@ Map* MapLoader::ReadMap(Map* map, string mapFileName)
 
             if (hasContinent && hasTerritory && hasAdj)
             {
-                cout << "\n\nThe Map is valid. \n";
+                //cout << "\n\nThe Map is valid. \n";
                 inStream.close();
                 return map;
             }
             else
             {
-                cout << "\n\nThe Map is invalid \n";
+                //cout << "\n\nThe Map is invalid \n";
                 inStream.close();
                 return nullptr;
             }

@@ -13,7 +13,7 @@ class Player
 public:
     ~Player();
     Player(const std::string&);
-    Player(const Hand&, const OrderList&, const std::string&);
+    Player(const Hand&, const OrderList&, const std::string&, int& armyPool);
     // Copy constructor
     Player(const Player&);
     // Assignment operator
@@ -28,7 +28,7 @@ public:
     OrderList& getOrderList();
     Hand* hand;
     OrderList* orderList;
-    int armyPool;
+    int* armyPool;
 private:
     std::string* name;
 };

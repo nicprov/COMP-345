@@ -23,7 +23,7 @@ Player::Player(const std::string &name) {
     this->name = new std::string(name);
     this->hand = new Hand();
     this->orderList = new OrderList();
-    this->armyPool = 0;
+    this->armyPool = new int (0);
 }
 
 /**
@@ -32,11 +32,12 @@ Player::Player(const std::string &name) {
  * @param orderlist
  * @param name
  */
-Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name)
+Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name, int& armyPool)
 {
     this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
     this->name = new std::string(name);
+    this->armyPool = new int(armyPool);
 }
 
 /**
@@ -48,6 +49,7 @@ Player::Player(const Player &player)
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
     this->name = new std::string(*player.name);
+    this->armyPool = new int(*player.armyPool);
 }
 
 /**
@@ -71,7 +73,7 @@ Player& Player::operator= (const Player &player)
  */
 std::ostream &operator<<(std::ostream &stream, const Player &player)
 {
-    return stream << "Player(" << *player.name << "): " << *player.hand << ", " << *player.orderList;
+    return stream << "Player(" << *player.name << "): " << *player.hand << ", " << *player.orderList << ", Army pool:" << *player.armyPool;
 }
 
 /**
