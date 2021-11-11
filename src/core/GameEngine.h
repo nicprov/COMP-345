@@ -6,6 +6,7 @@
 #include <boost/unordered_map.hpp>
 #include <vector>
 #include "Player.h"
+#include "Map.h"
 
 class GameEngine{
 public:
@@ -57,5 +58,6 @@ private:
     GameState *current_state;
     std::vector<Player*>* players;
     bool containsOrders(std::map<Player*, bool>);
+    Map* currentMap;
 };
 #endif //COMP354_GAMEENGINE_H

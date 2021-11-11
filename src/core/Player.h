@@ -4,6 +4,7 @@
 #include <string>
 #include "Orders.h"
 #include "Cards.h"
+#include "Map.h"
 
 class Territory;
 
@@ -12,9 +13,11 @@ class Territory;
 class Player
 {
 public:
+ //   Player(const Hand &hand, const OrderList &orderlist, const string &name, const Map &territoriesList);
+
     ~Player();
     Player(const std::string&);
-    Player(const Hand&, const OrderList&, const std::string&);
+    Player(const Hand&, const OrderList&, const std::string&, const Map&);
     // Copy constructor
     Player(const Player&);
     // Assignment operator
@@ -29,6 +32,10 @@ public:
     OrderList& getOrderList();
     Hand* hand;
     OrderList* orderList;
+    //std::vector<Territory*> territoryList;
+ //   Territory* territoryList;
+    Map* territoriesList;
+    int armyPool;
 private:
     std::string* name;
 };
