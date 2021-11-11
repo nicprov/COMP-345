@@ -857,4 +857,3 @@ ostream& operator << (std::ostream& o, const MapLoader& ml)
 {
     return o << "This is a domination map: " << ml.mapFileName;
 }
-

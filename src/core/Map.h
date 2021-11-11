@@ -34,7 +34,6 @@ public:
     friend ostream& operator << (ostream& out, const std::vector<Territory*>);
     bool operator== (const Territory&) const;
 
-
     Player* getOwner(); // get owner of this Territory
     void setOwner(Player* p); //set owner of a Territory
     Player* getOwnerOfAdj(string terrName); //get the owner of an adjacent Territory
@@ -42,7 +41,6 @@ public:
     bool removeTroops(int numTroops); //remove armies from a Territory
 
     vector<Territory*> listOfAdjTerr;
-    
 
 private:
     int terrIndex;
@@ -138,6 +136,3 @@ public:
 private:
     string* mapFileName;
 };
-
-
-

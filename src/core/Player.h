@@ -4,10 +4,9 @@
 #include <string>
 #include "Orders.h"
 #include "Cards.h"
+#include "Map.h"
 
 class Territory;
-
-#include "Map.h"
 
 class Player
 {
@@ -29,6 +28,7 @@ public:
     OrderList& getOrderList();
     Hand* hand;
     OrderList* orderList;
+    int armyPool;
 private:
     std::string* name;
 };

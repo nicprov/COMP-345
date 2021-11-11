@@ -1,4 +1,6 @@
 #include <iostream>
+#include <random>
+#include "CommandProcessing.h"
 #include "GameEngine.h"
 #include "Orders.h"
 
@@ -99,18 +101,28 @@ void GameEngine::transition(GameCommand &gameCommand)
             // Perform move
             switch (gameCommand){
                 case load_map:
+                    this->loadMap();
                     std::cout << std::endl << "\x1B[32m" << "Map loaded" << "\033[0m" << std::endl << std::endl;
                     *current_state = map_loaded;
                     break;
                 case validate_map:
-                    std::cout << std::endl << "\x1B[32m" << "Map validated" << "\033[0m" << std::endl << std::endl;
-                    *current_state = map_validated;
+                    if (map != nullptr && map->validate()) {
+                        this->validateMap();
+                        std::cout << std::endl << "\x1B[32m" << "Map validated" << "\033[0m" << std::endl << std::endl;
+                        *current_state = map_validated;
+                    }
+                    else {
+                        map->~Map();
+                        cerr << "Invalid Map File.";
+                    }
                     break;
                 case add_player:
+                    this->addPlayers();
                     std::cout << std::endl << "\x1B[32m" << "Players added" << "\033[0m" << std::endl << std::endl;
                     *current_state = players_added;
                     break;
                 case game_start:
+                    this->gameStart();
                     std::cout << std::endl << "\x1B[32m" << "Assign reinforcement" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
                     break;
@@ -214,6 +226,28 @@ bool GameEngine::operator==(const GameEngine &gameEngine) const
 {
     return *this->current_state == *gameEngine.current_state;
 }
+/**
+* Startup phase of the game: goes through loadmap, validatemap,
+* addplayer, gamestart through commands
+* @param gameEngine with state 'start'
+*/
+void GameEngine::startupPhase(GameEngine& gameEngine)
+{
+    std::cout << std::endl << "*Startup Phase*" << std::endl << std::endl;
+
+    int choice = 0;
+
+    while (choice != 4) { // based on enum value in game engine getCommand()
+        listAvailableCommands(gameEngine);
+        while (!(std::cin >> choice)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "\x1B[31m" << "Invalid input, try again: " << "\033[0m";
+        }
+        auto command = static_cast<GameEngine::GameCommand>(choice);
+        gameEngine.transition(command);
+    }
+}
 
 void GameEngine::reinforcementPhase()
 {
@@ -291,7 +325,7 @@ void GameEngine::mainGameLoop()
     // call method: ie. issueOrdersPhase(player reference)
 }
 
-void GameEngine::addPlayer(Player* player) {
+void GameEngine::registerPlayer(Player* player) {
     this->players->push_back(player);
 }
 
@@ -302,4 +336,96 @@ bool GameEngine::containsOrders(std::map<Player*, bool> map) {
     }
     return false;
 }
+void GameEngine::loadMap() {
+    std::string name = "";
+    MapLoader* mapLoader = new MapLoader();
 
+    std::cout << "Enter the name of the map file you wish to play with: \n";
+    std::cin >> name;
+    this->map->setMapName(name);
+
+    cout << "\nMap details: \n\n";
+    this->map = mapLoader->GetMap(map, name);
+
+    mapLoader->~MapLoader();
+
+    std::cout << std::endl << "\x1B[32m" << "Map loaded" << "\033[0m" << std::endl << std::endl;
+}
+
+void GameEngine::validateMap() {
+
+    if (map != nullptr && map->validate()) {
+
+        cout << "\nTotal Number of Continents: " << map->listOfContinents.size() << endl;
+        cout << "Total Number of Territories: " << map->listOfTerritories.size() << endl;
+
+        /*Territory* terr1 = map->getTerritory(1);
+
+        terr1->printAdjTerritory();*/
+
+    }
+    else {
+        map->~Map();
+        cerr << "Invalid Map File. Do load_map again!";
+    }
+
+}
+
+void GameEngine::addPlayers() {
+    int nbPlayers;
+
+    while ((players->size() + nbPlayers) < 2 || (players->size() + nbPlayers) > 6) {
+        cout << "Enter the number of players for this game (minimum 2, maximum 6): " << endl;
+        while (!(cin >> nbPlayers)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "\x1B[31m" << "Invalid input, try again: " << "\033[0m";
+        }
+    }
+    for (int i = nbPlayers; i > 0; i--) {
+        auto* playerName = new std::string();
+        cout << "Enter player name: " << endl;
+        cin >> *playerName;
+        auto* player = new Player(*playerName);
+        this->registerPlayer(player);
+    }
+
+}
+
+void GameEngine::gameStart() {
+
+    //Create deck for this game
+    deck = new Deck();
+
+    //Assign territories, armies and draw card sequentially
+    int nbTerr = map->listOfTerritories.size();
+    int nbPlayers = players->size();
+    int terrCounter = 0;
+
+    for (int i = 0; i < nbPlayers; i++) {
+        //Assign territories sequentially
+        for (int j = 0; j < (nbTerr / nbPlayers); j++) {
+            map->listOfTerritories[terrCounter]->setOwner(this->players->at(i));
+            terrCounter++;
+        }
+        //Add armies to reinforcement pool
+        this->players->at(i)->armyPool = 50;
+
+        //Draw 2 cards
+        players->at(i)->hand->addCard(deck->draw());
+        players->at(i)->hand->addCard(deck->draw());
+    }
+
+    //Randomize player order
+    std::shuffle(players->begin(), players->end(), default_random_engine(0));
+}
+
+void GameEngine::listAvailableCommands(GameEngine &gameEngine){
+    cout << "Available commands:" << endl;
+    vector<GameEngine::GameCommand> commands;
+    gameEngine.getAvailableCommands(commands);
+    for (GameEngine::GameCommand command: commands){
+        cout << static_cast<int>(command) << ". " << command << endl;
+    }
+    cout << "Choice: ";
+}
