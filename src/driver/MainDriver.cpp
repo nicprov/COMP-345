@@ -7,8 +7,8 @@
 #include "CommandProcessingDriver.cpp"
 
 int main(int argc, char *argv[]){
-    GameEngine gameEngine;
-    CommandProcessor* commandProcessor;
+    GameEngine* gameEngine = new GameEngine();
+    /*CommandProcessor* commandProcessor;
     switch (argc) {
         case 2:
             if (strcmp(argv[1], "-console") == 0){
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
         default:
             throw std::runtime_error("Must include either -console or -file <filename> when launching program");
     }
-
+*/
 //    cout << "Running Map Driver" << endl;
 //    cout << "-----------------------" << endl;
 //    mapDriver();
@@ -40,6 +40,6 @@ int main(int argc, char *argv[]){
 //    cardsDriver();
 //    cout << endl << endl << "Running Game Engine Driver" << endl;
 //    cout << "-----------------------" << endl;
-//    gameEngineDriver();
-    commandProcessingDriver(commandProcessor);
+    gameEngineDriver();
+//    commandProcessingDriver(commandProcessor);
 }

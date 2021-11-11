@@ -6,9 +6,11 @@
 #include <boost/unordered_map.hpp>
 #include <vector>
 #include "Player.h"
-#include "CommandProcessing.h"
 #include "Map.h"
 #include "Cards.h"
+#include "CommandProcessing.h"
+
+class Command;
 
 class GameEngine{
 public:
@@ -32,7 +34,7 @@ public:
         execute_order=7,
         end_execute_order=8,
         win_game=9,
-        play=10,
+        replay=10,
         end=11
     };
     GameEngine();

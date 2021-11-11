@@ -6,7 +6,7 @@
 
 const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gameCommandMapping = boost::assign::map_list_of("loadmap", GameEngine::GameCommand::load_map)
         ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
-        ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
+        ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_orders) ("executeorder", GameEngine::GameCommand::execute_order)
         ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit);
 
 /**
@@ -65,7 +65,7 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
             break;
         case players_added:
             availableCommands.push_back(GameCommand::add_player);
-            availableCommands.push_back(GameCommand::assign_countries);
+            availableCommands.push_back(GameCommand::game_start);
             break;
         case assign_reinforcement:
             availableCommands.push_back(GameCommand::issue_order);
@@ -146,7 +146,7 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
                     break;
-                case play:
+                case replay:
                     std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
                     break;
