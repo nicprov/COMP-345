@@ -10,9 +10,7 @@ using namespace std;
 
 //*********************************** TERRITORY *****************************************
 
-/**
- * Default Constructor
- */
+//Default Constructor
 Territory::Territory()
 {
     terrIndex = 0;
@@ -20,13 +18,7 @@ Territory::Territory()
     contIndex = 0;
 }
 
-/**
- * Parameterized constructor
- * @param tid Territory Id
- * @param tn Territory Name
- * @param contID Corresponding continent id to the territory.
- */
-
+//Parameterized constructor
 Territory::Territory(int tid, string tn, int contID)
 {
     terrIndex = tid;
@@ -43,10 +35,7 @@ Territory::Territory(int tid, string tn, int contID, int numArmies, Player* p)
     owner = p;
 }
 
-/**
- * Copy Constructor makes a copy of Territory.
- * @param t Territory
- */
+//Copy Constructor
 Territory::Territory(const Territory& t)
 {
     terrIndex = t.terrIndex;
@@ -55,12 +44,10 @@ Territory::Territory(const Territory& t)
     numberOfArmies = t.numberOfArmies;
     owner = t.owner;
     listOfAdjTerr = t.listOfAdjTerr;
+
 }
 
-/**
- * Assignment Operator
- * @param t Territory
- */
+//Assignment Operator
 Territory& Territory:: operator = (const Territory& t)
 {
     if (&t != this)
@@ -75,16 +62,14 @@ Territory& Territory:: operator = (const Territory& t)
     return *this;
 }
 
-/**
- * Destructor
- * Destroys the list of adjacent territories.
- */
+//Destructor
 Territory::~Territory()
 {
     for (int i = 0; i < this->listOfAdjTerr.size(); i++)
     {
-        delete this->listOfAdjTerr[i];
+        this->listOfAdjTerr[i] = nullptr;
     }
+    this->listOfAdjTerr.clear();
 }
 
 int Territory::getTerrIndex()
@@ -137,9 +122,6 @@ Territory* Territory::getAdjTerritoryByName(string name)
     return 0;
 }
 
-/**
- * Prints the list of adjacent territories.
- */
 void Territory::printAdjTerritory()
 {
     cout << "Adjacent Territories of Territory " << this->getTerrName() << ": ";
@@ -150,26 +132,31 @@ void Territory::printAdjTerritory()
     cout << endl;
 }
 
-/**
- * Output Stream for Territories.
- */
+//Output Stream
 ostream& operator << (ostream& out, const Territory& t)
 {
-    return out << "Territory [" << t.terrName << ", " << t.terrIndex << "]";
+    out << "The Territory name is '" << t.terrName << "'\n\n";
+    cout << "Adjacent Territories of '" << t.terrName << "':";
+    for (int i = 0; i < t.listOfAdjTerr.size(); i++)
+    {
+        cout << t.listOfAdjTerr.at(i)->terrName << " -> ";
+    }
+    cout << "\nContinent " << t.contIndex << ", Territory " << t.terrIndex << endl;
+
+    return out;
 }
 
-bool Territory::operator==(const Territory &territory) const {
-    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->owner == territory.owner && this->numberOfArmies == territory.numberOfArmies;
+bool Territory::operator==(const Territory& territory) const {
+    return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->player == territory.player && this->name == territory.name && this->army == territory.army;
 }
 
-ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
-    if (territoryList.empty())
+ostream& operator<<(ostream& out, const vector<Territory*>* territoryList) {
+    if (territoryList->empty())
         return out << "No territories in list";
 
-    for (Territory* territory: territoryList){
-        out << *territory;
+    for (Territory* territory : *territoryList) {
+        return out << territory;
     }
-    return out;
 }
 
 /**
@@ -190,6 +177,7 @@ void Territory::setOwner(Player* p)
 
 /**
 * Returns the name of the owner of an adjacent Territory.
+* @param terrName Name of the adjacent territory for which you want the name of the owner
 */
 Player* Territory::getOwnerOfAdj(string terrName)
 {
@@ -227,12 +215,24 @@ bool Territory::removeTroops(int numTroops)
     return false;
 }
 
+/**
+* Check if Territory is adjacent
+* @param terrName name of the target territory we want to check is adjacent to our current territory
+*/
+bool Territory::isAdjacent(string terrName)
+{
+    for (int i = 0; i < listOfAdjTerr.size(); i++)
+    {
+        if (listOfAdjTerr.at(i)->getTerrName() == terrName)
+            return true;
+    }
+
+    return false;
+}
 
 //*********************************** CONTINENT *****************************************
 
-/**
- * Default Constructor
- */
+//Default Constructor
 Continent::Continent()
 {
     cIndex = 0;
@@ -240,12 +240,7 @@ Continent::Continent()
     armyValue = 0;
 }
 
-/**
- * Parameterized constructor
- * @param cid Continent Id
- * @param cn Continent Name
- * @param armyV Army value of the continent.
- */
+//Parameterized constructor
 Continent::Continent(int cid, string cn, int armyV)
 {
     cIndex = cid;
@@ -253,10 +248,7 @@ Continent::Continent(int cid, string cn, int armyV)
     armyValue = armyV;
 }
 
-/**
- * Copy Constructor makes a copy of Continent.
- * @param c Continent
- */
+//Copy Constructor
 Continent::Continent(const Continent& c)
 {
     cIndex = c.cIndex;
@@ -267,10 +259,7 @@ Continent::Continent(const Continent& c)
 
 }
 
-/**
- * Assignment Operator
- * @param c Continent
- */
+//Assignment Operator
 Continent& Continent:: operator = (const Continent& c)
 {
     if (&c != this)
@@ -284,21 +273,21 @@ Continent& Continent:: operator = (const Continent& c)
     return *this;
 }
 
-/**
- * Destructor
- * Destroys the list of territories and the list of adjacent continents.
- */
+//Destructor
 Continent::~Continent()
 {
     for (int i = 0; i < this->listOfTerritories.size(); i++)
     {
         delete this->listOfTerritories[i];
+        this->listOfTerritories[i] = nullptr;
     }
+    this->listOfTerritories.clear();
 
     for (int i = 0; i < this->listOfAdjCont.size(); i++)
     {
-        delete this->listOfAdjCont[i];
+        this->listOfAdjCont[i] = nullptr;
     }
+    this->listOfAdjCont.clear();
 }
 
 int Continent::getCIndex()
@@ -348,9 +337,7 @@ Territory* Continent::getTerritory(int id)
     return nullptr;
 }
 
-/**
- * Output Stream for Continents.
- */
+//Output Stream
 ostream& operator << (ostream& out, const Continent& c)
 {
     out << "The continent name is '" << c.contName << "'\n\n";
@@ -364,51 +351,33 @@ ostream& operator << (ostream& out, const Continent& c)
     return out;
 }
 
-bool Continent::operator==(const Continent &continent) const {
+bool Continent::operator==(const Continent& continent) const {
     return this->listOfTerritories == continent.listOfTerritories && this->contName == continent.contName && this->armyValue == continent.armyValue && this->cIndex == continent.cIndex && this->listOfAdjCont == continent.listOfAdjCont;
 }
 
-bool Continent::isOwnedByPlayer(Player* player) {
-    for (Territory* territory: this->listOfTerritories){
-        if (territory->getOwner() != player)
-            return false;
-    }
-    return true;
-}
 
 //*********************************** MAP *****************************************
 
-/**
- * Default Constructor
- */
+//Default Constructor
 Map::Map()
 {
     mapName = "";
 }
 
-/**
- * Parameterized constructor
- * @param mn Map name
- */
+//Parameterized constructor
 Map::Map(string mn)
 {
     mapName = mn;
 }
 
-/**
- * Copy Constructor makes a copy of Map.
- * @param m Map
- */
+//Copy Constructor
 Map::Map(const Map& m)
 {
     mapName = m.mapName;
     listOfContinents = m.listOfContinents;
 }
 
-/**
- * Assignment Operator
- * @param m Map
- */
+//Assignment Operator
 Map& Map:: operator = (const Map& m)
 {
     if (&m != this)
@@ -420,21 +389,21 @@ Map& Map:: operator = (const Map& m)
     return *this;
 }
 
-/**
- * Destructor
- * Destroys the list of continents and the list of territories.
- */
+//Destructor
 Map::~Map()
 {
     for (int i = 0; i < this->listOfContinents.size(); i++)
     {
         delete this->listOfContinents[i];
+        this->listOfContinents[i] = nullptr;
     }
+    this->listOfContinents.clear();
 
     for (int i = 0; i < this->listOfTerritories.size(); i++)
     {
-        delete this->listOfTerritories[i];
+        this->listOfTerritories[i] = nullptr;
     }
+    this->listOfTerritories.clear();
 }
 
 string Map::getMapName()
@@ -477,12 +446,7 @@ Territory* Map::getTerritory(int tid)
     return listOfTerritories[tid - 1];
 }
 
-/**
- * Traverses the map to check if it is a graph and the the continents are a subgraph.
- * @param current Territory currently on.
- * @param visitedT Whether a Territory has been visited or not
- * @param visitedC Whether a Continent has been Visited or not
- */
+
 void Map::traverse(Territory* current, bool visitedT[], bool visitedC[])
 {
     if (!visitedT[current->getTerrIndex() - 1])
@@ -501,12 +465,7 @@ void Map::traverse(Territory* current, bool visitedT[], bool visitedC[])
     }
 }
 
-/**
- * Checks if each country belongs to one and only one continent.
- * @param current Continent currently on.
- * @param visCont Whether a Continent has been visited or not
- * @param terrCount Number of times a territory appears.
- */
+
 void Map::checkOnly1(Continent* current, bool visCont[], int terrCount[])
 {
     if (!visCont[current->getCIndex() - 1])
@@ -519,20 +478,15 @@ void Map::checkOnly1(Continent* current, bool visCont[], int terrCount[])
                 terrCount[i] += 1;
         }
 
-        for (int j=current->getCIndex(); j < listOfContinents.size(); j++)
+        for (int j = current->getCIndex(); j < listOfContinents.size(); j++)
         {
             checkOnly1(listOfContinents.at(j), visCont, terrCount);
         }
     }
 }
 
-/**
- * Validates
- * 1) the map is a connected graph,
- * 2) continents are connected subgraphs and
- * 3) each country belongs to one and only one continent.
- * @return if map is valid.
- */
+//Validate 1) the map is a connected graph, 2) continents are connected subgraphs and 3) each country belongs to one and only one continent.
+
 bool Map::validate()
 {
     bool tIsConnected = true;
@@ -564,7 +518,7 @@ bool Map::validate()
     }
 
     for (int k = 0; k < listOfTerritories.size(); k++)\
-	{
+    {
         if (terrCount[k] != 1)
         {
             only1Cont = false;
@@ -619,9 +573,7 @@ bool Map::validate()
 
 }
 
-/**
- * Output Stream for Maps.
- */
+//Output Stream
 ostream& operator << (ostream& out, const Map& m)
 {
     out << "The map name is '" << m.mapName << "'\n\n";
@@ -644,72 +596,43 @@ ostream& operator << (ostream& out, const Map& m)
     return out;
 }
 
-bool Map::operator==(const Map &map) const {
+bool Map::operator==(const Map& map) const {
     return this->listOfContinents == map.listOfContinents && this->listOfTerritories == map.listOfTerritories && this->mapName == map.mapName;
 }
 
-vector<Territory*> Map::getTerritoriesByPlayer(Player *player) {
-    vector<Territory*> territoriesByPlayer;
-    for (Territory* territory: this->listOfTerritories){
-        if (territory->getOwner() == player)
-            territoriesByPlayer.push_back(territory);
-    }
-    return territoriesByPlayer;
-}
-
-
 //*********************************** MAP LOADER *****************************************
 
-/**
- * Default Constructor
- */
+//Default Constructor
 MapLoader::MapLoader()
 {
     this->mapFileName = nullptr;
 }
 
-/**
- * Copy Constructor makes a copy of Map Loader.
- * @param map Map
- */
+//Copy Constructor
 MapLoader::MapLoader(MapLoader& map)
 {
     mapFileName = map.mapFileName;
 }
 
-/**
- * Assignment Operator
- * @param map Map
- */
+//Assignment Operator
 MapLoader& MapLoader:: operator = (const MapLoader& map)
 {
     return *this;
 }
 
-/**
- * Destructor
- * Destroys the maps file name.
- */
+//Destructor
 MapLoader::~MapLoader()
 {
-    delete this->mapFileName;
+    delete mapFileName;
 }
 
-/**
- * Parameterized constructor
- * @param mapFileName Name of the file that will be read to construct the map.
- */
+//Parameterized constructor
 MapLoader::MapLoader(string mapFileName)
 {
     this->mapFileName = new string(mapFileName);
 }
 
-/**
- * Reads map file to construct the map to be played with.
- * @param map Map Object.
- * @param filename Name of map file that will be played with.
- * @return Map Object.
- */
+//Method to read map file
 Map* MapLoader::GetMap(Map* map, string filename)
 {
     return ReadMap(map, filename);
@@ -830,14 +753,9 @@ Map* MapLoader::ReadMap(Map* map, string mapFileName)
         return nullptr;
         cerr << "An Error has occured! \n";
     }
-
-    return nullptr;
 }
 
-/**
- * Split string read from the map file.
- * Code taken from ideone.com/R9RJCf
- */
+// Code taken from ideone.com/R9RJCf
 vector<string> MapLoader::SplitString(string s)
 {
     istringstream iss(s);
@@ -850,9 +768,7 @@ vector<string> MapLoader::SplitString(string s)
     return v;
 }
 
-/**
- * Output Stream for Map Loader.
- */
+//Output Stream
 ostream& operator << (std::ostream& o, const MapLoader& ml)
 {
     return o << "This is a domination map: " << ml.mapFileName;

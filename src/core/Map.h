@@ -2,11 +2,12 @@
 #include <string>
 #include <vector>
 #include <fstream>
+
 #include "Player.h"
 
-using namespace std;
-
 class Player;
+
+using namespace std;
 
 class Territory
 {
@@ -31,18 +32,19 @@ public:
     void printAdjTerritory();
     Territory* getAdjTerritoryByName(string name);
     friend ostream& operator << (ostream& out, const Territory& c);
-    friend ostream& operator << (ostream& out, const std::vector<Territory*>);
+    friend ostream& operator << (ostream& out, const std::vector<Territory*>*);
     bool operator== (const Territory&) const;
-
 
     Player* getOwner(); // get owner of this Territory
     void setOwner(Player* p); //set owner of a Territory
     Player* getOwnerOfAdj(string terrName); //get the owner of an adjacent Territory
     bool addTroops(int numTroops); //add armies to a Territory
     bool removeTroops(int numTroops); //remove armies from a Territory
+    bool isAdjacent(string terrName); //check if Territory is adjacent
 
     vector<Territory*> listOfAdjTerr;
-    
+
+    Player* player;
 
 private:
     int terrIndex;
@@ -50,7 +52,10 @@ private:
     int contIndex;
     int numberOfArmies; //number of armies in a given Territory
 
-    Player* owner; //player that owns a given Territory
+    Player* owner;
+
+    string* name;
+    int* army;
 };
 
 
@@ -75,7 +80,6 @@ public:
     Territory* getTerritory(int tid);
     friend ostream& operator << (ostream& out, const Continent& c);
     bool operator== (const Continent&) const;
-    bool isOwnedByPlayer(Player*);
 
     vector<Continent*> listOfAdjCont;
     vector<Territory*> listOfTerritories;
@@ -110,7 +114,6 @@ public:
     bool validate();
     friend ostream& operator << (ostream& out, const Map& m);
     bool operator== (const Map&) const;
-    vector<Territory*> getTerritoriesByPlayer(Player*);
 
     vector<Continent*> listOfContinents;
     vector<Territory*> listOfTerritories;
