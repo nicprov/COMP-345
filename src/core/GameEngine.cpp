@@ -2,6 +2,7 @@
 #include <random>
 #include "CommandProcessing.h"
 #include "GameEngine.h"
+#include "Orders.h"
 
 const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gameCommandMapping = boost::assign::map_list_of("loadmap", GameEngine::GameCommand::load_map)
         ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
@@ -335,7 +336,6 @@ bool GameEngine::containsOrders(std::map<Player*, bool> map) {
     }
     return false;
 }
-
 void GameEngine::loadMap() {
     std::string name = "";
     MapLoader* mapLoader = new MapLoader();
@@ -429,5 +429,3 @@ void GameEngine::listAvailableCommands(GameEngine &gameEngine){
     }
     cout << "Choice: ";
 }
-//
-

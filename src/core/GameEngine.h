@@ -55,6 +55,8 @@ public:
     void registerPlayer(Player*);
 
     void startupPhase(GameEngine& gameEngine);
+
+
     void mainGameLoop();
     void reinforcementPhase();
     void issueOrdersPhase();

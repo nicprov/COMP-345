@@ -368,6 +368,14 @@ bool Continent::operator==(const Continent &continent) const {
     return this->listOfTerritories == continent.listOfTerritories && this->contName == continent.contName && this->armyValue == continent.armyValue && this->cIndex == continent.cIndex && this->listOfAdjCont == continent.listOfAdjCont;
 }
 
+bool Continent::isOwnedByPlayer(Player* player) {
+    for (Territory* territory: this->listOfTerritories){
+        if (territory->getOwner() != player)
+            return false;
+    }
+    return true;
+}
+
 //*********************************** MAP *****************************************
 
 /**

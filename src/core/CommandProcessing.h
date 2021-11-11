@@ -5,8 +5,6 @@
 #include <vector>
 #include "GameEngine.h"
 
-class GameEngine;
-
 class FileLineReader {
 public:
     ~FileLineReader();
