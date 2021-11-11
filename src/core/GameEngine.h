@@ -1,16 +1,12 @@
-#ifndef COMP354_GAMEENGINE_H
-#define COMP354_GAMEENGINE_H
-#include <vector>
-#include <map>
+#pragma once
+
 #include <boost/assign/list_of.hpp>
 #include <boost/unordered_map.hpp>
 #include <vector>
+#include <map>
 #include "Player.h"
 #include "Map.h"
 #include "Cards.h"
-#include "CommandProcessing.h"
-
-class Command;
 
 class GameEngine{
 public:
@@ -30,12 +26,12 @@ public:
         add_player=3,
         game_start=4,
         issue_order=5,
-        end_issue_orders=6,
+        end_issue_order=6,
         execute_order=7,
         end_execute_order=8,
         win_game=9,
         replay=10,
-        end=11
+        quit=11
     };
     GameEngine();
     // Copy constructor
@@ -63,6 +59,7 @@ public:
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
+    void listAvailableCommands(GameEngine& gameEngine);
 
 private:
     GameState *current_state;
@@ -70,8 +67,4 @@ private:
     Map* map;
     Deck* deck;
     bool containsOrders(std::map<Player*, bool>);
-
 };
-
-void listAvailableCommands(GameEngine& gameEngine);
-#endif COMP354_GAMEENGINE_H

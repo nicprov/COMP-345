@@ -1,12 +1,11 @@
 #include <iostream>
 #include <random>
+#include "CommandProcessing.h"
 #include "GameEngine.h"
-//#include "Orders.h"
-//#include "Map.h"
 
 const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gameCommandMapping = boost::assign::map_list_of("loadmap", GameEngine::GameCommand::load_map)
         ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
-        ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_orders) ("executeorder", GameEngine::GameCommand::execute_order)
+        ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
         ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit);
 
 /**
@@ -72,7 +71,7 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
             break;
         case issue_orders:
             availableCommands.push_back(GameCommand::issue_order);
-            availableCommands.push_back(GameCommand::end_issue_orders);
+            availableCommands.push_back(GameCommand::end_issue_order);
             break;
         case execute_orders:
             availableCommands.push_back(GameCommand::execute_order);
@@ -80,8 +79,8 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
             availableCommands.push_back(GameCommand::win_game);
             break;
         case win:
-            availableCommands.push_back(GameCommand::play);
-            availableCommands.push_back(GameCommand::end);
+            availableCommands.push_back(GameCommand::replay);
+            availableCommands.push_back(GameCommand::quit);
             break;
     }
 }
@@ -130,7 +129,7 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = issue_orders;
                     break;
-                case end_issue_orders:
+                case end_issue_order:
                     std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
                     break;
@@ -150,7 +149,7 @@ void GameEngine::transition(GameCommand &gameCommand)
                     std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
                     break;
-                case end:
+                case quit:
                     std::cout << std::endl << "\x1B[32m" << "Exiting game" << "\033[0m" << std::endl << std::endl;
                     exit(0);
             }
@@ -195,7 +194,7 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
         case GameEngine::GameCommand::issue_order:
             stream << "Issue order";
             break;
-        case GameEngine::GameCommand::end_issue_orders:
+        case GameEngine::GameCommand::end_issue_order:
             stream << "End issue order";
             break;
         case GameEngine::GameCommand::execute_order:
@@ -207,10 +206,10 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
         case GameEngine::GameCommand::win_game:
             stream << "Win game";
             break;
-        case GameEngine::GameCommand::play:
+        case GameEngine::GameCommand::replay:
             stream << "Play game";
             break;
-        case GameEngine::GameCommand::end:
+        case GameEngine::GameCommand::quit:
             stream << "End";
             break;
     }
@@ -420,5 +419,15 @@ void GameEngine::gameStart() {
     //Randomize player order
     std::shuffle(players->begin(), players->end(), default_random_engine(0));
 }
-    //
+
+void GameEngine::listAvailableCommands(GameEngine &gameEngine){
+    cout << "Available commands:" << endl;
+    vector<GameEngine::GameCommand> commands;
+    gameEngine.getAvailableCommands(commands);
+    for (GameEngine::GameCommand command: commands){
+        cout << static_cast<int>(command) << ". " << command << endl;
+    }
+    cout << "Choice: ";
+}
+//
 
