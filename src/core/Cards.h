@@ -6,17 +6,18 @@
 
 class Hand;
 class Deck;
+class OrderList;
 
 class Card
 {
 public:
     enum CardType
     {
-        bomb=1,
-        reinforcement=2,
-        blockade=3,
-        airlift=4,
-        diplomacy=5
+        bomb = 1,
+        reinforcement = 2,
+        blockade = 3,
+        airlift = 4,
+        diplomacy = 5
     };
     Card(CardType);
     // Copy constructor
@@ -29,9 +30,9 @@ public:
     bool operator== (const Card&) const;
     void play(OrderList*, Hand*, Deck*);
     CardType& getType();
-    static constexpr std::initializer_list<CardType> ALL_Card_Type = {bomb, reinforcement, blockade, airlift, diplomacy};
+    static constexpr std::initializer_list<CardType> ALL_Card_Type = { bomb, reinforcement, blockade, airlift, diplomacy };
 private:
-    CardType *type;
+    CardType* type;
 };
 
 class Hand
@@ -50,10 +51,10 @@ public:
     void removeCard(Card*);
     std::vector<Card*> getCards();
 private:
-    std::vector<Card*> *cards;
+    std::vector<Card*>* cards;
 };
 
-class Deck{
+class Deck {
 public:
     ~Deck();
     Deck();
@@ -69,6 +70,6 @@ public:
     std::vector<Card*> getCards();
     static constexpr int NUM_CARDS_PER_TYPE = 10;
 private:
-    std::vector<Card*> *cards;
+    std::vector<Card*>* cards;
 };
 #endif //TEST1_CARDS_H
