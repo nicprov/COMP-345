@@ -15,6 +15,8 @@ const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gam
 GameEngine::GameEngine()
 {
     this->current_state = new GameState(GameState::start);
+    this->map = new Map();
+
 }
 
 /**
@@ -24,6 +26,9 @@ GameEngine::GameEngine()
 GameEngine::GameEngine(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
+    this->players = new vector<Player*> (*gameEngine.players);
+    this->map = new Map(*gameEngine.map);
+    this->deck = new Deck(*gameEngine.deck);
 }
 
 /**
@@ -44,6 +49,30 @@ GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 GameEngine::GameState& GameEngine::getGameState()
 {
     return *current_state;
+}
+
+/**
+ * Get list of current players in the game
+ * @return list of players
+ */
+vector<Player *> &GameEngine::getPlayers() {
+    return *players;
+}
+
+/**
+ * Get current map in the game
+ * @return current map
+ */
+Map &GameEngine::getMap() {
+    return *map;
+}
+
+/**
+ * Get current deck in the game
+ * @return current deck
+ */
+Deck &GameEngine::getDeck() {
+    return *deck;
 }
 
 /**
@@ -372,7 +401,7 @@ void GameEngine::validateMap() {
 }
 
 void GameEngine::addPlayers() {
-    int nbPlayers;
+    int nbPlayers = 0;
 
     while ((players->size() + nbPlayers) < 2 || (players->size() + nbPlayers) > 6) {
         cout << "Enter the number of players for this game (minimum 2, maximum 6): " << endl;
@@ -429,3 +458,9 @@ void GameEngine::listAvailableCommands(GameEngine &gameEngine){
     }
     cout << "Choice: ";
 }
+
+
+
+
+
+
