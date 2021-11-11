@@ -97,22 +97,22 @@ bool Player::operator==(const Player &player) const {
  * Create and display territories to defend
  * @return content of territory
  */
-std::vector<Territory *> Player::toDefend() {
+std::vector<Territory *>* Player::toDefend() {
     auto* territoriesToDefend = new std::vector<Territory*>;
     Territory* territory = new Territory(1,"Alabama",2);
     territoriesToDefend->push_back(territory);
-    return *territoriesToDefend;
+    return territoriesToDefend;
 }
 
 /**
  * Create and display territories to attack
  * @return content of territory
  */
-std::vector<Territory *> Player::toAttack() {
+std::vector<Territory *>* Player::toAttack() {
     auto* territoriesToAttack = new std::vector<Territory*>;
     Territory* territory = new Territory(2,"Alabama",2);
     territoriesToAttack->push_back(territory);
-    return *territoriesToAttack;
+    return territoriesToAttack;
 }
 
 /**
