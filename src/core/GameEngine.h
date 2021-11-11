@@ -8,7 +8,7 @@
 #include "Map.h"
 #include "Cards.h"
 
-class GameEngine{
+class GameEngine : public Subject{
 public:
     enum GameState{
         start=1,
@@ -62,6 +62,7 @@ public:
     void issueOrdersPhase();
     void executeOrdersPhase();
     void listAvailableCommands(GameEngine& gameEngine);
+    std::string stringToLog();
 
 private:
     GameState *current_state;

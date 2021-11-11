@@ -7,6 +7,7 @@
 #include "CommandProcessingDriver.cpp"
 
 int main(int argc, char *argv[]){
+    remove("gamelog.txt");
     GameEngine gameEngine;
     CommandProcessor* commandProcessor;
     switch (argc) {

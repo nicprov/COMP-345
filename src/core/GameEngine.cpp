@@ -101,6 +101,7 @@ void GameEngine::transition(GameCommand &gameCommand)
             // Perform move
             switch (gameCommand){
                 case load_map:
+                    Notify(this);
                     this->loadMap();
                     std::cout << std::endl << "\x1B[32m" << "Map loaded" << "\033[0m" << std::endl << std::endl;
                     *current_state = map_loaded;
@@ -110,6 +111,7 @@ void GameEngine::transition(GameCommand &gameCommand)
                         this->validateMap();
                         std::cout << std::endl << "\x1B[32m" << "Map validated" << "\033[0m" << std::endl << std::endl;
                         *current_state = map_validated;
+                        Notify(this);
                     }
                     else {
                         map->~Map();
@@ -120,35 +122,43 @@ void GameEngine::transition(GameCommand &gameCommand)
                     this->addPlayers();
                     std::cout << std::endl << "\x1B[32m" << "Players added" << "\033[0m" << std::endl << std::endl;
                     *current_state = players_added;
+                    Notify(this);
                     break;
                 case game_start:
                     this->gameStart();
                     std::cout << std::endl << "\x1B[32m" << "Assign reinforcement" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
+                    Notify(this);
                     break;
                 case issue_order:
                     std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = issue_orders;
+                    Notify(this);
                     break;
                 case end_issue_order:
                     std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
+                    Notify(this);
                     break;
                 case execute_order:
                     std::cout << std::endl << "\x1B[32m" << "Execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
+                    Notify(this);
                     break;
                 case end_execute_order:
                     std::cout << std::endl << "\x1B[32m" << "End execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
+                    Notify(this);
                     break;
                 case win_game:
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
+                    Notify(this);
                     break;
                 case replay:
                     std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
+                    Notify(this);
                     break;
                 case quit:
                     std::cout << std::endl << "\x1B[32m" << "Exiting game" << "\033[0m" << std::endl << std::endl;
@@ -428,4 +438,9 @@ void GameEngine::listAvailableCommands(GameEngine &gameEngine){
         cout << static_cast<int>(command) << ". " << command << endl;
     }
     cout << "Choice: ";
+}
+
+std::string GameEngine::stringToLog() {
+    std::string currentState = std::to_string(this->getGameState());
+    return "Game Engine with State: " + currentState;
 }

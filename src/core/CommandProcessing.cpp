@@ -87,6 +87,7 @@ std::ostream &operator<<(std::ostream &stream, const Command &_command)
 void Command::saveEffect(const std::string& effect)
 {
     this->effect = effect;
+    Notify(this);
 }
 
 Command& Command::getCommand()
@@ -105,6 +106,10 @@ std::string Command::getParam() {
 
 std::string Command::getEffect() {
     return this->effect;
+}
+
+std::string Command::stringToLog() {
+    return "Command Effect: " + this->getEffect();
 }
 
 // CommandProcessor class
@@ -153,6 +158,7 @@ void CommandProcessor::saveCommand(Command* command)
 {
     if (command != nullptr)
         this->commands->push_back(command);
+        Notify(this);
 }
 
 Command* CommandProcessor::readCommand()
@@ -179,6 +185,10 @@ Command* CommandProcessor::readCommand()
         }
     }
     return nullptr;
+}
+
+std::string CommandProcessor::stringToLog() {
+    return "Command: ";
 }
 
 std::ostream &operator<<(std::ostream &stream, const CommandProcessor &commandProcessor)

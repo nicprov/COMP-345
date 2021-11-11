@@ -4,12 +4,13 @@
 //this class uses streams and vectors
 #include <iostream>
 #include <vector>
+#include "LoggingObserver.h"
 
 // Order Class:
 // used to define orders given by players during their turn,
 // each order has an ordertype which is on of the 6 valid orders in warzone
 
-class Order{
+class Order: public Subject{
 public:
     //valid Order Types
     enum OrderType{
@@ -31,6 +32,7 @@ public:
     virtual void execute() = 0; //execute order method, virtual to avoid ambiguity with subclass methods
     virtual bool validate() = 0; //validate order method, irtual to avoid ambiguity with subclass methods
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = {deploy, advance, bomb, blockade, airlift, negotiate}; //array of const OrderType with 1 of each type
+    virtual std::string stringToLog() =0;
 protected:
     OrderType* orderType; //pointer to ordertype of order
 };
@@ -45,6 +47,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Deploy&); // Stream output operator
     void execute(); //execute method for deploy orders
     bool validate(); //validate method for deploy orders
+    std::string stringToLog();
 };
 
 //subclass of order for advance Orders
@@ -57,6 +60,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Advance&); // Stream output operator
     void execute(); //execute method for advance orders
     bool validate(); //validate method for advance orders
+    std::string stringToLog();
 };
 
 //subclass of order for bomb Orders
@@ -69,6 +73,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Bomb&); // Stream output operator
     void execute(); //execute method for bomb orders
     bool validate(); //validate method for bomb methods
+    std::string stringToLog();
 };
 
 //subclass of order for blockade Orders
@@ -81,6 +86,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
     void execute(); //execute method for blockade order
     bool validate(); //execute method for validate order
+    std::string stringToLog();
 };
 
 //subclass of order for airlift Orders
@@ -93,6 +99,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Airlift&); // Stream output operator
     void execute(); //execute method for airlift order
     bool validate(); //valid method for airlift order
+    std::string stringToLog();
 };
 
 //subclass of order for negotiate Orders
@@ -105,11 +112,12 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Negotiate&); // Stream output operator
     void execute(); //execute method for negotiate order
     bool validate(); //validate method for negotiate order
+    std::string stringToLog();
 };
 
 //Order List class:
 // used to create a list of all user Orders and allow them to be moved around or deleted
-class OrderList{
+class OrderList : public Subject{
 public:
     ~OrderList(); //destructor
     OrderList();//default constructor
@@ -122,6 +130,8 @@ public:
     void move(Order*, int newIndex, int oldIndex); //move method to move a specific order from one index to another
     std::vector<Order*> getOrders(); //accessor method for order list
     int getSize();
+    std::string stringToLog();
+
 private:
     std::vector<Order*>* orders; //pointer to list of order pointers
 };

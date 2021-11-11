@@ -141,6 +141,7 @@ std::ostream &operator<<(std::ostream &stream, const Deploy &deploy)
 void Deploy::execute()
 {
     std::cout << "Executing Deploy";
+    Notify(this);
 }
 /**
  * Validate method for Deploy
@@ -149,6 +150,9 @@ void Deploy::execute()
 bool Deploy::validate()
 {
     return this->getOrderType() == OrderType::deploy;
+}
+std::string Deploy::stringToLog() {
+    return "Order Executed: Deploy";
 }
 
 /**
@@ -195,11 +199,16 @@ std::ostream &operator<<(std::ostream &stream, const Blockade &blockade)
  */
 void Blockade::execute() {
     std::cout << "Executing Blockade";
+    Notify(this);
 }
 
 bool Blockade::validate() {
     return this->getOrderType() == OrderType::blockade;
 }
+std::string Blockade::stringToLog() {
+    return "Order Executed: Blockade";
+}
+
 
 /**
  * Advance destructor (overwrites Order destructor)
@@ -246,6 +255,7 @@ std::ostream &operator<<(std::ostream &stream, const Advance &advance)
 void Advance::execute()
 {
     std::cout << "Executing Advance";
+    Notify(this);
 }
 
 /**
@@ -256,6 +266,11 @@ bool Advance::validate()
 {
     return this->getOrderType() == OrderType::advance;
 }
+
+std::string Advance::stringToLog() {
+    return "Order Executed: Advance";
+}
+
 
 /**
  * Bomb destructor (overwrites Order destructor)
@@ -300,13 +315,16 @@ std::ostream &operator<<(std::ostream &stream, const Bomb &bomb)
  */
 void Bomb::execute() {
     std::cout << "Executing Validate";
+    Notify(this);
 }
 
 
 bool Bomb::validate() {
     return this->getOrderType() == OrderType::bomb;
 }
-
+std::string Bomb::stringToLog() {
+    return "Order Executed: Bomb";
+}
 /**
  * Airlift destructor (overwrites Order destructor)
  */
@@ -351,10 +369,15 @@ std::ostream &operator<<(std::ostream &stream, const Airlift &airlift)
  */
 void Airlift::execute() {
     std::cout << "Executing Airlift";
+    Notify(this);
 }
 
 bool Airlift::validate() {
     return this->getOrderType() == OrderType::airlift;
+}
+
+std::string Airlift::stringToLog() {
+    return "Order Executed: Airlift";
 }
 
 /**
@@ -402,6 +425,7 @@ std::ostream &operator<<(std::ostream &stream, const Negotiate &negotiate)
 void Negotiate::execute()
 {
     std::cout << "Executing Negotiate";
+    Notify(this);
 }
 
 /**
@@ -411,6 +435,11 @@ void Negotiate::execute()
 bool Negotiate::validate()
 {
     return this->getOrderType() == OrderType::negotiate;
+}
+
+std::string Negotiate::stringToLog() {
+    std::cout << "Order Executed: Negotiate" <<std::endl;
+    return "Order Executed: Negotiate";
 }
 
 // OrderList methods
@@ -478,6 +507,7 @@ std::ostream &operator<<(std::ostream &stream, const OrderList &orderList)
 void OrderList::add(Order *order)
 {
     this->orders->push_back(order);
+    Notify(this);
 }
 
 /**
@@ -550,3 +580,9 @@ bool OrderList::operator==(const OrderList &orderList) const {
 int OrderList::getSize() {
     return this->orders->size();
 }
+
+std::string OrderList::stringToLog() {
+    std::string currentOrder = std::to_string(orders->at(this->orders->size()-1)->getOrderType());
+    return "Order Issued: " + currentOrder;
+}
+
