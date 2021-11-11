@@ -132,3 +132,18 @@ OrderList &Player::getOrderList()
 {
     return *this->orderList;
 }
+
+bool Player::hasNegotiationWith(Player* enemy)
+{
+    for (int i = 0; i < orderList->getOrders().size(); i++)
+    {
+        if (orderList->getOrders().at(i)->getOrderType() == 6)
+        {
+            if (dynamic_cast<Negotiate*>(orderList->getOrders().at(i))->getEnemy() == enemy)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
