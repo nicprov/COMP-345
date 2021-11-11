@@ -13,8 +13,6 @@ TEST_CASE("Game engine constructor initializes")
 TEST_CASE("Game engine copy constructor initializes")
 {
     auto* gameEngine = new GameEngine();
-    GameEngine::GameCommand command = GameEngine::GameCommand::load_map;
-    gameEngine->transition(command);
     auto* gameEngine2 = new GameEngine(*gameEngine);
     REQUIRE(*gameEngine == *gameEngine2);
 }
@@ -22,8 +20,6 @@ TEST_CASE("Game engine copy constructor initializes")
 TEST_CASE("Game engine assignment operator initializes")
 {
     auto* gameEngine = new GameEngine();
-    GameEngine::GameCommand command = GameEngine::GameCommand::load_map;
-    gameEngine->transition(command);
     auto* gameEngine2 = new GameEngine(*gameEngine);
     REQUIRE(*gameEngine == *gameEngine2);
 }
@@ -41,13 +37,5 @@ TEST_CASE("Game engine get available commands")
     gameEngine->getAvailableCommands(commands);
     REQUIRE(commands.size() == 1);
     REQUIRE(std::find(commands.begin(), commands.end(), GameEngine::GameCommand::load_map) != commands.end());
-}
-
-TEST_CASE("Game engine transition")
-{
-    auto* gameEngine = new GameEngine();
-    GameEngine::GameCommand command = GameEngine::GameCommand::load_map;
-    gameEngine->transition(command);
-    REQUIRE(gameEngine->getGameState() == GameEngine::GameState::map_loaded);
 }
 

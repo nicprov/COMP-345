@@ -6,15 +6,15 @@
 #include "Cards.h"
 #include "Map.h"
 
+class Order;
+class OrderList;
+class Hand;
 class Territory;
-
-#include "Map.h"
+class Map;
 
 class Player
 {
 public:
- //   Player(const Hand &hand, const OrderList &orderlist, const string &name, const Map &territoriesList);
-
     ~Player();
     Player(const std::string&);
     Player(const Hand&, const OrderList&, const std::string&, const Map&);
@@ -25,17 +25,17 @@ public:
     // Stream output operator
     friend std::ostream& operator<< (std::ostream&, const Player&);
     bool operator== (const Player&) const;
-    std::vector<Territory*> toDefend();
-    std::vector<Territory*> toAttack();
+    std::vector<Territory*>* toDefend();
+    std::vector<Territory*>* toAttack();
     void issueOrder(Order*);
     std::string& getName();
     OrderList& getOrderList();
+    OrderList* getOrders();
     Hand* hand;
     OrderList* orderList;
-    //std::vector<Territory*> territoryList;
- //   Territory* territoryList;
     Map* territoriesList;
     int armyPool;
+    bool hasNegotiationWith(Player* enemy);
 private:
     std::string* name;
 };

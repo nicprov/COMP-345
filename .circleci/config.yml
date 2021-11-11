@@ -14,6 +14,7 @@ workflows:
                 - dev-juhi
                 - dev-nick
                 - dev-rosie
+                - clean_test
 jobs:
   build-and-test:
     docker:
