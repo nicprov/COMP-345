@@ -150,13 +150,14 @@ bool Territory::operator==(const Territory& territory) const {
     return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->owner == territory.owner && this->name == territory.name && this->army == territory.army;
 }
 
-ostream& operator<<(ostream& out, const vector<Territory*>* territoryList) {
+ostream& operator<<(ostream& stream, const vector<Territory*>* territoryList) {
     if (territoryList->empty())
-        return out << "No territories in list";
+        stream << "No territories in list";
 
     for (Territory* territory : *territoryList) {
-        return out << territory;
+        stream << territory;
     }
+    return stream;
 }
 
 /**
@@ -684,7 +685,6 @@ Map* MapLoader::ReadMap(Map* map, string mapFileName)
                     cout << endl;
                     hasContinent = true;
                 }
-
                 if (line.find("[countries]") == 0 && hasContinent)
                 {
                     getline(inStream, line);
@@ -704,54 +704,53 @@ Map* MapLoader::ReadMap(Map* map, string mapFileName)
                     }
 
                     hasTerritory = true;
-                }
 
-                if (line.find("[borders]") == 0 && hasContinent && hasTerritory)
-                {
-                    getline(inStream, line);
-                    while (!line.empty())
+                    if (line.find("[borders]") == 0 && hasContinent && hasTerritory)
                     {
-                        if (line == "")
-                            break;
-
-                        vector<string> adjTerritories = SplitString(line);
-                        Territory* t1 = map->getTerritory(stoi(adjTerritories[0]));
-                        cout << "\nNew Border: " << adjTerritories[0];
-                        for (int i = 1; i < adjTerritories.size(); i++)
+                        getline(inStream, line);
+                        while (!line.empty())
                         {
-                            Territory* t2 = map->getTerritory(stoi(adjTerritories[i]));
-                            map->addAdjTerritory(t1, t2);
+                            if (line == "")
+                                break;
 
-                            cout << " " << adjTerritories[i];
+                            vector<string> adjTerritories = SplitString(line);
+                            Territory* t1 = map->getTerritory(stoi(adjTerritories[0]));
+                            cout << "\nNew Border: " << adjTerritories[0];
+                            for (int i = 1; i < adjTerritories.size(); i++)
+                            {
+                                Territory* t2 = map->getTerritory(stoi(adjTerritories[i]));
+                                map->addAdjTerritory(t1, t2);
+
+                                cout << " " << adjTerritories[i];
+                            }
+
+
+                            getline(inStream, line);
                         }
 
-
-                        getline(inStream, line);
+                        hasAdj = true;
                     }
-
-                    hasAdj = true;
+                }
+                if (hasContinent && hasTerritory && hasAdj)
+                {
+                    cout << "\n\nThe Map is valid. \n";
+                    inStream.close();
+                    return map;
+                }
+                else
+                {
+                    cout << "\n\nThe Map is invalid \n";
+                    inStream.close();
+                    return nullptr;
                 }
             }
-
-            if (hasContinent && hasTerritory && hasAdj)
-            {
-                cout << "\n\nThe Map is valid. \n";
-                inStream.close();
-                return map;
-            }
-            else
-            {
-                cout << "\n\nThe Map is invalid \n";
-                inStream.close();
-                return nullptr;
-            }
+            return nullptr;
         }
     }
-
     catch (const exception& e)
     {
-        return nullptr;
         cerr << "An Error has occured! \n";
+        return nullptr;
     }
 }
 
