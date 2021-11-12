@@ -301,13 +301,16 @@ void GameEngine::reinforcementPhase()
             if (continent->isOwnedByPlayer(player)) {           //if player owns all territories of continent
                 int continentBonusValue = continent->getArmyValue();
                 player->armyPool += continentBonusValue;
+                cout << player->getName() << "gets additional " << continentBonusValue << " armies as continent bonus." << endl;
             } else {                                            // player does not own all territories of continent
                 int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
                 if(size_TerritoriesByPlayer < 3) {    //size of territories less than 3
                     player->armyPool += 3;              //default 3 armies
+                    cout << player->getName() << "gets default 3 armies." << endl;
                 } else {
                     int armiesToGive = size_TerritoriesByPlayer / 3;
                     player->armyPool += armiesToGive;
+                    cout << player->getName() << "gets default " << armiesToGive << " armies." << endl;
                 }
             }
         }
@@ -321,7 +324,7 @@ void GameEngine::issueOrdersPhase()
         Order *order = nullptr;
         while (order == nullptr) {
             for (Order::OrderType orderType: Order::ALL_ORDER_TYPES) {
-                std::cout << static_cast<int>(orderType) << ": " << orderType;
+                std::cout << static_cast<int>(orderType) << ": " << orderType << std::endl;
             }
             std::cout << "Choice: ";
             int orderType;
@@ -329,24 +332,31 @@ void GameEngine::issueOrdersPhase()
             switch (orderType) {
                 case 1:
                     order = new Deploy(Order::OrderType::deploy);
+                    player->orderList->add(order);
                     break;
                 case 2:
                     order = new Advance(Order::OrderType::advance);
+                    player->orderList->add(order);
                     break;
                 case 3:
                     order = new Bomb(Order::OrderType::bomb);
+                    player->orderList->add(order);
                     break;
                 case 4:
                     order = new Blockade(Order::OrderType::blockade);
+                    player->orderList->add(order);
                     break;
                 case 5:
                     order = new Airlift(Order::OrderType::airlift);
+                    player->orderList->add(order);
                     break;
                 case 6:
                     order = new Negotiate(Order::OrderType::negotiate);
+                    player->orderList->add(order);
                     break;
                 default:
-                    std::cout << "Invalid choice";       //**TO DO: LOOP BACK IF INVALID ORDER CHOICE
+                    std::cout << "Invalid choice";
+                    order = nullptr;//**TO DO: LOOP BACK IF INVALID ORDER CHOICE
                     break;
             }
         }
