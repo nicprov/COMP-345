@@ -756,13 +756,18 @@ void OrderList::add(Order * order)
 
 void OrderList::remove(int index)
 {
-    if (index > 0 && index < this->orders->size()) {
-        Order* order = this->orders->at(index);
-        this->orders->erase(this->orders->begin() + index);
-        delete order;
+    try {
+        if (index > 0 && index < this->orders->size()) {
+            Order* order = this->orders->at(index);
+            this->orders->erase(this->orders->begin() + index);
+            delete order;
+        }
+        else
+            throw std::runtime_error("Cannot remove order, index out of range");
     }
-    else
-        throw std::runtime_error("Cannot remove order, index out of range");
+    catch (exception& e) {
+        cout << "Cannot remove order, index out of range." << endl;
+    }
 }
 
 void OrderList::move(Order* order, int newIndex, int oldIndex)

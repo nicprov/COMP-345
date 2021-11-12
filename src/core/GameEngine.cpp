@@ -296,30 +296,35 @@ void GameEngine::startupPhase(GameEngine& gameEngine)
 
 void GameEngine::reinforcementPhase()
 {
+    cout << "*Reinforcement Phase*" << endl << endl;
+
     for(Player* player: *this->players) {
+        int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
+        if (size_TerritoriesByPlayer < 3) {    //size of territories less than 3
+            player->armyPool += 3;              //default 3 armies
+            cout << player->getName() << " gets default 3 armies." << endl;
+        }
+        else {
+            int armiesToGive = size_TerritoriesByPlayer / 3;
+            player->armyPool += armiesToGive;
+            cout << player->getName() << " gets default " << armiesToGive << " armies." << endl;
+        }
         for(Continent *continent : this->map->listOfContinents) {
             if (continent->isOwnedByPlayer(player)) {           //if player owns all territories of continent
                 int continentBonusValue = continent->getArmyValue();
                 player->armyPool += continentBonusValue;
-                cout << player->getName() << "gets additional " << continentBonusValue << " armies as continent bonus." << endl;
-            } else {                                            // player does not own all territories of continent
-                int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
-                if(size_TerritoriesByPlayer < 3) {    //size of territories less than 3
-                    player->armyPool += 3;              //default 3 armies
-                    cout << player->getName() << "gets default 3 armies." << endl;
-                } else {
-                    int armiesToGive = size_TerritoriesByPlayer / 3;
-                    player->armyPool += armiesToGive;
-                    cout << player->getName() << "gets default " << armiesToGive << " armies." << endl;
-                }
+                cout << player->getName() << " gets additional " << continentBonusValue << " armies as continent bonus for owning the entirety of " << continent->getContName() << endl;
             }
         }
+        cout << player->getName() << " can deploy a total of " << player->armyPool << " troops." << endl << endl;
     }
 }
 
 
 void GameEngine::issueOrdersPhase()
 {
+    cout << "*Issue Order Phase*" << endl << endl; 
+
     for(Player* player: *this->players) {
         Order *order = nullptr;
         while (order == nullptr) {
@@ -366,6 +371,8 @@ void GameEngine::issueOrdersPhase()
 
 void GameEngine::executeOrdersPhase()
 {
+    cout << "*Execution Phase*" << endl << endl;
+
     std::map<Player*, bool>listPlayerOrder;
     for(Player* player: *this->players) {
         listPlayerOrder[player] = true;   //orderList has content
