@@ -88,32 +88,37 @@ int main() {
     cout << endl;
     deploy->Detach(ODeploy);
 
+    cout << endl;
     advance->execute();
     cout << endl;
     advance->Detach(OAdvance);
 
-//    bomb->execute();
-//    cout << endl;
-//    bomb->Detach(OBomb);
-//
-//    blockade->execute();
-//    cout << endl;
-//    blockade->Detach(OBlockade);
-//
-//    airlift->execute();
-//    cout << endl;
-//    airlift->Detach(OAirlift);
-//
-//    negotiate->execute();
-//    cout << endl << endl;
-//    negotiate->Detach(ONegotiate);
-//
-//    // Remove order
-//    orderList.remove(1);
-//
-//    // Move order
-//    orderList.move(airlift, 1, 3);
-//
-//    //Show orderList again after changes
-//    cout << orderList;
+    cout << endl;
+    bomb->execute();
+    cout << endl;
+    bomb->Detach(OBomb);
+
+    cout << endl;
+    blockade->execute();
+    cout << endl;
+    blockade->Detach(OBlockade);
+
+    cout << endl;
+    airlift->execute();
+    cout << endl;
+    airlift->Detach(OAirlift);
+
+    cout << endl;
+    negotiate->execute();
+    cout << endl << endl;
+    negotiate->Detach(ONegotiate);
+
+    // Remove order
+    orderList.remove(1);
+
+    // Move order
+    orderList.move(airlift, 1, 3);
+
+    //Show orderList again after changes
+    cout << orderList;
 }
