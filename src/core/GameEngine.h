@@ -55,6 +55,7 @@ public:
     void mainGameLoop();
     std::string stringToLog();
 
+    static const boost::unordered_map<std::string, GameState> gameStateMapping;
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 
 private:

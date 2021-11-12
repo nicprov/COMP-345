@@ -9,6 +9,10 @@ const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gam
         ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
         ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit);
 
+const boost::unordered_map<std::string, GameEngine::GameState> GameEngine::gameStateMapping = boost::assign::map_list_of("start", GameEngine::GameState::start)
+        ("map loaded", GameEngine::GameState::map_loaded) ("map validated", GameEngine::GameState::map_validated) ("players added", GameEngine::GameState::players_added) ("assign reinforcement", GameEngine::GameState::assign_reinforcement)
+        ("issue orders", GameEngine::GameState::issue_orders) ("execute orders", GameEngine::GameState::execute_orders) ("start", GameEngine::GameState::start) ("win", GameEngine::GameState::win);
+
 /**
  * Game Engine constructor
  */
@@ -138,14 +142,14 @@ void GameEngine::transition(GameCommand &gameCommand, const std::string& param)
                     } catch (std::runtime_error&) {
                         std::cout << endl << "\x1B[31m" << "Could not load map. Try again." << "\033[0m" << endl << endl;
                     }
-                    Notify(this);
+                    notify(this);
                     break;
                 case validate_map:
                     if (map != nullptr && map->validate()) {
                         this->validateMap();
                         std::cout << std::endl << "\x1B[32m" << "Map validated" << "\033[0m" << std::endl << std::endl;
                         *current_state = map_validated;
-                        Notify(this);
+                        notify(this);
                     }
                     else {
                         map->~Map();
@@ -156,7 +160,7 @@ void GameEngine::transition(GameCommand &gameCommand, const std::string& param)
                 case add_player:
                     this->addPlayer(param);
                     *current_state = players_added;
-                    Notify(this);
+                    notify(this);
                     break;
                 case game_start:
                     if (players->size() < 2)
@@ -166,37 +170,37 @@ void GameEngine::transition(GameCommand &gameCommand, const std::string& param)
                         std::cout << std::endl << "\x1B[32m" << "Game started. Proceed to 'play' phase." << "\033[0m" << std::endl << std::endl;
                         *current_state = assign_reinforcement;
                     }
-                    Notify(this);
+                    notify(this);
                     break;
                 case issue_order:
                     std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = issue_orders;
-                    Notify(this);
+                    notify(this);
                     break;
                 case end_issue_order:
                     std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
-                    Notify(this);
+                    notify(this);
                     break;
                 case execute_order:
                     std::cout << std::endl << "\x1B[32m" << "Execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
-                    Notify(this);
+                    notify(this);
                     break;
                 case end_execute_order:
                     std::cout << std::endl << "\x1B[32m" << "End execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
-                    Notify(this);
+                    notify(this);
                     break;
                 case win_game:
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
-                    Notify(this);
+                    notify(this);
                     break;
                 case replay:
                     std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
-                    Notify(this);
+                    notify(this);
                     break;
                 case quit:
                     std::cout << std::endl << "\x1B[32m" << "Exiting game" << "\033[0m" << std::endl << std::endl;
@@ -514,5 +518,10 @@ void GameEngine::printAvailableCommands(){
 
 std::string GameEngine::stringToLog() {
     std::string currentState = std::to_string(this->getGameState());
-    return "Game Engine with State: " + currentState;
+    std::string strGameState;
+    for (auto& it: GameEngine::gameStateMapping){
+        if (it.second == *this->current_state)
+            strGameState = it.first;
+    }
+    return "Game Engine new state: " + strGameState;
 }

@@ -56,7 +56,6 @@ int main() {
 
     // Add all order types
     OrderList orderList = OrderList();
-    auto* oList = new LogObserver(&orderList);
     Order* deploy = new Deploy(Order::OrderType::deploy, player1, terr1_1, 2);
     Order* advance = new Advance(Order::OrderType::advance, deck, player1, terr1_1, terr2_1, 2);
     Order* bomb = new Bomb(Order::OrderType::bomb, player1, terr2_1);
@@ -70,12 +69,6 @@ int main() {
     orderList.add(blockade);
     orderList.add(airlift);
     orderList.add(negotiate);
-    auto* ODeploy = new LogObserver(deploy);
-    auto* OAdvance = new LogObserver(advance);
-    auto* OBomb = new LogObserver(bomb);
-    auto* OBlockade = new LogObserver(blockade);
-    auto* OAirlift = new LogObserver(airlift);
-    auto* ONegotiate = new LogObserver(negotiate);
 
     // Show orders
     cout << orderList << endl;
@@ -84,32 +77,26 @@ int main() {
     cout << endl;
     deploy->execute();
     cout << endl;
-    deploy->Detach(ODeploy);
 
     cout << endl;
     advance->execute();
     cout << endl;
-    advance->Detach(OAdvance);
 
     cout << endl;
     bomb->execute();
     cout << endl;
-    bomb->Detach(OBomb);
 
     cout << endl;
     blockade->execute();
     cout << endl;
-    blockade->Detach(OBlockade);
 
     cout << endl;
     airlift->execute();
     cout << endl;
-    airlift->Detach(OAirlift);
 
     cout << endl;
     negotiate->execute();
     cout << endl << endl;
-    negotiate->Detach(ONegotiate);
 
     // Remove order
     orderList.remove(1);

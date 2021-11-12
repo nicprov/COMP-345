@@ -92,7 +92,7 @@ void Deploy::execute()
 {
     if (validate())
     {
-        Notify(this);
+        notify(this);
         cout << "Deploy order executed." << endl;
 
         //player->removeReinforcements(numOfArmies); something like this to remove the number of armies from the total number available.
@@ -181,7 +181,7 @@ void Blockade::execute()
 {
     if (validate())
     {
-        Notify(this);
+        notify(this);
         cout << "Blockade order executed." << endl;
         target->addTroops(target->getNumberOfArmies() * 2);
         target->setOwner(new Player("Neutral")); //neutral player, come back to this when neutral player implemented
@@ -283,7 +283,7 @@ void Advance::execute()
 
     if (validate())
     {
-        Notify(this);
+        notify(this);
         cout << "Advance order executed." << endl;
 
         if (target->getOwner() == player)
@@ -413,7 +413,7 @@ void Bomb::execute() {
     {
         if (validate())
         {
-            Notify(this);
+            notify(this);
             cout << "Bomb order executed." << endl;
 
             int numDestroyed = target->getNumberOfArmies() / 2;
@@ -526,7 +526,7 @@ void Airlift::execute()
 {
     if (validate())
     {
-        Notify(this);
+        notify(this);
         cout << "Deploy order executed." << endl;
 
         source->removeTroops(numOfArmies);
@@ -617,7 +617,7 @@ void Negotiate::execute()
 {
     if (validate())
     {
-        Notify(this);
+        notify(this);
         cout << "Negotiate order executed." << endl;
 
         cout << "NEGOTIATE ORDER: Negotiating... No attack is being performed this turn. (do nothing)\n";
@@ -703,7 +703,7 @@ std::ostream& operator<<(std::ostream & stream, const OrderList & orderList)
 void OrderList::add(Order * order)
 {
     this->orders->push_back(order);
-    Notify(this);
+    notify(this);
 }
 
 void OrderList::remove(int index)

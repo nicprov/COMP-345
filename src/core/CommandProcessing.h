@@ -33,6 +33,7 @@ public:
     std::string getParam();
     std::string getEffect();
     std::string stringToLog();
+    std::string toString();
 private:
     GameEngine::GameCommand* command;
     std::string param;
@@ -51,7 +52,7 @@ public:
 protected:
     void saveCommand(Command*);
     virtual Command* readCommand();
-    std::vector<Command*>* commands;
+    std::vector<Command*> commands;
     GameEngine& gameEngine;
 };
 
