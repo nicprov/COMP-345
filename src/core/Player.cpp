@@ -2,7 +2,6 @@
 #include "Orders.h"
 #include "Cards.h"
 #include <vector>
-using namespace  std;
 
 //Player methods
 
@@ -15,10 +14,6 @@ Player::~Player()
     hand = nullptr;
     delete this->orderList;
     orderList = nullptr;
-    for(Territory* territory: *this->territoriesList ){
-        delete territory;
-    }
-
 }
 
 /**
@@ -30,7 +25,6 @@ Player::Player(const std::string &name) {
     this->hand = new Hand();
     this->orderList = new OrderList();
     this->armyPool = 0;
-    this->territoriesList = new vector<Territory*>;
 }
 
 /**
@@ -39,13 +33,12 @@ Player::Player(const std::string &name) {
  * @param orderlist
  * @param name
  */
-Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name, vector<Territory*>* territoryList)
+Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name)
 {
     this->armyPool = 0;
     this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
     this->name = name;
-    this->territoriesList = new vector(*territoryList);
 }
 
 /**
@@ -57,7 +50,6 @@ Player::Player(const Player &player)
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
     this->name = player.name;
-    this->territoriesList = new vector(*player.territoriesList);
     this->armyPool = player.armyPool;
 }
 
@@ -71,7 +63,6 @@ Player& Player::operator= (const Player& player)
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
     this->name = player.name;
-    this->territoriesList = new vector(*player.territoriesList);
     this->armyPool = player.armyPool;
     return *this;
 }
@@ -118,23 +109,23 @@ bool Player::operator==(const Player &player) const {
  * Create and display territories to defend
  * @return content of territory
  */
-std::vector<Territory*>* Player::toDefend() {
-    auto* territoriesToDefend = this->territoriesList;
-    return territoriesToDefend;
+std::vector<Territory*> Player::toDefend(Map& map) {
+    return map.getTerritoriesByPlayer(this);
 }
 
 /**
  * Create and display territories to attack
  * @return content of territory
  */
-std::vector<Territory *>* Player::toAttack() {
-    auto* territoriesToAttack = new std::vector<Territory*>;
-    for(Territory* territory: *territoriesList){
-        for(Territory* adj : territory->listOfAdjTerr){
-            territoriesToAttack->push_back(adj);
+std::vector<Territory *> Player::toAttack(Map& map) {
+    auto neighbouringTerritories = vector<Territory*>();
+    for (Territory* playerTerritory: map.getTerritoriesByPlayer(this)){
+        for (Territory* neighbouringTerritory: playerTerritory->listOfAdjTerr){
+            if (!std::find(neighbouringTerritories.begin(), neighbouringTerritories.end(), neighbouringTerritory) != neighbouringTerritories.end()) // Check if territory is already in list
+                neighbouringTerritories.push_back(neighbouringTerritory);
         }
     }
-    return territoriesToAttack;
+    return neighbouringTerritories;
 }
 
 /**
@@ -157,17 +148,15 @@ OrderList &Player::getOrderList()
 
 bool Player::hasNegotiationWith(Player* enemy)
 {
-    //TODO fix
+    for (int i = 0; i < orderList->getOrders().size(); i++)
+    {
+        if (orderList->getOrders().at(i)->getOrderType() == 6)
+        {
+            if (dynamic_cast<Negotiate*>(orderList->getOrders().at(i))->getEnemy() == enemy)
+            {
+                return true;
+            }
+        }
+    }
     return false;
-//    for (int i = 0; i < orderList->getOrders().size(); i++)
-//    {
-//        if (orderList->getOrders().at(i)->getOrderType() == 6)
-//        {
-//            if (dynamic_cast<Negotiate*>(orderList->getOrders().at(i))->getEnemy() == enemy)
-//            {
-//                return true;
-//            }
-//        }
-//    }
-//    return false;
 }
