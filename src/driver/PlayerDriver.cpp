@@ -5,8 +5,7 @@ int main(){
     auto* orderlist = new OrderList();
     Hand* hand = new Hand();
     auto name = "Jonathan";
-    auto* territories = new vector<Territory*>();
-    auto* player = new Player(*hand, *orderlist, name, territories);
+    auto* player = new Player(*hand, *orderlist, name);
 
     std::cout << *player << std::endl;
 

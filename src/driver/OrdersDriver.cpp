@@ -13,20 +13,18 @@ int main() {
     Card* card3 = new Card(Card::CardType::airlift);
     Card* card4 = new Card(Card::CardType::diplomacy);
     auto* orderlist1 = new OrderList();
-    auto* territories1 = new std::vector<Territory*>();
-    auto* territories2 = new std::vector<Territory*>();
     Hand* hand1 = new Hand();
     hand1->addCard(card1);
     hand1->addCard(card2);
     hand1->addCard(card3);
     hand1->addCard(card4);
     auto* name1 = "Jonathan";
-    auto* player1 = new Player(*hand1, *orderlist1, name1, territories1);
+    auto* player1 = new Player(*hand1, *orderlist1, name1);
 
     auto* orderlist2 = new OrderList();
     Hand* hand2 = new Hand();
     auto* name2 = "Janet";
-    auto* player2 = new Player(*hand2, *orderlist2, name2, territories2);
+    auto* player2 = new Player(*hand2, *orderlist2, name2);
 
     string mapName = "../solar.map";
     Map* map = new Map(mapName);
