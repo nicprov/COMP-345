@@ -1,14 +1,20 @@
 #include "Player.h"
+#include "Orders.h"
+#include "Cards.h"
+#include <vector>
+using namespace  std;
 
 //Player methods
 Player::~Player()
 {
     delete this->name;          //deallocate memory
-    name = NULL;                //prevents dangling pointer errors
+    name = nullptr;                //prevents dangling pointer errors
     delete this->hand;
-    hand = NULL;
+    hand = nullptr;
     delete this->orderList;
-    orderList = NULL;
+    orderList = nullptr;
+    delete this->territoriesList;
+    orderList = nullptr;
 }
 
 /**
@@ -19,14 +25,23 @@ Player::Player(const std::string& name) {
     this->name = new std::string(name);
     this->hand = new Hand();
     this->orderList = new OrderList();
+    this->territoriesList = new Map();
     this->armyPool = 0;
 }
 
-Player::Player(const Hand& hand, const OrderList& orderlist, const std::string& name)
+/**
+ * Player Constructor
+ * @param hand
+ * @param orderlist
+ * @param name
+ */
+Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name, const Map &territoriesList)
 {
+    this->armyPool = 0;
     this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
     this->name = new std::string(name);
+    this->territoriesList = new Map(territoriesList);
 }
 
 Player::Player(const Player& player)
@@ -34,8 +49,15 @@ Player::Player(const Player& player)
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
     this->name = new std::string(*player.name);
+    this->territoriesList = new Map(*player.territoriesList);
+    this->armyPool = player.armyPool;
 }
 
+/**
+ * Card assignment operator
+ * @param player
+ * @return reference to Player
+ */
 Player& Player::operator= (const Player& player)
 {
     this->hand = new Hand(*player.hand);
@@ -50,7 +72,17 @@ std::ostream& operator<<(std::ostream& stream, const Player& player)
 }
 
 void Player::issueOrder(Order* order) {
-    this->orderList->add(order);
+    if (armyPool == 0) {
+        this->orderList->add(order);
+    }
+    else {
+        this->orderList->add(new Deploy(Order::OrderType::deploy));
+        armyPool -= 1;
+    }
+    if(this->hand->getCards().size() != 0 ){
+        this->hand->getCards();
+        //**********call play()********************
+    }
 }
 
 bool Player::operator==(const Player& player) const {

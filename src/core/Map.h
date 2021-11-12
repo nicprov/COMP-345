@@ -78,6 +78,7 @@ public:
     Territory* getTerritory(int tid);
     friend ostream& operator << (ostream& out, const Continent& c);
     bool operator== (const Continent&) const;
+    bool isOwnedByPlayer(Player*);
 
     vector<Continent*> listOfAdjCont;
     vector<Territory*> listOfTerritories;
@@ -112,6 +113,7 @@ public:
     bool validate();
     friend ostream& operator << (ostream& out, const Map& m);
     bool operator== (const Map&) const;
+    vector<Territory*> getTerritoriesByPlayer(Player*);
 
     vector<Continent*> listOfContinents;
     vector<Territory*> listOfTerritories;
