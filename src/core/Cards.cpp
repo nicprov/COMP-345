@@ -41,10 +41,10 @@ Card& Card::operator=(const Card &card)
  */
 void Card::play(OrderList *orderList, Hand *hand, Deck *deck)
 {
-    // Add card back to deck
-    deck->returnCard(this);
-    hand->removeCard(this);
-
+//    // Add card back to deck
+//    deck->returnCard(this);
+//    hand->removeCard(this);
+//
 //    // Show action and create order
 //    switch (*this->type) {
 //        case bomb: {

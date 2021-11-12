@@ -121,7 +121,7 @@ std::vector<Territory *> Player::toAttack(Map& map) {
     auto neighbouringTerritories = vector<Territory*>();
     for (Territory* playerTerritory: map.getTerritoriesByPlayer(this)){
         for (Territory* neighbouringTerritory: playerTerritory->listOfAdjTerr){
-            if (!std::find(neighbouringTerritories.begin(), neighbouringTerritories.end(), neighbouringTerritory) != neighbouringTerritories.end()) // Check if territory is already in list
+            if (!(std::find(neighbouringTerritories.begin(), neighbouringTerritories.end(), neighbouringTerritory) != neighbouringTerritories.end())) // Check if territory is already in list
                 neighbouringTerritories.push_back(neighbouringTerritory);
         }
     }
