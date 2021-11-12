@@ -136,6 +136,7 @@ Blockade::~Blockade() = default;
  */
 Blockade::Blockade(Order::OrderType orderType, Player* player, Territory* target) : Order(orderType)
 {
+    this->player = player;
     this->target = target;
 }
 
@@ -197,7 +198,8 @@ bool Blockade::validate()
 {
     for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player->hand->getCards().at(i)->getType() == '3') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == Card::blockade)
+
         {
             if (target->getOwner() == player)
             {
@@ -434,7 +436,7 @@ bool Bomb::validate()
 {
     for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player->hand->getCards().at(i)->getType() == '1') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == Card::bomb)
         {
             if (target->getOwner() != player)
             {
@@ -541,7 +543,7 @@ bool Airlift::validate()
 {
     for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player->hand->getCards().at(i)->getType() == '4') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == Card::airlift)
         {
             if (source->getOwner() == player && target->getOwner() == player)
             {
@@ -632,7 +634,7 @@ bool Negotiate::validate()
 {
     for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player->hand->getCards().at(i)->getType() == '5') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == Card::diplomacy)
         {
             if (player != enemy)
             {
