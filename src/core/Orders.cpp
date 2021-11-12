@@ -30,24 +30,24 @@ Order::OrderType& Order::getOrderType()
 std::ostream& operator<<(std::ostream& stream, const Order::OrderType& orderType)
 {
     switch (orderType) {
-    case Order::OrderType::bomb:
-        stream << "Bomb";
-        break;
-    case Order::OrderType::negotiate:
-        stream << "Negotiate";
-        break;
-    case Order::OrderType::airlift:
-        stream << "Airlift";
-        break;
-    case Order::OrderType::blockade:
-        stream << "Blockade";
-        break;
-    case Order::OrderType::deploy:
-        stream << "Deploy";
-        break;
-    case Order::OrderType::advance:
-        stream << "Advance";
-        break;
+        case Order::OrderType::bomb:
+            stream << "Bomb";
+            break;
+        case Order::OrderType::negotiate:
+            stream << "Negotiate";
+            break;
+        case Order::OrderType::airlift:
+            stream << "Airlift";
+            break;
+        case Order::OrderType::blockade:
+            stream << "Blockade";
+            break;
+        case Order::OrderType::deploy:
+            stream << "Deploy";
+            break;
+        case Order::OrderType::advance:
+            stream << "Advance";
+            break;
     }
     return stream;
 }
@@ -57,60 +57,26 @@ bool Order::operator==(const Order& order) const
     return *this->orderType == *order.orderType;
 }
 
-bool Order::validate()
-{
-    switch (*this->orderType) {
-    case deploy:
-    case advance:
-    case bomb:
-    case blockade:
-    case airlift:
-    case negotiate:
-        std::cout << "Valid order";
-        return true;
-    default:
-        std::cout << "Invalid order";
-        return false;
-    }
-}
-
-void Order::execute()
-{
-    switch (*this->orderType) {
-    case deploy:
-        std::cout << "Executing Deploy";
-        break;
-    case advance:
-        std::cout << "Executing Advance";
-        break;
-    case bomb:
-        std::cout << "Executing Bomb";
-        break;
-    case blockade:
-        std::cout << "Executing Blockade";
-        break;
-    case airlift:
-        std::cout << "Executing Airlift";
-        break;
-    case negotiate:
-        std::cout << "Executing Negotiate";
-        break;
-    default:
-        std::cout << "Invalid order";
-        break;
-    }
-}
-
 //************************************************************************* DEPLOY *******************************************************************************************
 
+Deploy::Deploy(const Order::OrderType orderType, Player* player, Territory* territory, int numOfArmies) : Order(orderType)
+{
+    this->player = player;
+    this->territory = territory;
+    this->numOfArmies = numOfArmies;
+}
 
-Deploy::Deploy(const Order::OrderType orderType) : Order(orderType) {}
-
-Deploy::Deploy(const Deploy& deploy) : Order(deploy) {}
+Deploy::Deploy(const Deploy& deploy) : Order(deploy)
+{
+    this->territory = new Territory(*deploy.territory);
+    this->numOfArmies = deploy.numOfArmies;
+}
 
 Deploy& Deploy::operator= (const Deploy& deploy)
 {
     this->orderType = new OrderType(*deploy.orderType);
+    this->territory = new Territory(*deploy.territory);
+    this->numOfArmies = deploy.numOfArmies;
     return *this;
 }
 
@@ -122,16 +88,16 @@ std::ostream& operator<<(std::ostream& stream, const Deploy& deploy)
 /**
  * Print to console when deploy order is executed
  */
-void Deploy::execute(Player& player, Territory& territory, int numOfArmies)
+void Deploy::execute()
 {
-    if (validate(player, territory, numOfArmies))
+    if (validate())
     {
         Notify(this);
         cout << "Deploy order executed." << endl;
 
         //player->removeReinforcements(numOfArmies); something like this to remove the number of armies from the total number available.
-        territory.addTroops(numOfArmies);
-        cout << "DEPLOY ORDER: Deploying " << numOfArmies << " armies to " << territory.getTerrName() << "." << endl;
+        territory->addTroops(numOfArmies);
+        cout << "DEPLOY ORDER: Deploying " << numOfArmies << " armies to " << territory->getTerrName() << "." << endl;
     }
     else
     {
@@ -143,9 +109,9 @@ void Deploy::execute(Player& player, Territory& territory, int numOfArmies)
  * Validate method for Deploy
  * @return True if OrderType is Deploy, false otherwise
  */
-bool Deploy::validate(Player& player, Territory& territory, int numOfArmies)
+bool Deploy::validate()
 {
-    if (*territory.getOwner() == player)
+    if (territory->getOwner() == player)
     {
         cout << "Deploy order validated." << endl;
         return true;
@@ -153,7 +119,6 @@ bool Deploy::validate(Player& player, Territory& territory, int numOfArmies)
     cout << "Deploy order is invalid." << endl;
     return false;
 }
-
 std::string Deploy::stringToLog() {
     return "Order Executed: Deploy";
 }
@@ -169,14 +134,20 @@ Blockade::~Blockade() = default;
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Blockade Order
  */
-Blockade::Blockade(Order::OrderType orderType) : Order(orderType) {}
+Blockade::Blockade(Order::OrderType orderType, Player* player, Territory* target) : Order(orderType)
+{
+    this->target = target;
+}
 
 /**
  * Blockage copy constructor
  *
  * @param blockage the blockade order to copy
  */
-Blockade::Blockade(const Blockade &blockade) : Order(blockade) {}
+Blockade::Blockade(const Blockade &blockade) : Order(blockade)
+{
+    this->target = new Territory(*blockade.target);
+}
 
 /**
  * Assignment operator for Blockade
@@ -186,6 +157,7 @@ Blockade::Blockade(const Blockade &blockade) : Order(blockade) {}
 Blockade& Blockade::operator= (const Blockade & blockade)
 {
     this->orderType = new OrderType(*blockade.orderType);
+    this->target = new Territory(*blockade.target);
     return *this;
 }
 
@@ -204,15 +176,15 @@ std::ostream& operator<<(std::ostream & stream, const Blockade & blockade)
  * Execute method if validate() returns true
  */
 
-void Blockade::execute(Player& player, Territory& target)
+void Blockade::execute()
 {
-    if (validate(player, target))
+    if (validate())
     {
         Notify(this);
         cout << "Blockade order executed." << endl;
-        target.addTroops(target.getNumberOfArmies() * 2);
-        target.setOwner(new Player("Neutral")); //neutral player, come back to this when neutral player implemented
-        cout << "BLOCKADE ORDER: Blockading " << target.getTerrName() << " territory, doubling its forces and making it neutral.\n";
+        target->addTroops(target->getNumberOfArmies() * 2);
+        target->setOwner(new Player("Neutral")); //neutral player, come back to this when neutral player implemented
+        cout << "BLOCKADE ORDER: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral.\n";
     }
     else
         cout << "Blockade order invalid: execute() method fails to execute." << endl;
@@ -221,13 +193,13 @@ void Blockade::execute(Player& player, Territory& target)
 /**
  * Validate method for Blockade class, validating the owner of the target territory is myself
  */
-bool Blockade::validate(Player& player, Territory& target)
+bool Blockade::validate()
 {
-    for (int i = 0; i < player.hand->getCards().size(); i++)
+    for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player.hand->getCards().at(i)->getType() == '3') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == '3') //Does get card return an int or a string???
         {
-            if (*target.getOwner() == player)
+            if (target->getOwner() == player)
             {
                 cout << "Blockade order validated." << endl;
                 return true;
@@ -243,6 +215,7 @@ std::string Blockade::stringToLog() {
     return "Order Executed: Blockade";
 }
 
+
 //************************************************************************* ADVANCE *******************************************************************************************
 
 /**
@@ -254,14 +227,26 @@ Advance::~Advance() = default;
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Advance Order
  */
-Advance::Advance(Order::OrderType orderType) : Order(orderType) {}
+Advance::Advance(Order::OrderType orderType, Deck* deck, Player* player, Territory* source, Territory* target, int numOfArmies) : Order(orderType)
+{
+    this->deck = deck;
+    this->player = player;
+    this->source = source;
+    this->target = target;
+    this->numOfArmies = numOfArmies;
+}
 
 /**
  * Advance copy constructor
  *
  * @param advance the advance order to copy
  */
-Advance::Advance(const Advance &advance) : Order(advance) {}
+Advance::Advance(const Advance &advance) : Order(advance)
+{
+    this->source = new Territory(*advance.source);
+    this->target = new Territory(*advance.target);
+    this->numOfArmies = advance.numOfArmies;
+}
 
 /**
  * Assignment operator for Advance
@@ -271,6 +256,9 @@ Advance::Advance(const Advance &advance) : Order(advance) {}
 Advance& Advance::operator= (const Advance & advance)
 {
     this->orderType = new OrderType(*advance.orderType);
+    this->source = new Territory(*advance.source);
+    this->target = new Territory(*advance.target);
+    this->numOfArmies = advance.numOfArmies;
     return *this;
 }
 
@@ -288,45 +276,46 @@ std::ostream& operator<<(std::ostream & stream, const Advance & advance)
 /**
  * Print to console when advance order is executed
  */
-void Advance::execute(Deck &deck, Player& player, Territory& target, Territory& source, int numOfArmies)
+void Advance::execute()
 {
-    if (validate(player, target, source))
+
+    if (validate())
     {
         Notify(this);
         cout << "Advance order executed." << endl;
 
-        if (*target.getOwner() == player)
+        if (target->getOwner() == player)
         {
-            source.removeTroops(numOfArmies);
-            target.addTroops(numOfArmies);
+            source->removeTroops(numOfArmies);
+            target->addTroops(numOfArmies);
 
-            cout << "ADVANCE ORDER: Advancing " << numOfArmies << " armies from " << source.getTerrName() << " to " << target.getTerrName() << "." << endl;
+            cout << "ADVANCE ORDER: Advancing " << numOfArmies << " armies from " << source->getTerrName() << " to " << target->getTerrName() << "." << endl;
         }
-        else if (!player.hasNegotiationWith(target.getOwner()))
+        else if (!player->hasNegotiationWith(target->getOwner()))
         {
-            while (target.getNumberOfArmies() > 0 || source.getNumberOfArmies() > 0)
+            while (target->getNumberOfArmies() > 0 || source->getNumberOfArmies() > 0)
             {
                 srand(time(nullptr));
 
                 if (rand() % 10 < 6)
-                    target.removeTroops(1);
+                    target->removeTroops(1);
 
                 else if (rand() % 10 < 7)
-                    source.removeTroops(1);
+                    source->removeTroops(1);
             }
 
-            if (target.getNumberOfArmies() == 0)
+            if (target->getNumberOfArmies() == 0)
             {
-                target.setOwner(new Player(player));
-                target.addTroops(source.getNumberOfArmies());
-                source.removeTroops(source.getNumberOfArmies());
-                player.hand->addCard(deck.draw());
+                target->setOwner(player);
+                target->addTroops(source->getNumberOfArmies());
+                source->removeTroops(source->getNumberOfArmies());
+                player->hand->addCard(deck->draw());
 
-                cout << "ADVANCE ORDER: You Attacked and WON! Advancing " << target.getNumberOfArmies() << " armies from " << source.getTerrName() << " to " << target.getTerrName() << "." << endl;
+                cout << "ADVANCE ORDER: You Attacked and WON! Advancing " << target->getNumberOfArmies() << " armies from " << source->getTerrName() << " to " << target->getTerrName() << "." << endl;
             }
-            if (source.getNumberOfArmies() == 0)
+            if (source->getNumberOfArmies() == 0)
             {
-                cout << "ADVANCE ORDER: You Attacked and LOST! You are left with 0 armies on " << source.getTerrName() << "." << endl;
+                cout << "ADVANCE ORDER: You Attacked and LOST! You are left with 0 armies on " << source->getTerrName() << "." << endl;
             }
         }
         else
@@ -344,9 +333,9 @@ void Advance::execute(Deck &deck, Player& player, Territory& target, Territory& 
  * Validate method for Advance
  * @return True if OrderType is Advance, false otherwise
  */
-bool Advance::validate(Player& player, Territory& source, Territory& target)
+bool Advance::validate()
 {
-    if (*source.getOwner() == player && source.isAdjacent(target.getTerrName()))
+    if (source->getOwner() == player && source->isAdjacent(target->getTerrName()))
     {
         cout << "Advance order validated." << endl;
         return true;
@@ -375,13 +364,20 @@ Bomb::~Bomb() = default;
  * @param player Player of the Bomb Order
  * @param target Territory targetted by the Bomb Order
  */
-Bomb::Bomb(Order::OrderType orderType) : Order(orderType) {}
+Bomb::Bomb(Order::OrderType orderType, Player* player, Territory* target) : Order(orderType)
+{
+    this->player = player;
+    this->target = target;
+}
 /**
  * Bomb copy constructor
  *
  * @param bomb the bomb order to copy
  */
-Bomb::Bomb(const Bomb & bomb) : Order(bomb) {}
+Bomb::Bomb(const Bomb & bomb) : Order(bomb)
+{
+    this->target = new Territory(*bomb.target);
+}
 
 /**
  * Assignment operator for Bomb
@@ -391,6 +387,7 @@ Bomb::Bomb(const Bomb & bomb) : Order(bomb) {}
 Bomb& Bomb::operator= (const Bomb& bomb)
 {
     this->orderType = new OrderType(*bomb.orderType);
+    this->target = new Territory(*bomb.target);
     return *this;
 }
 
@@ -408,20 +405,20 @@ std::ostream& operator<<(std::ostream & stream, const Bomb & bomb)
 /**
 *Print to console when bomb order is executed
 */
-void Bomb::execute(Player& player, Territory& target) {
+void Bomb::execute() {
 
-    if (!player.hasNegotiationWith(target.getOwner()))
+    if (!player->hasNegotiationWith(target->getOwner()))
     {
-        if (validate(player, target))
+        if (validate())
         {
             Notify(this);
             cout << "Bomb order executed." << endl;
 
-            int numDestroyed = target.getNumberOfArmies() / 2;
+            int numDestroyed = target->getNumberOfArmies() / 2;
 
-            target.removeTroops(numDestroyed);
+            target->removeTroops(numDestroyed);
 
-            cout << "BOMB ORDER: Bombing " << target.getTerrName() << " territory, reducing 1/2 of its forces.\n";
+            cout << "BOMB ORDER: Bombing " << target->getTerrName() << " territory, reducing 1/2 of its forces.\n";
         }
         else
             cout << "Bomb order invalid: execute() method fails to execute." << endl;
@@ -433,17 +430,17 @@ void Bomb::execute(Player& player, Territory& target) {
 /**
 *Validate method for Bomb class, validating the currentand next territories are adjacent
 */
-bool Bomb::validate(Player& player, Territory& target)
+bool Bomb::validate()
 {
-    for (int i = 0; i < player.hand->getCards().size(); i++)
+    for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player.hand->getCards().at(i)->getType() == '1') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == '1') //Does get card return an int or a string???
         {
-            if (*target.getOwner() != player)
+            if (target->getOwner() != player)
             {
-                for (int i = 0; i < target.listOfAdjTerr.size(); i++)
+                for (int i = 0; i < target->listOfAdjTerr.size(); i++)
                 {
-                    if (*target.listOfAdjTerr.at(i)->getOwner() == player)
+                    if (target->listOfAdjTerr.at(i)->getOwner() == player)
                     {
                         cout << "Bomb order validated." << endl;
                         return true;
@@ -470,18 +467,30 @@ std::string Bomb::stringToLog() {
  */
 Airlift::~Airlift() = default;
 
+
 /**
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Airlift Order
  */
-Airlift::Airlift(const Order::OrderType orderType) : Order(orderType) {}
+Airlift::Airlift(const Order::OrderType orderType, Player* player, Territory* source, Territory* target, int numOfArmies) : Order(orderType)
+{
+    this->player = player;
+    this->source = source;
+    this->target = target;
+    this->numOfArmies = numOfArmies;
+}
 
 /**
  * Airlift copy constructor
  *
  * @param airlift the airlift order to copy
  */
-Airlift::Airlift(const Airlift &airlift) : Order(airlift) {}
+Airlift::Airlift(const Airlift &airlift) : Order(airlift)
+{
+    this->source = new Territory(*airlift.source);
+    this->target = new Territory(*airlift.target);
+    this->numOfArmies = airlift.numOfArmies;
+}
 
 /**
  * Assignment operator for Airlift
@@ -491,6 +500,9 @@ Airlift::Airlift(const Airlift &airlift) : Order(airlift) {}
 Airlift& Airlift::operator= (const Airlift & airlift)
 {
     this->orderType = new OrderType(*airlift.orderType);
+    this->source = new Territory(*airlift.source);
+    this->target = new Territory(*airlift.target);
+    this->numOfArmies = airlift.numOfArmies;
     return *this;
 }
 
@@ -508,16 +520,16 @@ std::ostream& operator<<(std::ostream & stream, const Airlift & airlift)
 /**
  * Print to console when airlift order is executed
  */
-void Airlift::execute(Player& player, Territory& target, Territory& source, int numOfArmies)
+void Airlift::execute()
 {
-    if (validate(player, target, source))
+    if (validate())
     {
         Notify(this);
         cout << "Deploy order executed." << endl;
 
-        source.removeTroops(numOfArmies);
-        target.addTroops(numOfArmies);
-        cout << "AIRLIFT ORDER: Airlifting " << numOfArmies << " armies from " << source.getTerrName() << " to " << target.getTerrName() << "." << endl;
+        source->removeTroops(numOfArmies);
+        target->addTroops(numOfArmies);
+        cout << "AIRLIFT ORDER: Airlifting " << numOfArmies << " armies from " << source->getTerrName() << " to " << target->getTerrName() << "." << endl;
     }
     else
     {
@@ -525,13 +537,13 @@ void Airlift::execute(Player& player, Territory& target, Territory& source, int 
     }
 }
 
-bool Airlift::validate(Player& player, Territory& target, Territory& source)
+bool Airlift::validate()
 {
-    for (int i = 0; i < player.hand->getCards().size(); i++)
+    for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player.hand->getCards().at(i)->getType() == '4') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == '4') //Does get card return an int or a string???
         {
-            if (*source.getOwner() == player && *target.getOwner() == player)
+            if (source->getOwner() == player && target->getOwner() == player)
             {
                 cout << "Advance order validated." << endl;
                 return true;
@@ -559,18 +571,30 @@ Negotiate::~Negotiate() = default;
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Negotiate Order
  */
-Negotiate::Negotiate(Order::OrderType orderType) : Order(orderType) {}
-
-Negotiate::Negotiate(const Negotiate &negotiate): Order(negotiate) {}
+Negotiate::Negotiate(Order::OrderType orderType, Player* player, Player* enemy) : Order(orderType)
+{
+    this->player = player;
+    this->enemy = enemy;
+}
+/**
+ * Negotiate copy constructor
+ *
+ * @param negotiate the negotiate order to copy
+ */
+Negotiate::Negotiate(const Negotiate &negotiate) : Order(negotiate)
+{
+    this->enemy = new Player(*negotiate.enemy);
+}
 
 /**
  * Assignment operator for Negotiate
  * @param negotiate Negotiate Order to copy
  * @return Copied negotiate Order
  */
-Negotiate& Negotiate::operator= (const Negotiate &negotiate)
+Negotiate& Negotiate::operator= (const Negotiate & negotiate)
 {
     this->orderType = new OrderType(*negotiate.orderType);
+    this->enemy = new Player(*negotiate.enemy);
     return *this;
 }
 /**
@@ -587,9 +611,9 @@ std::ostream& operator<<(std::ostream & stream, const Negotiate & negotiate)
 /**
  * Print to console when negotiate order is executed
  */
-void Negotiate::execute(Player& player, Player& enemy)
+void Negotiate::execute()
 {
-    if (validate(player, enemy))
+    if (validate())
     {
         Notify(this);
         cout << "Negotiate order executed." << endl;
@@ -604,11 +628,11 @@ void Negotiate::execute(Player& player, Player& enemy)
  * Validate method for Negotiate
  * @return True if OrderType is Negotiate, false otherwise
  */
-bool Negotiate::validate(Player& player, Player& enemy)
+bool Negotiate::validate()
 {
-    for (int i = 0; i < player.hand->getCards().size(); i++)
+    for (int i = 0; i < player->hand->getCards().size(); i++)
     {
-        if (player.hand->getCards().at(i)->getType() == '5') //Does get card return an int or a string???
+        if (player->hand->getCards().at(i)->getType() == '5') //Does get card return an int or a string???
         {
             if (player != enemy)
             {
@@ -620,6 +644,11 @@ bool Negotiate::validate(Player& player, Player& enemy)
         }
     }
     return false;
+}
+
+Player* Negotiate::getEnemy()
+{
+    return enemy;
 }
 
 std::string Negotiate::stringToLog() {
@@ -677,7 +706,7 @@ void OrderList::add(Order * order)
 
 void OrderList::remove(int index)
 {
-    if (index >= 0 && index < this->orders->size()) {
+    if (index > 0 && index < this->orders->size()) {
         Order* order = this->orders->at(index);
         this->orders->erase(this->orders->begin() + index);
         delete order;
@@ -732,5 +761,3 @@ std::string OrderList::stringToLog() {
     std::string currentOrder = std::to_string(orders->at(this->orders->size()-1)->getOrderType());
     return "Order Issued: " + currentOrder;
 }
-
-

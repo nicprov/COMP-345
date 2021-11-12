@@ -41,14 +41,5 @@ jobs:
           name: Creating Binary Files
           command: 'cmake --build build'
       - run:
-          name: Run CardsDriver
-          command: './bin/cards'
-      - run:
-          name: Run OrdersDriver
-          command: './bin/orders'
-      - run:
-          name: Run OrdersDriver
-          command: './bin/player'
-      - run:
           name: Point Unit Testing
           command: './bin/tests' 

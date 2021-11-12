@@ -10,7 +10,7 @@ int main(){
 
     std::cout << *player << std::endl;
 
-    Order* deploy = new Deploy(Order::OrderType::deploy);
+    Order* deploy = new Deploy(Order::OrderType::deploy, new Player("john"), new Territory(), 0);
     player->issueOrder(deploy);
 
     std::cout << *player << std::endl;

@@ -335,26 +335,35 @@ void GameEngine::issueOrdersPhase()
             std::cin >> orderType;
             switch (orderType) {
                 case 1:
-                    order = new Deploy(Order::OrderType::deploy);
+                    // Ask for the territory to deploy to (get list: 1..4)
+                    std::cout << "Select a territory to deploy armies to: ";
+                    std::cout << this->map->getTerritoriesByPlayer(player);
+
+                    // Ask for number of armies to deploy
+                    int armies = 0;
+                    std::cout << "Select the number of armies to deploy: ";
+                    std::cin >> armies;
+                    //order = new Deploy(Order::OrderType::deploy, player, armies);
                     break;
-                case 2:
-                    order = new Advance(Order::OrderType::advance);
-                    break;
-                case 3:
-                    order = new Bomb(Order::OrderType::bomb);
-                    break;
-                case 4:
-                    order = new Blockade(Order::OrderType::blockade);
-                    break;
-                case 5:
-                    order = new Airlift(Order::OrderType::airlift);
-                    break;
-                case 6:
-                    order = new Negotiate(Order::OrderType::negotiate);
-                    break;
-                default:
-                    std::cout << "Invalid choice";
-                    break;
+//                case 2:
+//
+//                    order = new Advance(Order::OrderType::advance, );
+//                    break;
+//                case 3:
+//                    order = new Bomb(Order::OrderType::bomb);
+//                    break;
+//                case 4:
+//                    order = new Blockade(Order::OrderType::blockade);
+//                    break;
+//                case 5:
+//                    order = new Airlift(Order::OrderType::airlift);
+//                    break;
+//                case 6:
+//                    order = new Negotiate(Order::OrderType::negotiate);
+//                    break;
+//                default:
+//                    std::cout << "Invalid choice";
+//                    break;
             }
         }
         player->issueOrder(order);

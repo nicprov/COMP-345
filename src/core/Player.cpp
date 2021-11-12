@@ -92,17 +92,17 @@ std::ostream &operator<<(std::ostream &stream, const Player &player)
  * @param order
  */
 void Player::issueOrder(Order* order) {
-    if (armyPool == 0) {
-        this->orderList->add(order);
-    }
-    else {
-        this->orderList->add(new Deploy(Order::OrderType::deploy));
-        armyPool -= 1;
-    }
-    if(!this->hand->getCards().empty()){
-        this->hand->getCards();
-        //**********call play()********************
-    }
+//    if (armyPool == 0) {
+//        this->orderList->add(order);
+//    }
+//    else {
+//        this->orderList->add(new Deploy(Order::OrderType::deploy));
+//        armyPool -= 1;
+//    }
+//    if(!this->hand->getCards().empty()){
+//        this->hand->getCards();
+//        //**********call play()********************
+//    }
 }
 
 /**
