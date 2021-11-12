@@ -181,7 +181,7 @@ Command* CommandProcessor::readCommand()
             _param = "";
         Command* command = this->validate(_command, _param);
         if (command == nullptr){
-            std::cout << "\x1B[31m" << "Invalid command, try again... " << "\033[0m" << std::endl;
+            std::cout << std::endl << "\x1B[31m" << "Invalid command, try again... " << "\033[0m" << std::endl << std::endl;
         } else {
             return command;
         }
