@@ -49,7 +49,7 @@ public:
 
     void getAvailableCommands(std::vector<GameCommand>&);
 
-    void transition(GameCommand&);
+    void transition(GameCommand&, const std::string& param);
 
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 
@@ -67,9 +67,9 @@ private:
     Map* map;
     Deck* deck;
     bool containsOrders(std::map<Player*, bool>);
-    void loadMap();
+    void loadMap(const std::string& mapName);
     void validateMap();
-    void addPlayers();
+    void addPlayer(const std::string& playerName);
     void gameStart();
 
     void registerPlayer(Player*);
