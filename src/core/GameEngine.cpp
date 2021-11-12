@@ -318,39 +318,162 @@ void GameEngine::reinforcementPhase()
 void GameEngine::issueOrdersPhase()
 {
     for(Player* player: *this->players) {
-        Order *order = nullptr;
-        while (order == nullptr) {
-            for (Order::OrderType orderType: Order::ALL_ORDER_TYPES) {
-                std::cout << static_cast<int>(orderType) << ": " << orderType;
+        cout << player->getName() << "'s Turn!" << endl << endl;
+
+        //Some initializations to make compiler happy
+        Territory* sourceT = nullptr;
+        Territory* destinationT = nullptr;
+        Territory* targetT = nullptr;
+        Player* enemy = nullptr;
+        int armies = 0;
+        int i = 0;
+
+        Order* order = nullptr;
+
+        // Obligatory <Deploy> orders at start of issue order phase
+        for (Territory* ownedTerr : this->map->getTerritoriesByPlayer(player)) {
+            i++;
+            std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+        }
+        int armiesNotDeployed = player->armyPool;
+        while (armiesNotDeployed > 0) {
+            cout << "Armies left to deploy: " << armiesNotDeployed << endl << endl;
+
+            // Ask for the territory to deploy to (get list: 1..4
+            std::cout << "Select a territory to deploy armies to: " << endl;
+            int j = 0;
+            cin >> j;
+            Territory* deployToT = this->map->getTerritoriesByPlayer(player)[j - 1];
+
+            // Ask for number of armies to deploy
+            std::cout << "Select the number of armies to deploy: ";
+            std::cin >> armies;
+            order = new Deploy(Order::OrderType::deploy, player, deployToT, armies);
+
+            player->issueOrder(order);
+            armiesNotDeployed = armiesNotDeployed - armies;
+            armies = 0;
+        }
+        do {
+            for (Order::OrderType orderType : Order::ALL_ORDER_TYPES) {
+                std::cout << static_cast<int>(orderType) << ": " << orderType << std::endl;
             }
+            cout << "7. End turn" << endl;
+
             std::cout << "Choice: ";
             int orderType;
             std::cin >> orderType;
             switch (orderType) {
                 case 1:
-                    order = new Deploy(Order::OrderType::deploy);
+                    cout << "No more armies to deploy!";
                     break;
                 case 2:
-                    order = new Advance(Order::OrderType::advance);
+                    // Display owned territories
+                    i = 0;
+                    for (Territory* ownedTerr : this->map->getTerritoriesByPlayer(player)) {
+                        i++;
+                        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+                    }
+
+                    // Ask source territory
+                    std::cout << "Select a territory to mobilize armies from: " << endl;
+                    cin >> i;
+                    sourceT = this->map->getTerritoriesByPlayer(player)[i-1];
+
+                    // Display territories adjacent to source territory
+
+                    // Ask destination territory
+                    std::cout << "Select a territory to mobilize armies to: " << endl;
+                    cin >> i;
+                    destinationT = this->map->getTerritoriesByPlayer(player)[i-1];
+
+                    // Ask for number of armies to deploy
+                    std::cout << "Select the number of armies to deploy: ";
+                    std::cin >> armies;
+
+                    order = new Advance(Order::OrderType::advance, this->deck, player, sourceT, destinationT, armies);
                     break;
                 case 3:
-                    order = new Bomb(Order::OrderType::bomb);
+                    // Display territories available for bombing
+                    i = 0;
+                    cout << "List of available territories to bomb: " << endl;
+                    for (Territory* canAttack : *player->toAttack()) {
+                        cout << i << ": " << canAttack->getTerrName() << endl;
+                        i++;
+                    }
+
+                    // Ask for territory to bomb
+                    int j;
+                    cout << "Select territory to bomb: ";
+                    cin >> j;
+                    targetT = player->toAttack()->at(j);
+
+                    order = new Bomb(Order::OrderType::bomb, targetT->getOwner(), targetT);
                     break;
                 case 4:
-                    order = new Blockade(Order::OrderType::blockade);
+                    // List owned territories
+                    i = 0;
+                    for (Territory* ownedTerr : this->map->getTerritoriesByPlayer(player)) {
+                        i++;
+                        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+                    }
+
+                    //Ask territory to blockade
+                    cout << "Select territory to blockade: ";
+                    cin >> i;
+                    targetT = this->map->getTerritoriesByPlayer(player)[i-1];
+
+                    order = new Blockade(Order::OrderType::blockade, player, targetT);
                     break;
                 case 5:
-                    order = new Airlift(Order::OrderType::airlift);
+                    // Display owned territories
+                    i = 0;
+                    for (Territory* ownedTerr : this->map->getTerritoriesByPlayer(player)) {
+                        i++;
+                        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+                    }
+
+                    // Ask source territory
+                    std::cout << "Select a territory to mobilize armies from: " << endl;
+                    cin >> i;
+                    sourceT = this->map->getTerritoriesByPlayer(player)[i - 1];
+
+                    // Ask destination territory
+                    std::cout << "Select a territory to mobilize armies to: " << endl;
+                    cin >> i;
+                    destinationT = this->map->getTerritoriesByPlayer(player)[i - 1];
+
+                    // Ask for number of armies to deploy
+                    std::cout << "Select the number of armies to deploy: ";
+                    std::cin >> armies;
+
+                    order = new Airlift(Order::OrderType::advance, player, sourceT, destinationT, armies);
                     break;
+
                 case 6:
-                    order = new Negotiate(Order::OrderType::negotiate);
+                    // Display players in the game
+                    i = 0;
+                    for (Player* player : *this->players) {
+                        i++;
+                        cout << i << ". " << player->getName() << endl;
+                    }
+
+                    // Ask player to negotiate with
+                    cout << "Select player with whom to negotiate (cannot negotiate with oneself): "; 
+                    cin >> i;
+                    enemy = players->at(i - 1);
+ 
+                    order = new Negotiate(Order::OrderType::negotiate, player, enemy);
                     break;
                 default:
-                    std::cout << "Invalid choice";       //**TO DO: LOOP BACK IF INVALID ORDER CHOICE
+                    order = nullptr;
+                    std::cout << "End turn." << endl << endl;
                     break;
             }
-        }
-        player->issueOrder(order);
+            if (order != nullptr)
+                player->issueOrder(order);
+        } while (order != nullptr);
+        
     }
 }
 
