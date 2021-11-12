@@ -9,6 +9,8 @@
 #include "Cards.h"
 #include "LoggingObserver.h"
 
+class CommandProcessor;
+
 class GameEngine : public Subject{
 public:
     enum GameState{
@@ -49,7 +51,7 @@ public:
     Deck& getDeck();
     void getAvailableCommands(std::vector<GameCommand>&);
     void transition(GameCommand&, const std::string& param);
-    void startupPhase(GameEngine& gameEngine);
+    void startupPhase(CommandProcessor*);
     void mainGameLoop();
     std::string stringToLog();
 
@@ -60,7 +62,7 @@ private:
     std::vector<Player*>* players;
     Map* map;
     Deck* deck;
-    void printAvailableCommands(GameEngine& gameEngine);
+    void printAvailableCommands();
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();

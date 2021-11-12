@@ -81,7 +81,7 @@ Command &Command::operator= (const Command &_command)
 
 std::ostream &operator<<(std::ostream &stream, const Command &_command)
 {
-    return stream << "Command (" << _command.command << "), Effect (" << _command.effect << " )";
+    return stream << "Command (" << *_command.command << "), Param (" << _command.param << ")";
 }
 
 void Command::saveEffect(const std::string& effect)

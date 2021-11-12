@@ -29,8 +29,8 @@ public:
     friend std::ostream& operator<< (std::ostream&, const OrderType&); // Stream output operator
     bool operator== (const Order&) const;
     OrderType& getOrderType();
-    virtual void execute();
-    virtual bool validate();
+    virtual void execute() = 0;
+    virtual bool validate() = 0;
     virtual std::string stringToLog() =0;
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = { deploy, advance, bomb, blockade, airlift, negotiate };
 protected:
@@ -40,15 +40,15 @@ protected:
 class Deploy : public Order {
 public:
     ~Deploy();
-    Deploy(OrderType);
     Deploy(OrderType, Player*, Territory*, int); //parameterized constructor
     Deploy(const Deploy&); //copy constructor
     Deploy& operator= (const Deploy&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Deploy&); // Stream output operator
-    void execute(Player&); //execute method for deploy orders
-    bool validate(Player&); //validate method for deploy orders
+    void execute(); //execute method for deploy orders
+    bool validate(); //validate method for deploy orders
     std::string stringToLog();
 private:
+    Player* player;
     Territory* territory;
     int numOfArmies;
 };
@@ -56,15 +56,16 @@ private:
 class Advance : public Order {
 public:
     ~Advance();
-    Advance(OrderType);
-    Advance(OrderType, Territory*, Territory*, int); //parameterized constructor
+    Advance(OrderType, Deck*, Player*, Territory*, Territory*, int); //parameterized constructor
     Advance(const Advance&); //copy constructor
     Advance& operator= (const Advance&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Advance&); // Stream output operator
-    void execute(Deck&, Player&); //execute method for advance orders
-    bool validate(Player&); //validate method for advance orders
+    void execute(); //execute method for advance orders
+    bool validate(); //validate method for advance orders
     std::string stringToLog();
 private:
+    Deck* deck;
+    Player* player;
     Territory* source;
     Territory* target;
     int numOfArmies;
@@ -73,45 +74,45 @@ private:
 class Bomb : public Order {
 public:
     ~Bomb();
-    Bomb(OrderType);
-    Bomb(OrderType, Territory*); //parameterized constructor
+    Bomb(OrderType, Player*, Territory*); //parameterized constructor
     Bomb(const Bomb&); //copy constructor
     Bomb& operator= (const Bomb&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Bomb&); // Stream output operator
-    void execute(Player&); //execute method for bomb orders
-    bool validate(Player&); //validate method for bomb methods
+    void execute(); //execute method for bomb orders
+    bool validate(); //validate method for bomb methods
     std::string stringToLog();
 private:
+    Player* player;
     Territory* target;
 };
 
 class Blockade : public Order {
 public:
     ~Blockade();
-    Blockade(OrderType);
-    Blockade(OrderType, Territory*); //parameterized constructor
+    Blockade(OrderType, Player*, Territory*); //parameterized constructor
     Blockade(const Blockade&); //copy constructors
     Blockade& operator= (const Blockade&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
-    void execute(Player&); //execute method for blockade order
-    bool validate(Player&); //execute method for validate order
+    void execute(); //execute method for blockade order
+    bool validate(); //execute method for validate order
     std::string stringToLog();
 private:
     Territory* target;
+    Player* player;
 };
 
 class Airlift : public Order {
 public:
     ~Airlift();
-    Airlift(OrderType);
-    Airlift(OrderType, Territory*, Territory*, int); //parameterized constructor
+    Airlift(OrderType, Player*, Territory*, Territory*, int); //parameterized constructor
     Airlift(const Airlift&); //copy constructor
     Airlift& operator= (const Airlift&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Airlift&); // Stream output operator
-    void execute(Player&); //execute method for airlift order
-    bool validate(Player&); //valid method for airlift order
+    void execute(); //execute method for airlift order
+    bool validate(); //valid method for airlift order
     std::string stringToLog();
 private:
+    Player* player;
     Territory* source;
     Territory* target;
     int numOfArmies;
@@ -120,16 +121,16 @@ private:
 class Negotiate : public Order {
 public:
     ~Negotiate();
-    Negotiate(OrderType);
-    Negotiate(OrderType, Player*);  //parameterized constructor
+    Negotiate(OrderType, Player*, Player*);  //parameterized constructor
     Negotiate(const Negotiate&); //copy constructor
     Negotiate& operator= (const Negotiate&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Negotiate&); // Stream output operator
-    void execute(Player&); //execute method for negotiate order
-    bool validate(Player&); //validate method for negotiate order
+    void execute(); //execute method for negotiate order
+    bool validate(); //validate method for negotiate order
     Player* getEnemy(); //get enemy
     std::string stringToLog();
 private:
+    Player* player;
     Player* enemy;
 };
 

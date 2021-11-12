@@ -280,74 +280,89 @@ bool GameEngine::operator==(const GameEngine &gameEngine) const
 * addplayer, gamestart through commands
 * @param gameEngine with state 'start'
 */
-void GameEngine::startupPhase(GameEngine& gameEngine)
+void GameEngine::startupPhase(CommandProcessor* commandProcessor)
 {
-    CommandProcessor* commandProcessor = new CommandProcessor(gameEngine);
     std::cout << std::endl << "*Startup Phase*" << std::endl << std::endl;
-    printAvailableCommands(gameEngine);
+    printAvailableCommands();
     Command* command = commandProcessor->getCommand();    
-    gameEngine.transition(*command->getGameCommand(), command->getParam());
-    while (*(gameEngine.current_state) != assign_reinforcement) {
-        printAvailableCommands(gameEngine);
+    transition(*command->getGameCommand(), command->getParam());
+    while (*(this->current_state) != assign_reinforcement) {
+        printAvailableCommands();
         command = commandProcessor->getCommand();
-        gameEngine.transition(*command->getGameCommand(), command->getParam());
+        transition(*command->getGameCommand(), command->getParam());
     }
 }
 
 void GameEngine::reinforcementPhase()
 {
+    cout << "*Reinforcement Phase*" << endl << endl;
+
     for(Player* player: *this->players) {
+        int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
+        if (size_TerritoriesByPlayer < 3) {    //size of territories less than 3
+            player->armyPool += 3;              //default 3 armies
+            cout << player->getName() << " gets default 3 armies." << endl;
+        }
+        else {
+            int armiesToGive = size_TerritoriesByPlayer / 3;
+            player->armyPool += armiesToGive;
+            cout << player->getName() << " gets default " << armiesToGive << " armies." << endl;
+        }
         for(Continent *continent : this->map->listOfContinents) {
             if (continent->isOwnedByPlayer(player)) {           //if player owns all territories of continent
                 int continentBonusValue = continent->getArmyValue();
                 player->armyPool += continentBonusValue;
-            } else {                                            // player does not own all territories of continent
-                int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
-                if(size_TerritoriesByPlayer < 3) {    //size of territories less than 3
-                    player->armyPool += 3;              //default 3 armies
-                } else {
-                    int armiesToGive = size_TerritoriesByPlayer / 3;
-                    player->armyPool += armiesToGive;
-                }
+                cout << player->getName() << " gets additional " << continentBonusValue << " armies as continent bonus for owning the entirety of " << continent->getContName() << endl;
             }
         }
+        cout << player->getName() << " can deploy a total of " << player->armyPool << " troops." << endl << endl;
     }
 }
 
-
 void GameEngine::issueOrdersPhase()
 {
+    cout << "*Issue Order Phase*" << endl << endl; 
+
     for(Player* player: *this->players) {
         Order *order = nullptr;
         while (order == nullptr) {
             for (Order::OrderType orderType: Order::ALL_ORDER_TYPES) {
-                std::cout << static_cast<int>(orderType) << ": " << orderType;
+                std::cout << static_cast<int>(orderType) << ": " << orderType << std::endl;
             }
             std::cout << "Choice: ";
             int orderType;
             std::cin >> orderType;
             switch (orderType) {
                 case 1:
-                    order = new Deploy(Order::OrderType::deploy);
+                    // Ask for the territory to deploy to (get list: 1..4)
+                    std::cout << "Select a territory to deploy armies to: ";
+                    std::cout << this->map->getTerritoriesByPlayer(player);
+
+                    // Ask for number of armies to deploy
+                    int armies = 0;
+                    std::cout << "Select the number of armies to deploy: ";
+                    std::cin >> armies;
+                    //order = new Deploy(Order::OrderType::deploy, player, armies);
                     break;
-                case 2:
-                    order = new Advance(Order::OrderType::advance);
-                    break;
-                case 3:
-                    order = new Bomb(Order::OrderType::bomb);
-                    break;
-                case 4:
-                    order = new Blockade(Order::OrderType::blockade);
-                    break;
-                case 5:
-                    order = new Airlift(Order::OrderType::airlift);
-                    break;
-                case 6:
-                    order = new Negotiate(Order::OrderType::negotiate);
-                    break;
-                default:
-                    std::cout << "Invalid choice";       //**TO DO: LOOP BACK IF INVALID ORDER CHOICE
-                    break;
+//                case 2:
+//
+//                    order = new Advance(Order::OrderType::advance, );
+//                    break;
+//                case 3:
+//                    order = new Bomb(Order::OrderType::bomb);
+//                    break;
+//                case 4:
+//                    order = new Blockade(Order::OrderType::blockade);
+//                    break;
+//                case 5:
+//                    order = new Airlift(Order::OrderType::airlift);
+//                    break;
+//                case 6:
+//                    order = new Negotiate(Order::OrderType::negotiate);
+//                    break;
+//                default:
+//                    std::cout << "Invalid choice";
+//                    break;
             }
         }
         player->issueOrder(order);
@@ -356,11 +371,13 @@ void GameEngine::issueOrdersPhase()
 
 void GameEngine::executeOrdersPhase()
 {
-    std::map<Player*, bool>listPlayerOrder;
+    cout << "*Execution Phase*" << endl << endl;
+
+    std::map<Player*, bool> playerHasOrdersToExecute;
     for(Player* player: *this->players) {
-        listPlayerOrder[player] = true;   //orderList has content
+        playerHasOrdersToExecute[player] = true;   //orderList has content
     }
-    while(containsOrders(listPlayerOrder)) {
+    while(containsOrders(playerHasOrdersToExecute)) {
         for (Player *player:*this->players) {
             if (player->orderList->getSize() > 0) {
                 player->orderList->remove(0);
@@ -396,8 +413,8 @@ void GameEngine::mainGameLoop()
     }
 }
 
-bool GameEngine::containsOrders(std::map<Player*, bool> map) {
-    for (auto it = map.begin(); it != map.end(); ++it) {
+bool GameEngine::containsOrders(std::map<Player*, bool> playerHasOrdersToExecute) {
+    for (auto it = playerHasOrdersToExecute.begin(); it != playerHasOrdersToExecute.end(); ++it) {
         if(it->second)
             return true;    //there is a true value
     }
@@ -485,10 +502,10 @@ void GameEngine::gameStart()
     }
 }
 
-void GameEngine::printAvailableCommands(GameEngine &gameEngine){
+void GameEngine::printAvailableCommands(){
     cout << "Available commands:" << endl;
     vector<GameEngine::GameCommand> commands;
-    gameEngine.getAvailableCommands(commands);
+    getAvailableCommands(commands);
     int counter = 1;
     for (GameEngine::GameCommand command: commands){
         cout << counter++ << ". " << command << endl;

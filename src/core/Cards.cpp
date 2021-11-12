@@ -45,37 +45,37 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck)
     deck->returnCard(this);
     hand->removeCard(this);
 
-    // Show action and create order
-    switch (*this->type) {
-        case bomb: {
-            std::cout << "Playing bomb card";
-            Order* bomb = new Bomb(Order::OrderType::bomb);
-            orderList->add(bomb);
-            break;
-        }
-        case reinforcement: {
-            std::cout << "Playing reinforcement card";
-            break;
-        }
-        case blockade: {
-            std::cout << "Playing blockade card";
-            Order* blockade = new Blockade(Order::OrderType::blockade);
-            orderList->add(blockade);
-            break;
-        }
-        case airlift:{
-            std::cout << "Playing airlift card";
-            Order* airlift = new Airlift(Order::OrderType::airlift);
-            orderList->add(airlift);
-            break;
-        }
-        case diplomacy: {
-            std::cout << "Playing diplomacy card";
-            Order* negotiate = new Negotiate(Order::OrderType::negotiate);
-            orderList->add(negotiate);
-            break;
-        }
-    }
+//    // Show action and create order
+//    switch (*this->type) {
+//        case bomb: {
+//            std::cout << "Playing bomb card";
+//            Order* bomb = new Bomb(Order::OrderType::bomb);
+//            orderList->add(bomb);
+//            break;
+//        }
+//        case reinforcement: {
+//            std::cout << "Playing reinforcement card";
+//            break;
+//        }
+//        case blockade: {
+//            std::cout << "Playing blockade card";
+//            Order* blockade = new Blockade(Order::OrderType::blockade);
+//            orderList->add(blockade);
+//            break;
+//        }
+//        case airlift:{
+//            std::cout << "Playing airlift card";
+//            Order* airlift = new Airlift(Order::OrderType::airlift);
+//            orderList->add(airlift);
+//            break;
+//        }
+//        case diplomacy: {
+//            std::cout << "Playing diplomacy card";
+//            Order* negotiate = new Negotiate(Order::OrderType::negotiate);
+//            orderList->add(negotiate);
+//            break;
+//        }
+//    }
 }
 
 /**

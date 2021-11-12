@@ -32,7 +32,7 @@ public:
     void printAdjTerritory();
     Territory* getAdjTerritoryByName(string name);
     friend ostream& operator << (ostream& out, const Territory& c);
-    friend ostream& operator << (ostream& out, const std::vector<Territory*>*);
+    friend ostream& operator << (ostream& out, const std::vector<Territory*>);
     bool operator== (const Territory&) const;
 
     Player* getOwner(); // get owner of this Territory

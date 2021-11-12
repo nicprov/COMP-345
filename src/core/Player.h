@@ -17,7 +17,7 @@ class Player
 public:
     ~Player();
     Player(const std::string&);
-    Player(const Hand&, const OrderList&, const std::string&, const std::vector<Territory*>*&);
+    Player(const Hand&, const OrderList&, const std::string&, std::vector<Territory*>*);
     // Copy constructor
     Player(const Player&);
     // Assignment operator
@@ -37,5 +37,5 @@ public:
     std::vector<Territory*>* territoriesList;
     int armyPool;
 private:
-    std::string* name;
+    std::string name;
 };
