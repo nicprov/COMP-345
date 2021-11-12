@@ -440,6 +440,7 @@ void GameEngine::gameStart()
         //Assign territories sequentially
         for (int j = 0; j < (nbTerr / nbPlayers); j++) {
             map->listOfTerritories[terrCounter]->setOwner(this->players->at(i));
+            cout << "Assigned to " << players->at(i)->getName() << ": " << *(map->listOfTerritories[terrCounter]) << endl;
             terrCounter++;
         }
         //Add armies to reinforcement pool
