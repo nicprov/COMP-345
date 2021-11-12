@@ -2,15 +2,6 @@
 #include "../core/GameEngine.h"
 using namespace std;
 
-void listAvailableCommands(GameEngine &gameEngine){
-    cout << "Available commands:" << endl;
-    vector<GameEngine::GameCommand> commands;
-    gameEngine.getAvailableCommands(commands);
-    for (GameEngine::GameCommand command: commands){
-        cout << static_cast<int>(command) << ". " << command << endl;
-    }
-    cout << "Choice: ";
-}
 
 void gameEngineDriver() {
     GameEngine gameEngine = GameEngine();

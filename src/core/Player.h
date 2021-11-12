@@ -33,9 +33,9 @@ public:
     OrderList* getOrders();
     Hand* hand;
     OrderList* orderList;
+    bool hasNegotiationWith(Player* enemy);
     Map* territoriesList;
     int armyPool;
-    bool hasNegotiationWith(Player* enemy);
 private:
     std::string* name;
 };

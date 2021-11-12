@@ -43,19 +43,17 @@ public:
     friend std::ostream& operator<< (std::ostream&, const GameCommand&);
     bool operator== (const GameEngine&) const;
     GameState& getGameState();
+    vector<Player *> &getPlayers();
+    Map& getMap();
+    Deck& getDeck();
+
     void getAvailableCommands(std::vector<GameCommand>&);
-    void loadMap();
-    void validateMap();
-    void addPlayers();
-    void gameStart();
-    void transition(GameCommand&);
+
+    void transition(GameCommand&, const std::string& param);
 
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 
-    void registerPlayer(Player*);
-
     void startupPhase(GameEngine& gameEngine);
-
 
     void mainGameLoop();
     void reinforcementPhase();
@@ -69,4 +67,9 @@ private:
     Map* map;
     Deck* deck;
     bool containsOrders(std::map<Player*, bool>);
+    void loadMap(const std::string& mapName);
+    void validateMap();
+    void addPlayer(const std::string& playerName);
+    void gameStart();
+    void registerPlayer(Player*);
 };
