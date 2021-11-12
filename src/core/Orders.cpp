@@ -141,6 +141,7 @@ void Deploy::execute(Player& player)
 {
     if (validate(player))
     {
+        Notify(this);
         cout << "Deploy order executed." << endl;
 
         //player->removeReinforcements(numOfArmies); something like this to remove the number of armies from the total number available.
@@ -151,6 +152,7 @@ void Deploy::execute(Player& player)
     {
         cout << "Deploy order invalid: execute() method fails to execute." << endl;
     }
+
 }
 /**
  * Validate method for Deploy
@@ -165,6 +167,9 @@ bool Deploy::validate(Player& player)
     }
     cout << "Deploy order is invalid." << endl;
     return false;
+}
+std::string Deploy::stringToLog() {
+    return "Order Executed: Deploy";
 }
 
 //************************************************************************* BLOCKADE *******************************************************************************************
@@ -220,10 +225,12 @@ std::ostream& operator<<(std::ostream & stream, const Blockade & blockade)
 /**
  * Execute method if validate() returns true
  */
+
 void Blockade::execute(Player& player)
 {
     if (validate(player))
     {
+        Notify(this);
         cout << "Blockade order executed." << endl;
         target->addTroops(target->getNumberOfArmies() * 2);
         target->setOwner(new Player("Neutral")); //neutral player, come back to this when neutral player implemented
@@ -253,6 +260,10 @@ bool Blockade::validate(Player& player)
     }
     return false;
 }
+std::string Blockade::stringToLog() {
+    return "Order Executed: Blockade";
+}
+
 
 //************************************************************************* ADVANCE *******************************************************************************************
 
@@ -319,6 +330,7 @@ void Advance::execute(Deck &deck, Player& player)
 
     if (validate(player))
     {
+        Notify(this);
         cout << "Advance order executed." << endl;
 
         if (*target->getOwner() == player)
@@ -381,7 +393,14 @@ bool Advance::validate(Player& player)
     return false;
 }
 
+
+std::string Advance::stringToLog() {
+    return "Order Executed: Advance";
+}
+
+
 //************************************************************************* BOMB *******************************************************************************************
+
 
 /**
  * Bomb destructor (overwrites Order destructor)
@@ -442,6 +461,7 @@ void Bomb::execute(Player& player) {
     {
         if (validate(player))
         {
+            Notify(this);
             cout << "Bomb order executed." << endl;
 
             int numDestroyed = target->getNumberOfArmies() / 2;
@@ -484,7 +504,13 @@ bool Bomb::validate(Player& player)
     return false;
 }
 
+std::string Bomb::stringToLog() {
+    return "Order Executed: Bomb";
+}
+
+
 //************************************************************************* AIRLIFT *******************************************************************************************
+
 
 /**
  * Airlift destructor (overwrites Order destructor)
@@ -548,6 +574,7 @@ void Airlift::execute(Player& player)
 {
     if (validate(player))
     {
+        Notify(this);
         cout << "Deploy order executed." << endl;
 
         source->removeTroops(numOfArmies);
@@ -578,7 +605,13 @@ bool Airlift::validate(Player& player)
     return false;
 }
 
+std::string Airlift::stringToLog() {
+    return "Order Executed: Airlift";
+}
+
+
 //************************************************************************* NEGOTIATE *******************************************************************************************
+
 /**
  * Negotiate destructor (overwrites Order destructor)
  */
@@ -632,6 +665,7 @@ void Negotiate::execute(Player& player)
 {
     if (validate(player))
     {
+        Notify(this);
         cout << "Negotiate order executed." << endl;
 
         cout << "NEGOTIATE ORDER: Negotiating... No attack is being performed this turn. (do nothing)\n";
@@ -665,6 +699,11 @@ bool Negotiate::validate(Player& player)
 Player* Negotiate::getEnemy()
 {
     return enemy;
+}
+
+std::string Negotiate::stringToLog() {
+    std::cout << "Order Executed: Negotiate" <<std::endl;
+    return "Order Executed: Negotiate";
 }
 
 //************************************************************************* ORDER LIST *******************************************************************************************
@@ -712,6 +751,7 @@ std::ostream& operator<<(std::ostream & stream, const OrderList & orderList)
 void OrderList::add(Order * order)
 {
     this->orders->push_back(order);
+    Notify(this);
 }
 
 void OrderList::remove(int index)
@@ -725,10 +765,29 @@ void OrderList::remove(int index)
         throw std::runtime_error("Cannot remove order, index out of range");
 }
 
-void OrderList::move(Order * order, int newIndex, int oldIndex)
+void OrderList::move(Order* order, int newIndex, int oldIndex)
 {
     if (newIndex < this->orders->size()) {
-        this->orders->insert(this->orders->begin() + newIndex, new Order(*order));
+        switch (order->getOrderType()) {
+            case Order::OrderType::negotiate:
+                this->orders->insert(this->orders->begin() + newIndex, new Negotiate(*dynamic_cast<Negotiate*>(order)));
+                break;
+            case Order::OrderType::airlift:
+                this->orders->insert(this->orders->begin() + newIndex, new Airlift(*dynamic_cast<Airlift*>(order)));
+                break;
+            case Order::OrderType::bomb:
+                this->orders->insert(this->orders->begin() + newIndex, new Bomb(*dynamic_cast<Bomb*>(order)));
+                break;
+            case Order::OrderType::advance:
+                this->orders->insert(this->orders->begin() + newIndex, new Advance(*dynamic_cast<Advance*>(order)));
+                break;
+            case Order::OrderType::blockade:
+                this->orders->insert(this->orders->begin() + newIndex, new Blockade(*dynamic_cast<Blockade*>(order)));
+                break;
+            case Order::OrderType::deploy:
+                this->orders->insert(this->orders->begin() + newIndex, new Deploy(*dynamic_cast<Deploy*>(order)));
+                break;
+        }
         this->orders->erase(this->orders->begin() + (oldIndex - 1));
     }
     else
@@ -746,3 +805,11 @@ bool OrderList::operator==(const OrderList & orderList) const {
 int OrderList::getSize() {
     return this->orders->size();
 }
+
+
+std::string OrderList::stringToLog() {
+    std::string currentOrder = std::to_string(orders->at(this->orders->size()-1)->getOrderType());
+    return "Order Issued: " + currentOrder;
+}
+
+

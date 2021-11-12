@@ -7,8 +7,9 @@
 #include "Player.h"
 #include "Map.h"
 #include "Cards.h"
+#include "LoggingObserver.h"
 
-class GameEngine{
+class GameEngine : public Subject{
 public:
     enum GameState{
         start=1,
@@ -46,30 +47,26 @@ public:
     vector<Player *> &getPlayers();
     Map& getMap();
     Deck& getDeck();
-
     void getAvailableCommands(std::vector<GameCommand>&);
-
     void transition(GameCommand&, const std::string& param);
+    void startupPhase(GameEngine& gameEngine);
+    void mainGameLoop();
+    std::string stringToLog();
 
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
-
-    void startupPhase(GameEngine& gameEngine);
-
-    void mainGameLoop();
-    void reinforcementPhase();
-    void issueOrdersPhase();
-    void executeOrdersPhase();
-    void listAvailableCommands(GameEngine& gameEngine);
 
 private:
     GameState *current_state;
     std::vector<Player*>* players;
     Map* map;
     Deck* deck;
+    void printAvailableCommands(GameEngine& gameEngine);
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
     bool containsOrders(std::map<Player*, bool>);
     void loadMap(const std::string& mapName);
     void validateMap();
     void addPlayer(const std::string& playerName);
     void gameStart();
-    void registerPlayer(Player*);
 };
