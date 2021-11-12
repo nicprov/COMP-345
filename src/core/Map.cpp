@@ -701,7 +701,6 @@ MapLoader& MapLoader:: operator = (const MapLoader& map)
  */
 MapLoader::~MapLoader()
 {
-    delete this->mapFileName;
 }
 
 /**
@@ -710,7 +709,7 @@ MapLoader::~MapLoader()
  */
 MapLoader::MapLoader(string mapFileName)
 {
-    this->mapFileName = new string(mapFileName);
+    this->mapFileName = mapFileName;
 }
 
 /**
@@ -719,135 +718,115 @@ MapLoader::MapLoader(string mapFileName)
  * @param filename Name of map file that will be played with.
  * @return Map Object.
  */
-Map* MapLoader::GetMap(Map* map, string filename)
+void MapLoader::readMap(Map* map)
 {
-    return ReadMap(map, filename);
-}
+    Continent* newContinent;
+    Territory* newTerritory;
+    string line = "";
+    bool hasContinent = false;
+    bool hasTerritory = false;
+    bool hasAdj = false;
 
-Map* MapLoader::ReadMap(Map* map, string mapFileName)
-{
-    try
+    ifstream inStream;
+    inStream.open(mapFileName);
+
+    if (inStream.fail())
+        throw std::runtime_error("Unable to open file");
+    else
     {
-        Continent* newContinent;
-        Territory* newTerritory;
-        string line = "";
-        bool hasContinent = false;
-        bool hasTerritory = false;
-        bool hasAdj = false;
-
-        ifstream inStream;
-        inStream.open(mapFileName);
-
-        if (inStream.fail())
+        while (getline(inStream, line))
         {
-            cout << "Error! File could not be read. \n";
-            return nullptr;
+            if (line.find("[continents]") == 0)
+            {
+                getline(inStream, line);
+
+                int index = 1;
+
+                while (line.find("[countries]") != 0)
+                {
+                    if (line == "")
+                        break;
+
+                    //Split line to access different attributes of continents
+                    vector<string> attributes = splitString(line);
+                    newContinent = new Continent(index /*stores continent id*/, attributes[0]/*stores continent name*/, stoi(attributes[1])/*stores army value as an integer*/);
+                    map->addContinent(newContinent);
+                    cout << "New Continent: " << index << " " << attributes[0] << " " << attributes[1] << endl;
+                    index++;
+                    getline(inStream, line);
+                }
+
+                cout << endl;
+                hasContinent = true;
+            }
+
+            if (line.find("[countries]") == 0 && hasContinent)
+            {
+                getline(inStream, line);
+
+                while (line.find("[borders]") != 0)
+                {
+                    if (line == "")
+                        break;
+
+                    vector<string> attributes = splitString(line);
+                    newTerritory = new Territory(stoi(attributes[0])/*stores territory id as an integer*/, attributes[1] /*stores territory name*/, stoi(attributes[2])/*stores the continent id the territory belongs to as an integer*/);
+                    map->listOfContinents[stoi(attributes[2]) - 1]->addTerritory(newTerritory); //adds the territory to a continent.
+                    map->addTerritory(newTerritory); //adds the territory to list of all territories.
+
+                    cout << "New Territory: " << attributes[0] << " " << attributes[1] << " " << attributes[2] << endl;
+                    getline(inStream, line);
+                }
+
+                hasTerritory = true;
+            }
+
+            if (line.find("[borders]") == 0 && hasContinent && hasTerritory)
+            {
+                getline(inStream, line);
+                while (!line.empty())
+                {
+                    if (line == "")
+                        break;
+
+                    vector<string> adjTerritories = splitString(line);
+                    Territory* t1 = map->getTerritory(stoi(adjTerritories[0]));
+                    cout << "\nNew Border: " << adjTerritories[0];
+                    for (int i = 1; i < adjTerritories.size(); i++)
+                    {
+                        Territory* t2 = map->getTerritory(stoi(adjTerritories[i]));
+                        map->addAdjTerritory(t1, t2);
+
+                        cout << " " << adjTerritories[i];
+                    }
+
+
+                    getline(inStream, line);
+                }
+
+                hasAdj = true;
+            }
+        }
+
+        if (hasContinent && hasTerritory && hasAdj)
+        {
+            // Map is valid
+            inStream.close();
         }
         else
         {
-            while (getline(inStream, line))
-            {
-                if (line.find("[continents]") == 0)
-                {
-                    getline(inStream, line);
-
-                    int index = 1;
-
-                    while (line.find("[countries]") != 0)
-                    {
-                        if (line == "")
-                            break;
-
-                        //Split line to access different attributes of continents
-                        vector<string> attributes = SplitString(line);
-                        newContinent = new Continent(index /*stores continent id*/, attributes[0]/*stores continent name*/, stoi(attributes[1])/*stores army value as an integer*/);
-                        map->addContinent(newContinent);
-                        cout << "New Continent: " << index << " " << attributes[0] << " " << attributes[1] << endl;
-                        index++;
-                        getline(inStream, line);
-                    }
-
-                    cout << endl;
-                    hasContinent = true;
-                }
-
-                if (line.find("[countries]") == 0 && hasContinent)
-                {
-                    getline(inStream, line);
-
-                    while (line.find("[borders]") != 0)
-                    {
-                        if (line == "")
-                            break;
-
-                        vector<string> attributes = SplitString(line);
-                        newTerritory = new Territory(stoi(attributes[0])/*stores territory id as an integer*/, attributes[1] /*stores territory name*/, stoi(attributes[2])/*stores the continent id the territory belongs to as an integer*/);
-                        map->listOfContinents[stoi(attributes[2]) - 1]->addTerritory(newTerritory); //adds the territory to a continent.
-                        map->addTerritory(newTerritory); //adds the territory to list of all territories.
-
-                        cout << "New Territory: " << attributes[0] << " " << attributes[1] << " " << attributes[2] << endl;
-                        getline(inStream, line);
-                    }
-
-                    hasTerritory = true;
-                }
-
-                if (line.find("[borders]") == 0 && hasContinent && hasTerritory)
-                {
-                    getline(inStream, line);
-                    while (!line.empty())
-                    {
-                        if (line == "")
-                            break;
-
-                        vector<string> adjTerritories = SplitString(line);
-                        Territory* t1 = map->getTerritory(stoi(adjTerritories[0]));
-                        cout << "\nNew Border: " << adjTerritories[0];
-                        for (int i = 1; i < adjTerritories.size(); i++)
-                        {
-                            Territory* t2 = map->getTerritory(stoi(adjTerritories[i]));
-                            map->addAdjTerritory(t1, t2);
-
-                            cout << " " << adjTerritories[i];
-                        }
-
-
-                        getline(inStream, line);
-                    }
-
-                    hasAdj = true;
-                }
-            }
-
-            if (hasContinent && hasTerritory && hasAdj)
-            {
-                //cout << "\n\nThe Map is valid. \n";
-                inStream.close();
-                return map;
-            }
-            else
-            {
-                //cout << "\n\nThe Map is invalid \n";
-                inStream.close();
-                return nullptr;
-            }
+            // Map is invalid
+            inStream.close();
+            throw std::runtime_error("Map is invalid");
         }
     }
-
-    catch (const exception& e)
-    {
-        return nullptr;
-        cerr << "An Error has occured! \n";
-    }
-
-    return nullptr;
 }
 
 /**
  * Split string read from the map file.
  * Code taken from ideone.com/R9RJCf
  */
-vector<string> MapLoader::SplitString(string s)
+vector<string> MapLoader::splitString(string s)
 {
     istringstream iss(s);
     vector<string> v;

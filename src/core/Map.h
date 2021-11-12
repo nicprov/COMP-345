@@ -127,17 +127,16 @@ class MapLoader
 {
 public:
     MapLoader();
-    MapLoader(MapLoader& map);
+    MapLoader(MapLoader&);
     MapLoader& operator = (const MapLoader& map);
     ~MapLoader();
 
     MapLoader(string mapFileName);
-    virtual Map* GetMap(Map* map, string filename);
-    Map* ReadMap(Map* map, string mapFileName);
+    void readMap(Map* map);
     friend ostream& operator<<(std::ostream& o, const MapLoader& ml);
 
-    vector<string> SplitString(string s);
+    vector<string> splitString(string s);
 
 private:
-    string* mapFileName;
+    string mapFileName;
 };
