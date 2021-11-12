@@ -132,7 +132,7 @@ public:
     ~MapLoader();
 
     MapLoader(string mapFileName);
-    void getMap(Map* map);
+    void readMap(Map* map);
     friend ostream& operator<<(std::ostream& o, const MapLoader& ml);
 
     vector<string> splitString(string s);

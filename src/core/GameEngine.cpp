@@ -392,7 +392,7 @@ void GameEngine::loadMap(const std::string& mapName)
 {
     this->map->setMapName(mapName);
     auto mapLoader = MapLoader(mapName);
-    mapLoader.getMap(map);
+    mapLoader.readMap(map);
 }
 
 void GameEngine::validateMap()

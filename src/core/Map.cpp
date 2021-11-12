@@ -718,7 +718,7 @@ MapLoader::MapLoader(string mapFileName)
  * @param filename Name of map file that will be played with.
  * @return Map Object.
  */
-void MapLoader::getMap(Map* map)
+void MapLoader::readMap(Map* map)
 {
     Continent* newContinent;
     Territory* newTerritory;

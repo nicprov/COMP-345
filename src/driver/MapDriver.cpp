@@ -17,7 +17,7 @@ void mapDriver()
 		Map* map = new Map(mapName);
 		MapLoader* mapLoader = new MapLoader(mapName);
 
-        mapLoader->getMap(map);
+        mapLoader->readMap(map);
         if(map!= nullptr){
             if (map->validate())
                 isValid = true;
