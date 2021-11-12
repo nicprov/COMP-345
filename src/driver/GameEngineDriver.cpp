@@ -1,14 +1,11 @@
 #include <iostream>
 #include "../core/GameEngine.h"
-using namespace std;
+#include "../core/CommandProcessing.h"
 
-
-void gameEngineDriver() {
-    GameEngine gameEngine = GameEngine();
-    auto* logObserver = new LogObserver(&gameEngine);
+int main() {
+    GameEngine gameEngine;
     cout << "==========================" << endl;
     cout << "Welcome to Warzone" << endl;
     cout << "==========================" << endl;
-    gameEngine.startupPhase(gameEngine);
-    gameEngine.Detach(logObserver);
+    gameEngine.startupPhase(new CommandProcessor(gameEngine));
 }

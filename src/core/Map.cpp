@@ -162,12 +162,13 @@ bool Territory::operator==(const Territory &territory) const {
     return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->owner == territory.owner && this->numberOfArmies == territory.numberOfArmies;
 }
 
-ostream &operator<<(ostream &out, const vector<Territory*> territoryList) {
+ostream &operator<<(ostream &out, const std::vector<Territory*> territoryList) {
     if (territoryList.empty())
         return out << "No territories in list";
 
+    int count = 1;
     for (Territory* territory: territoryList){
-        out << *territory;
+        out << count++ << ". " << *territory << std::endl;
     }
     return out;
 }

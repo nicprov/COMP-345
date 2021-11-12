@@ -32,7 +32,7 @@ public:
     void printAdjTerritory();
     Territory* getAdjTerritoryByName(string name);
     friend ostream& operator << (ostream& out, const Territory& c);
-    friend ostream& operator << (ostream& out, const std::vector<Territory*>*);
+    friend ostream& operator << (ostream& out, std::vector<Territory*>);
     bool operator== (const Territory&) const;
 
     Player* getOwner(); // get owner of this Territory
@@ -49,11 +49,9 @@ private:
     string terrName;
     int contIndex;
     int numberOfArmies; //number of armies in a given Territory
-
     Player* owner;
-
-    string* name;
-    int* army;
+    string name;
+    int army;
 };
 
 

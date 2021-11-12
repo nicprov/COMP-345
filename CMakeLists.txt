@@ -32,6 +32,30 @@ target_link_libraries(tests PRIVATE Catch2::Catch2WithMain Boost::algorithm Boos
 
 add_executable(main ${CMAKE_SOURCE_DIR}/src/driver/MainDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
 
+add_executable(cards ${CMAKE_SOURCE_DIR}/src/driver/CardsDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
+
+add_executable(commandProcessing ${CMAKE_SOURCE_DIR}/src/driver/CommandProcessingDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
+
+add_executable(gameEngine ${CMAKE_SOURCE_DIR}/src/driver/GameEngineDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
+
+add_executable(map ${CMAKE_SOURCE_DIR}/src/driver/MapDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
+
+add_executable(orders ${CMAKE_SOURCE_DIR}/src/driver/OrdersDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
+
+add_executable(player ${CMAKE_SOURCE_DIR}/src/driver/PlayerDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
+
 target_link_libraries(main Boost::algorithm Boost::assign)
+
+target_link_libraries(cards Boost::algorithm Boost::assign)
+
+target_link_libraries(commandProcessing Boost::algorithm Boost::assign)
+
+target_link_libraries(gameEngine Boost::algorithm Boost::assign)
+
+target_link_libraries(map Boost::algorithm Boost::assign)
+
+target_link_libraries(orders Boost::algorithm Boost::assign)
+
+target_link_libraries(player Boost::algorithm Boost::assign)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)

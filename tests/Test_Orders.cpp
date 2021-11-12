@@ -6,20 +6,20 @@
  */
 TEST_CASE("Order constructor initializes and get type")
 {
-    Order* order = new Advance(Order::OrderType::advance);
-    REQUIRE(order->getOrderType() == Order::OrderType::advance);
+    Order* order = new Bomb(Order::OrderType::bomb, new Player("john"), new Territory());
+    REQUIRE(order->getOrderType() == Order::OrderType::bomb);
 }
 
 TEST_CASE("Order copy constructor initializes")
 {
-    Order* order = new Deploy(Order::OrderType::deploy);
+    Order* order = new Deploy(Order::OrderType::deploy, new Player("test"), new Territory(), 0);
     Order* order2 = new Deploy(*dynamic_cast<Deploy*>(order));
     REQUIRE(*order == *order2);
 }
 
 TEST_CASE("Order assignment operator initializes")
 {
-    Order* order = new Deploy(Order::OrderType::deploy);
+    Order* order = new Deploy(Order::OrderType::deploy, new Player("test"), new Territory(), 0);
     Order* order2 = order;
     REQUIRE(*order == *order2);
 }
@@ -37,7 +37,7 @@ TEST_CASE("OrderList constructor initializes")
 TEST_CASE("OrderList copy constructor initializes")
 {
     OrderList* orderList = new OrderList();
-    orderList->add(new Advance(Order::OrderType::advance));
+    orderList->add(new Deploy(Order::OrderType::deploy, new Player("test"), new Territory(), 0));
     OrderList* orderList2 = new OrderList(*orderList);
     REQUIRE(*orderList == *orderList2);
 }
@@ -45,7 +45,7 @@ TEST_CASE("OrderList copy constructor initializes")
 TEST_CASE("OrderList assignment operator initializes")
 {
     OrderList* orderList = new OrderList();
-    orderList->add(new Advance(Order::OrderType::advance));
+    orderList->add(new Deploy(Order::OrderType::deploy, new Player("test"), new Territory(), 0));
     OrderList* orderList2 = orderList;
     REQUIRE(*orderList == *orderList2);
 }

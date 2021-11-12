@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void cardsDriver(){
+int main(){
     // Create a deck of Warzone cards
     Deck* deck = new Deck();
     cout << *deck << endl;

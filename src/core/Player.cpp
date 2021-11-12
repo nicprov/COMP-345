@@ -2,7 +2,6 @@
 #include "Orders.h"
 #include "Cards.h"
 #include <vector>
-using namespace  std;
 
 //Player methods
 
@@ -11,13 +10,9 @@ using namespace  std;
  */
 Player::~Player()
 {
-    delete this->name;          //deallocate memory
-    name = nullptr;                //prevents dangling pointer errors
     delete this->hand;
     hand = nullptr;
     delete this->orderList;
-    orderList = nullptr;
-    delete this->territoriesList;
     orderList = nullptr;
 }
 
@@ -26,11 +21,9 @@ Player::~Player()
  * @param name
  */
 Player::Player(const std::string &name) {
-    this->name = new std::string(name);
+    this->name = name;
     this->hand = new Hand();
     this->orderList = new OrderList();
-    this->armyPool = 0;
-    this->territoriesList = new Map();
     this->armyPool = 0;
 }
 
@@ -40,13 +33,12 @@ Player::Player(const std::string &name) {
  * @param orderlist
  * @param name
  */
-Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name, const Map &territoriesList)
+Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name)
 {
     this->armyPool = 0;
     this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
-    this->name = new std::string(name);
-    this->territoriesList = new Map(territoriesList);
+    this->name = name;
 }
 
 /**
@@ -57,8 +49,7 @@ Player::Player(const Player &player)
 {
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
-    this->name = new std::string(*player.name);
-    this->territoriesList = new Map(*player.territoriesList);
+    this->name = player.name;
     this->armyPool = player.armyPool;
 }
 
@@ -71,7 +62,8 @@ Player& Player::operator= (const Player& player)
 {
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
-    this->name = new std::string(*player.name);
+    this->name = player.name;
+    this->armyPool = player.armyPool;
     return *this;
 }
 
@@ -83,7 +75,7 @@ Player& Player::operator= (const Player& player)
  */
 std::ostream &operator<<(std::ostream &stream, const Player &player)
 {
-    return stream << "Player(" << *player.name << "): " << *player.hand << ", " << *player.orderList << ", Army pool:" << player.armyPool;
+    return stream << "Player(" << player.name << "): " << *player.hand << ", " << *player.orderList << ", Army pool:" << player.armyPool;
 }
 
 /**
@@ -91,17 +83,17 @@ std::ostream &operator<<(std::ostream &stream, const Player &player)
  * @param order
  */
 void Player::issueOrder(Order* order) {
-    if (armyPool == 0) {
-        this->orderList->add(order);
-    }
-    else {
-        this->orderList->add(new Deploy(Order::OrderType::deploy));
-        armyPool -= 1;
-    }
-    if(this->hand->getCards().size() != 0 ){
-        this->hand->getCards();
-        //**********call play()********************
-    }
+//    if (armyPool == 0) {
+//        this->orderList->add(order);
+//    }
+//    else {
+//        this->orderList->add(new Deploy(Order::OrderType::deploy));
+//        armyPool -= 1;
+//    }
+//    if(!this->hand->getCards().empty()){
+//        this->hand->getCards();
+//        //**********call play()********************
+//    }
 }
 
 /**
@@ -110,29 +102,30 @@ void Player::issueOrder(Order* order) {
  * @return bool value of true (match) or false (does not match)
  */
 bool Player::operator==(const Player &player) const {
-    return *this->name == *player.name && *this->orderList == *player.orderList && *this->hand == *player.hand;
+    return this->name == player.name && *this->orderList == *player.orderList && *this->hand == *player.hand;
 }
 
 /**
  * Create and display territories to defend
  * @return content of territory
  */
-std::vector<Territory *>* Player::toDefend() {
-    auto* territoriesToDefend = new std::vector<Territory*>;
-    Territory* territory = new Territory(1,"Alabama",2);
-    territoriesToDefend->push_back(territory);
-    return territoriesToDefend;
+std::vector<Territory*> Player::toDefend(Map& map) {
+    return map.getTerritoriesByPlayer(this);
 }
 
 /**
  * Create and display territories to attack
  * @return content of territory
  */
-std::vector<Territory *>* Player::toAttack() {
-    auto* territoriesToAttack = new std::vector<Territory*>;
-    Territory* territory = new Territory(2,"Alabama",2);
-    territoriesToAttack->push_back(territory);
-    return territoriesToAttack;
+std::vector<Territory *> Player::toAttack(Map& map) {
+    auto neighbouringTerritories = vector<Territory*>();
+    for (Territory* playerTerritory: map.getTerritoriesByPlayer(this)){
+        for (Territory* neighbouringTerritory: playerTerritory->listOfAdjTerr){
+            if (!(std::find(neighbouringTerritories.begin(), neighbouringTerritories.end(), neighbouringTerritory) != neighbouringTerritories.end())) // Check if territory is already in list
+                neighbouringTerritories.push_back(neighbouringTerritory);
+        }
+    }
+    return neighbouringTerritories;
 }
 
 /**
@@ -141,7 +134,7 @@ std::vector<Territory *>* Player::toAttack() {
  */
 std::string &Player::getName()
 {
-    return *this->name;
+    return this->name;
 }
 
 /**
