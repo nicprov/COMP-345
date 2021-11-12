@@ -44,21 +44,21 @@ std::string FileLineReader::readLineFromFile()
 }
 
 // Command class
-Command::Command(GameEngine::GameCommand &gameCommand)
+Command::Command(const GameEngine::GameCommand &gameCommand)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
     this->param = "";
     this->effect = "";
 }
 
-Command::Command(GameEngine::GameCommand &gameCommand, const std::string& param)
+Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
     this->param = param;
     this->effect = "";
 }
 
-Command::Command(GameEngine::GameCommand &gameCommand, const std::string& param, const std::string& effect)
+Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param, const std::string& effect)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
     this->param = param;
@@ -129,10 +129,12 @@ CommandProcessor &CommandProcessor::operator= (const CommandProcessor &commandPr
     return *this;
 }
 
-void CommandProcessor::getCommand()
+Command* CommandProcessor::getCommand()
 {
     Command* command = this->readCommand();
     this->saveCommand(command);
+
+    return command;
 }
 
 Command* CommandProcessor::validate(const std::string& command, const std::string& param)
@@ -173,7 +175,7 @@ Command* CommandProcessor::readCommand()
         std::vector<std::string> inputSplit;
         boost::split(inputSplit, inputCommand, boost::is_any_of("\t "));
         _command = boost::algorithm::to_lower_copy(inputSplit.at(0));
-        if ((_command == "loadmap" || _command == "addplayer") && inputSplit.size() == 2) // Get effect only if command is loadmap or addplayer
+        if ((_command == "loadmap" || _command == "addplayer") && inputSplit.size() == 2) // Get param only if command is loadmap or addplayer
             _param = boost::algorithm::to_lower_copy(inputSplit.at(1));
         else
             _param = "";

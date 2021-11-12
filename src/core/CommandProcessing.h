@@ -21,9 +21,9 @@ private:
 
 class Command : public Subject{
 public:
-    Command(GameEngine::GameCommand&);
-    Command(GameEngine::GameCommand&, const std::string&);
-    Command(GameEngine::GameCommand&, const std::string&, const std::string&);
+    Command(const GameEngine::GameCommand&);
+    Command(const GameEngine::GameCommand&, const std::string&);
+    Command(const GameEngine::GameCommand&, const std::string&, const std::string&);
     Command(const Command&);
     Command& operator= (const Command&);
     friend std::ostream& operator<< (std::ostream&, const Command&);
@@ -45,7 +45,7 @@ public:
     CommandProcessor(const CommandProcessor&);
     CommandProcessor& operator= (const CommandProcessor&);
     friend std::ostream& operator<< (std::ostream&, const CommandProcessor&);
-    void getCommand();
+    Command* getCommand();
     Command* validate(const std::string&, const std::string&);
     std::string stringToLog();
 protected:

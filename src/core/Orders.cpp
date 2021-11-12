@@ -765,10 +765,29 @@ void OrderList::remove(int index)
         throw std::runtime_error("Cannot remove order, index out of range");
 }
 
-void OrderList::move(Order * order, int newIndex, int oldIndex)
+void OrderList::move(Order* order, int newIndex, int oldIndex)
 {
     if (newIndex < this->orders->size()) {
-        this->orders->insert(this->orders->begin() + newIndex, new Order(*order));
+        switch (order->getOrderType()) {
+            case Order::OrderType::negotiate:
+                this->orders->insert(this->orders->begin() + newIndex, new Negotiate(*dynamic_cast<Negotiate*>(order)));
+                break;
+            case Order::OrderType::airlift:
+                this->orders->insert(this->orders->begin() + newIndex, new Airlift(*dynamic_cast<Airlift*>(order)));
+                break;
+            case Order::OrderType::bomb:
+                this->orders->insert(this->orders->begin() + newIndex, new Bomb(*dynamic_cast<Bomb*>(order)));
+                break;
+            case Order::OrderType::advance:
+                this->orders->insert(this->orders->begin() + newIndex, new Advance(*dynamic_cast<Advance*>(order)));
+                break;
+            case Order::OrderType::blockade:
+                this->orders->insert(this->orders->begin() + newIndex, new Blockade(*dynamic_cast<Blockade*>(order)));
+                break;
+            case Order::OrderType::deploy:
+                this->orders->insert(this->orders->begin() + newIndex, new Deploy(*dynamic_cast<Deploy*>(order)));
+                break;
+        }
         this->orders->erase(this->orders->begin() + (oldIndex - 1));
     }
     else
