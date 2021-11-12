@@ -19,7 +19,7 @@ private:
     int lineCount;
 };
 
-class Command{
+class Command : public Subject{
 public:
     Command(const GameEngine::GameCommand&);
     Command(const GameEngine::GameCommand&, const std::string&);
@@ -32,13 +32,14 @@ public:
     GameEngine::GameCommand* getGameCommand();
     std::string getParam();
     std::string getEffect();
+    std::string stringToLog();
 private:
     GameEngine::GameCommand* command;
     std::string param;
     std::string effect;
 };
 
-class CommandProcessor {
+class CommandProcessor : public Subject{
 public:
     CommandProcessor(const GameEngine &gameEngine);
     CommandProcessor(const CommandProcessor&);
@@ -46,6 +47,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const CommandProcessor&);
     Command* getCommand();
     Command* validate(const std::string&, const std::string&);
+    std::string stringToLog();
 protected:
     void saveCommand(Command*);
     virtual Command* readCommand();

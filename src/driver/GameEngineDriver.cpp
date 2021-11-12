@@ -5,7 +5,7 @@ using namespace std;
 
 void gameEngineDriver() {
     GameEngine gameEngine = GameEngine();
-
+    LogObserver* ge = new LogObserver(&gameEngine);
     cout << "==========================" << endl;
     cout << "Welcome to Warzone" << endl;
     cout << "==========================" << endl;
@@ -22,4 +22,5 @@ void gameEngineDriver() {
         auto command = static_cast<GameEngine::GameCommand>(choice);
         gameEngine.transition(command);
     }*/
+    gameEngine.Detach(ge);
 }

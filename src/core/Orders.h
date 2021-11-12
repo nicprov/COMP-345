@@ -3,8 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-//To use the territory and player classes
+#include "LoggingObserver.h"
 #include "Map.h"
 #include "Player.h"
 #include "Cards.h"
@@ -13,7 +12,7 @@ class Player;
 class Territory;
 class Deck;
 
-class Order {
+class Order: public Subject {
 public:
     enum OrderType {
         deploy = 1,
@@ -32,6 +31,7 @@ public:
     OrderType& getOrderType();
     virtual void execute();
     virtual bool validate();
+    virtual std::string stringToLog() =0;
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = { deploy, advance, bomb, blockade, airlift, negotiate };
 protected:
     OrderType* orderType; //pointer to ordertype of order
@@ -47,6 +47,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Deploy&); // Stream output operator
     void execute(Player&); //execute method for deploy orders
     bool validate(Player&); //validate method for deploy orders
+    std::string stringToLog();
 private:
     Territory* territory;
     int numOfArmies;
@@ -62,6 +63,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Advance&); // Stream output operator
     void execute(Deck&, Player&); //execute method for advance orders
     bool validate(Player&); //validate method for advance orders
+    std::string stringToLog();
 private:
     Territory* source;
     Territory* target;
@@ -78,6 +80,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Bomb&); // Stream output operator
     void execute(Player&); //execute method for bomb orders
     bool validate(Player&); //validate method for bomb methods
+    std::string stringToLog();
 private:
     Territory* target;
 };
@@ -92,6 +95,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
     void execute(Player&); //execute method for blockade order
     bool validate(Player&); //execute method for validate order
+    std::string stringToLog();
 private:
     Territory* target;
 };
@@ -106,6 +110,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Airlift&); // Stream output operator
     void execute(Player&); //execute method for airlift order
     bool validate(Player&); //valid method for airlift order
+    std::string stringToLog();
 private:
     Territory* source;
     Territory* target;
@@ -123,11 +128,12 @@ public:
     void execute(Player&); //execute method for negotiate order
     bool validate(Player&); //validate method for negotiate order
     Player* getEnemy(); //get enemy
+    std::string stringToLog();
 private:
     Player* enemy;
 };
 
-class OrderList {
+class OrderList: public Subject {
 public:
     ~OrderList();
     OrderList();
@@ -140,6 +146,7 @@ public:
     void move(Order*, int newIndex, int oldIndex);
     std::vector<Order*> getOrders();
     int getSize();
+    std::string stringToLog();
 private:
     std::vector<Order*>* orders;
 };
