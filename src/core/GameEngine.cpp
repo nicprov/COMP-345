@@ -302,7 +302,7 @@ void GameEngine::reinforcementPhase()
                 int continentBonusValue = continent->getArmyValue();
                 player->armyPool += continentBonusValue;
             } else {                                            // player does not own all territories of continent
-                int size_TerritoriesByPlayer = player->territoriesList->getTerritoriesByPlayer(player).size();
+                int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
                 if(size_TerritoriesByPlayer < 3) {    //size of territories less than 3
                     player->armyPool += 3;              //default 3 armies
                 } else {
@@ -371,14 +371,29 @@ void GameEngine::executeOrdersPhase()
 
 void GameEngine::mainGameLoop()
 {
-    while(true){
-        reinforcementPhase();
-        issueOrdersPhase();
-        executeOrdersPhase();
+    bool playing = true;
+    while(playing){
+        bool allcontinents;
+        for(Player* player: *this->players) {
+            allcontinents = true;
+            for(Continent* continent: map->listOfContinents){
+                if(!continent->isOwnedByPlayer(player)){
+                    allcontinents = false;
+                }
+            }
+            if(map->getTerritoriesByPlayer(player).empty()){
+                removePlayer(player->getName());
+            }
+        }
+        if(allcontinents){
+            playing = false;
+        }
+        else{
+            reinforcementPhase();
+            issueOrdersPhase();
+            executeOrdersPhase();
+        }
     }
-    //for each state (execute orders, issue order, etc. )
-    // for player in player
-    // call method: ie. issueOrdersPhase(player reference)
 }
 
 bool GameEngine::containsOrders(std::map<Player*, bool> map) {
@@ -424,7 +439,16 @@ void GameEngine::addPlayer(const std::string& playerName)
         }
     }
 }
-
+void GameEngine::removePlayer(const std::string &playerName) {
+    int count=0;
+    for(Player* player: *this->players){
+        if(player->getName() == playerName){
+            players->erase(players->begin()+count);
+            break;
+        }
+        count++;
+    }
+}
 
 void GameEngine::gameStart()
 {

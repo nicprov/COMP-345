@@ -17,8 +17,10 @@ Player::~Player()
     hand = nullptr;
     delete this->orderList;
     orderList = nullptr;
-    delete this->territoriesList;
-    orderList = nullptr;
+    for(Territory* territory: *this->territoriesList ){
+        delete territory;
+    }
+
 }
 
 /**
@@ -30,7 +32,7 @@ Player::Player(const std::string &name) {
     this->hand = new Hand();
     this->orderList = new OrderList();
     this->armyPool = 0;
-    this->territoriesList = new Map();
+    this->territoriesList = new vector<Territory*>;
     this->armyPool = 0;
 }
 
@@ -40,13 +42,13 @@ Player::Player(const std::string &name) {
  * @param orderlist
  * @param name
  */
-Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name, const Map &territoriesList)
+Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name, const vector<Territory*>* &territoryList)
 {
     this->armyPool = 0;
     this->hand = new Hand(hand);
     this->orderList = new OrderList(orderlist);
     this->name = new std::string(name);
-    this->territoriesList = new Map(territoriesList);
+    this->territoriesList = new vector(*territoryList);
 }
 
 /**
@@ -58,7 +60,7 @@ Player::Player(const Player &player)
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
     this->name = new std::string(*player.name);
-    this->territoriesList = new Map(*player.territoriesList);
+    this->territoriesList = new vector(*player.territoriesList);
     this->armyPool = player.armyPool;
 }
 
@@ -72,6 +74,7 @@ Player& Player::operator= (const Player& player)
     this->hand = new Hand(*player.hand);
     this->orderList = new OrderList(*player.orderList);
     this->name = new std::string(*player.name);
+    this->territoriesList = new vector(*player.territoriesList);
     return *this;
 }
 
@@ -118,9 +121,7 @@ bool Player::operator==(const Player &player) const {
  * @return content of territory
  */
 std::vector<Territory *>* Player::toDefend() {
-    auto* territoriesToDefend = new std::vector<Territory*>;
-    Territory* territory = new Territory(1,"Alabama",2);
-    territoriesToDefend->push_back(territory);
+    auto* territoriesToDefend = this->territoriesList;
     return territoriesToDefend;
 }
 
@@ -130,8 +131,11 @@ std::vector<Territory *>* Player::toDefend() {
  */
 std::vector<Territory *>* Player::toAttack() {
     auto* territoriesToAttack = new std::vector<Territory*>;
-    Territory* territory = new Territory(2,"Alabama",2);
-    territoriesToAttack->push_back(territory);
+    for(Territory* territory: *territoriesList){
+        for(Territory* adj : territory->listOfAdjTerr){
+            territoriesToAttack->push_back(adj);
+        }
+    }
     return territoriesToAttack;
 }
 
