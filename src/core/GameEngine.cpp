@@ -319,7 +319,6 @@ void GameEngine::reinforcementPhase()
     }
 }
 
-
 void GameEngine::issueOrdersPhase()
 {
     cout << "*Issue Order Phase*" << endl << endl; 

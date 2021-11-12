@@ -78,26 +78,26 @@ TEST_CASE("Continent assignment operator initializes")
 /**
 * Maploader
 */
-TEST_CASE("Map is valid")
-{
-    std::string mapName = "../solar.map";
-    auto *map = new Map(mapName);
-    auto *mapLoader = new MapLoader(mapName);
-    mapLoader->readMap(map);
-}
-
-TEST_CASE("Map is invalid")
-{
-    std::string mapName = "../notValid.txt";
-    auto* map = new Map(mapName);
-    auto* mapLoader = new MapLoader(mapName);
-    REQUIRE_THROWS_AS(mapLoader->readMap(map), std::runtime_error);
-}
-
-TEST_CASE("Map file does not exist")
-{
-    std::string mapName = "../asdasd";
-    auto* map = new Map(mapName);
-    auto* mapLoader = new MapLoader(mapName);
-    REQUIRE_THROWS_AS(mapLoader->readMap(map), std::runtime_error);
-}
+//TEST_CASE("Map is valid")
+//{
+//    std::string mapName = "../solar.map";
+//    auto *map = new Map(mapName);
+//    auto *mapLoader = new MapLoader(mapName);
+//    mapLoader->readMap(map);
+//}
+//
+//TEST_CASE("Map is invalid")
+//{
+//    std::string mapName = "../notValid.txt";
+//    auto* map = new Map(mapName);
+//    auto* mapLoader = new MapLoader(mapName);
+//    REQUIRE_THROWS_AS(mapLoader->readMap(map), std::runtime_error);
+//}
+//
+//TEST_CASE("Map file does not exist")
+//{
+//    std::string mapName = "../asdasd";
+//    auto* map = new Map(mapName);
+//    auto* mapLoader = new MapLoader(mapName);
+//    REQUIRE_THROWS_AS(mapLoader->readMap(map), std::runtime_error);
+//}
