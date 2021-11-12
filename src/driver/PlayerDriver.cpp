@@ -8,14 +8,16 @@ void PlayerDriver(){
     Hand* hand = new Hand();
     auto* name = new std::string("Jonathan");
     int* army = new int(10);
-    auto* player = new Player(*hand, *orderlist, *name, *army);
-    cout << *player << endl;
-
-    Order* deploy = new Deploy(Order::OrderType::deploy);
-    player->issueOrder(deploy);
-    cout << *player << endl;
-
-    //cout << "To Attack: " << player->toAttack();
-    //cout << endl;
-    //cout << "To Defend: " << player->toDefend();
+    //auto* player = new Player(*hand, *orderlist, *name, *army);
+//    auto* territoriesList = new Map();
+//    //auto* player = new Player(*hand, *orderlist, *name, *territoriesList);
+//    cout << *player << endl;
+//
+//    Order* deploy = new Deploy(Order::OrderType::deploy);
+//    player->issueOrder(deploy);
+//    cout << *player << endl;
+//
+//    cout << "To Attack: " << player->toAttack();
+//    cout << endl;
+//    cout << "To Defend: " << player->toDefend();
 }

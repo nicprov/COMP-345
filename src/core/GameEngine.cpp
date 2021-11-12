@@ -4,6 +4,7 @@
 #include "GameEngine.h"
 #include "Orders.h"
 
+
 const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gameCommandMapping = boost::assign::map_list_of("loadmap", GameEngine::GameCommand::load_map)
         ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
         ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
@@ -17,7 +18,7 @@ GameEngine::GameEngine()
     this->current_state = new GameState(GameState::start);
     this->map = new Map();
     this->players = new vector<Player*>();
-
+    this->deck = new Deck();
 }
 
 /**
@@ -295,9 +296,23 @@ void GameEngine::startupPhase(GameEngine& gameEngine)
 
 void GameEngine::reinforcementPhase()
 {
-
+    for(Player* player: *this->players) {
+        for(Continent *continent : this->map->listOfContinents) {
+            if (continent->isOwnedByPlayer(player)) {           //if player owns all territories of continent
+                int continentBonusValue = continent->getArmyValue();
+                player->armyPool += continentBonusValue;
+            } else {                                            // player does not own all territories of continent
+                int size_TerritoriesByPlayer = player->territoriesList->getTerritoriesByPlayer(player).size();
+                if(size_TerritoriesByPlayer < 3) {    //size of territories less than 3
+                    player->armyPool += 3;              //default 3 armies
+                } else {
+                    int armiesToGive = size_TerritoriesByPlayer / 3;
+                    player->armyPool += armiesToGive;
+                }
+            }
+        }
+    }
 }
-
 
 
 void GameEngine::issueOrdersPhase()
@@ -439,7 +454,7 @@ void GameEngine::gameStart() {
             terrCounter++;
         }
         //Add armies to reinforcement pool
-        this->players->at(i)->armyPool = new int(50);
+        this->players->at(i)->armyPool = 50;
 
         //Draw 2 cards
         players->at(i)->hand->addCard(deck->draw());

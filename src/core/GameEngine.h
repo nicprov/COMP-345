@@ -71,6 +71,5 @@ private:
     void validateMap();
     void addPlayer(const std::string& playerName);
     void gameStart();
-
     void registerPlayer(Player*);
 };

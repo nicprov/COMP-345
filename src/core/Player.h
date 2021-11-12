@@ -10,13 +10,14 @@ class Order;
 class OrderList;
 class Hand;
 class Territory;
+class Map;
 
 class Player
 {
 public:
     ~Player();
     Player(const std::string&);
-    Player(const Hand&, const OrderList&, const std::string&, int&);
+    Player(const Hand&, const OrderList&, const std::string&, const Map&);
     // Copy constructor
     Player(const Player&);
     // Assignment operator
@@ -33,8 +34,8 @@ public:
     Hand* hand;
     OrderList* orderList;
     bool hasNegotiationWith(Player* enemy);
-    int* armyPool;
-
+    Map* territoriesList;
+    int armyPool;
 private:
     std::string* name;
 };
