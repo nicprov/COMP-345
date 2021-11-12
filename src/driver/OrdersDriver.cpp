@@ -1,15 +1,64 @@
 #include <iostream>
 #include "../core/Orders.h"
-#include "../core/LoggingObserver.h"
 
 using std::cout;
 using std::endl;
 
-void ordersDriver() {
+int main() {
+
+    Deck* deck = new Deck();
+
+    Card* card1 = new Card(Card::CardType::bomb);
+    Card* card2 = new Card(Card::CardType::blockade);
+    Card* card3 = new Card(Card::CardType::airlift);
+    Card* card4 = new Card(Card::CardType::diplomacy);
+    auto* orderlist1 = new OrderList();
+    auto* territories1 = new std::vector<Territory*>();
+    auto* territories2 = new std::vector<Territory*>();
+    Hand* hand1 = new Hand();
+    hand1->addCard(card1);
+    hand1->addCard(card2);
+    hand1->addCard(card3);
+    hand1->addCard(card4);
+    auto* name1 = "Jonathan";
+    auto* player1 = new Player(*hand1, *orderlist1, name1, territories1);
+
+    auto* orderlist2 = new OrderList();
+    Hand* hand2 = new Hand();
+    auto* name2 = "Janet";
+    auto* player2 = new Player(*hand2, *orderlist2, name2, territories2);
+
+    string mapName = "../solar.map";
+    Map* map = new Map(mapName);
+    auto* mapLoader = new MapLoader(mapName);
+    mapLoader->readMap(map);
+
+    cout << endl;
+
+    Territory* terr1_1 = map->getTerritory(1);
+    Territory* terr1_2 = map->getTerritory(2);
+    Territory* terr1_3 = map->getTerritory(10);
+    Territory* terr2_1 = map->getTerritory(3);
+    Territory* terr2_2 = map->getTerritory(17);
+
+    terr1_1->setOwner(player1);
+    terr1_2->setOwner(player1);
+    terr1_3->setOwner(player1);
+
+    terr2_1->setOwner(player2);
+
+    terr1_1->addTroops(5);
+    terr1_2->addTroops(5);
+    terr1_3->addTroops(5);
+    terr2_1->addTroops(5);
+    terr2_2->addTroops(5);
+
+    cout << "Player 1 " << *hand1 << endl;
+    cout << "Player 2 " << *hand2 << endl;
 
     // Add all order types
     OrderList orderList = OrderList();
-    LogObserver* oList = new LogObserver(&orderList);
+    auto* oList = new LogObserver(&orderList);
     Order* deploy = new Deploy(Order::OrderType::deploy);
     Order* advance = new Advance(Order::OrderType::advance);
     Order* bomb = new Bomb(Order::OrderType::bomb);
@@ -22,14 +71,12 @@ void ordersDriver() {
     orderList.add(blockade);
     orderList.add(airlift);
     orderList.add(negotiate);
-    LogObserver* ODeploy = new LogObserver(deploy);
-    LogObserver* OAdvance = new LogObserver(advance);
-    LogObserver* OBomb = new LogObserver(bomb);
-    LogObserver* OBlockade = new LogObserver(blockade);
-    LogObserver* OAirlift = new LogObserver(airlift);
-    LogObserver* ONegotiate = new LogObserver(negotiate);
-
-
+    auto* ODeploy = new LogObserver(deploy);
+    auto* OAdvance = new LogObserver(advance);
+    auto* OBomb = new LogObserver(bomb);
+    auto* OBlockade = new LogObserver(blockade);
+    auto* OAirlift = new LogObserver(airlift);
+    auto* ONegotiate = new LogObserver(negotiate);
 
     // Show orders
     cout << orderList << endl;
@@ -74,5 +121,4 @@ void ordersDriver() {
 
     //Show orderList again after changes
     cout << orderList;
-
 }

@@ -280,17 +280,16 @@ bool GameEngine::operator==(const GameEngine &gameEngine) const
 * addplayer, gamestart through commands
 * @param gameEngine with state 'start'
 */
-void GameEngine::startupPhase(GameEngine& gameEngine)
+void GameEngine::startupPhase(CommandProcessor* commandProcessor)
 {
-    CommandProcessor* commandProcessor = new CommandProcessor(gameEngine);
     std::cout << std::endl << "*Startup Phase*" << std::endl << std::endl;
-    printAvailableCommands(gameEngine);
+    printAvailableCommands();
     Command* command = commandProcessor->getCommand();    
-    gameEngine.transition(*command->getGameCommand(), command->getParam());
-    while (*(gameEngine.current_state) != assign_reinforcement) {
-        printAvailableCommands(gameEngine);
+    transition(*command->getGameCommand(), command->getParam());
+    while (*(this->current_state) != assign_reinforcement) {
+        printAvailableCommands();
         command = commandProcessor->getCommand();
-        gameEngine.transition(*command->getGameCommand(), command->getParam());
+        transition(*command->getGameCommand(), command->getParam());
     }
 }
 
@@ -337,31 +336,24 @@ void GameEngine::issueOrdersPhase()
             switch (orderType) {
                 case 1:
                     order = new Deploy(Order::OrderType::deploy);
-                    player->orderList->add(order);
                     break;
                 case 2:
                     order = new Advance(Order::OrderType::advance);
-                    player->orderList->add(order);
                     break;
                 case 3:
                     order = new Bomb(Order::OrderType::bomb);
-                    player->orderList->add(order);
                     break;
                 case 4:
                     order = new Blockade(Order::OrderType::blockade);
-                    player->orderList->add(order);
                     break;
                 case 5:
                     order = new Airlift(Order::OrderType::airlift);
-                    player->orderList->add(order);
                     break;
                 case 6:
                     order = new Negotiate(Order::OrderType::negotiate);
-                    player->orderList->add(order);
                     break;
                 default:
                     std::cout << "Invalid choice";
-                    order = nullptr;//**TO DO: LOOP BACK IF INVALID ORDER CHOICE
                     break;
             }
         }
@@ -373,11 +365,11 @@ void GameEngine::executeOrdersPhase()
 {
     cout << "*Execution Phase*" << endl << endl;
 
-    std::map<Player*, bool>listPlayerOrder;
+    std::map<Player*, bool> playerHasOrdersToExecute;
     for(Player* player: *this->players) {
-        listPlayerOrder[player] = true;   //orderList has content
+        playerHasOrdersToExecute[player] = true;   //orderList has content
     }
-    while(containsOrders(listPlayerOrder)) {
+    while(containsOrders(playerHasOrdersToExecute)) {
         for (Player *player:*this->players) {
             if (player->orderList->getSize() > 0) {
                 player->orderList->remove(0);
@@ -413,8 +405,8 @@ void GameEngine::mainGameLoop()
     }
 }
 
-bool GameEngine::containsOrders(std::map<Player*, bool> map) {
-    for (auto it = map.begin(); it != map.end(); ++it) {
+bool GameEngine::containsOrders(std::map<Player*, bool> playerHasOrdersToExecute) {
+    for (auto it = playerHasOrdersToExecute.begin(); it != playerHasOrdersToExecute.end(); ++it) {
         if(it->second)
             return true;    //there is a true value
     }
@@ -502,10 +494,10 @@ void GameEngine::gameStart()
     }
 }
 
-void GameEngine::printAvailableCommands(GameEngine &gameEngine){
+void GameEngine::printAvailableCommands(){
     cout << "Available commands:" << endl;
     vector<GameEngine::GameCommand> commands;
-    gameEngine.getAvailableCommands(commands);
+    getAvailableCommands(commands);
     int counter = 1;
     for (GameEngine::GameCommand command: commands){
         cout << counter++ << ". " << command << endl;

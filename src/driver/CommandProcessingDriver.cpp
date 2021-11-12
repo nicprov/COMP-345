@@ -1,13 +1,13 @@
+#include <iostream>
 #include "../core/CommandProcessing.h"
 
-void commandProcessingDriver(CommandProcessor* commandProcessor){
+int main(){
     GameEngine gameEngine;
-    LogObserver* cp = new LogObserver(commandProcessor);
-    while (true)
-        commandProcessor->getCommand();
-//    auto* fileCommandProcessorAdapter = new FileCommandProcessorAdapter(gameEngine, "../commands.txt");
-//    fileCommandProcessorAdapter->getCommand();
-//    fileCommandProcessorAdapter->getCommand();
-//    fileCommandProcessorAdapter->getCommand();
-    commandProcessor->Detach(cp);
+    auto* commandProcessor = new CommandProcessor(gameEngine);
+    Command* command = commandProcessor->getCommand();
+    std::cout << *command << std::endl;
+
+    auto* fileCommandProcessor = new FileCommandProcessorAdapter(gameEngine, "../commands.txt");
+    Command* fileCommand = fileCommandProcessor->getCommand();
+    std::cout << *fileCommand << std::endl;
 }
