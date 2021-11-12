@@ -84,10 +84,19 @@ std::ostream &operator<<(std::ostream &stream, const Command &_command)
     return stream << "Command (" << *_command.command << "), Param (" << _command.param << ")";
 }
 
+std::string Command::toString(){
+    std::string strCommand;
+    for (auto& it: GameEngine::gameCommandMapping){
+        if (it.second == *this->command)
+            strCommand = it.first;
+    }
+    return "Command (" + strCommand + "), Param (" + this->param + ")";
+}
+
 void Command::saveEffect(const std::string& effect)
 {
     this->effect = effect;
-    Notify(this);
+    notify(this);
 }
 
 Command& Command::getCommand()
@@ -109,23 +118,23 @@ std::string Command::getEffect() {
 }
 
 std::string Command::stringToLog() {
-    return "Command Effect: " + this->getEffect();
+    return "Command's Effect: " + this->getEffect();
 }
 
 // CommandProcessor class
 CommandProcessor::CommandProcessor(const GameEngine &gameEngine): gameEngine(const_cast<GameEngine &>(gameEngine))
 {
-    this->commands = new std::vector<Command*>();
+    this->commands = std::vector<Command*>();
 }
 
 CommandProcessor::CommandProcessor(const CommandProcessor &commandProcessor): gameEngine(commandProcessor.gameEngine)
 {
-    this->commands = new std::vector<Command*>(*commandProcessor.commands);
+    this->commands = std::vector<Command*>(commandProcessor.commands);
 }
 
 CommandProcessor &CommandProcessor::operator= (const CommandProcessor &commandProcessor)
 {
-    this->commands = new std::vector<Command*>(*commandProcessor.commands);
+    this->commands = std::vector<Command*>(commandProcessor.commands);
     return *this;
 }
 
@@ -133,7 +142,6 @@ Command* CommandProcessor::getCommand()
 {
     Command* command = this->readCommand();
     this->saveCommand(command);
-
     return command;
 }
 
@@ -158,9 +166,10 @@ Command* CommandProcessor::validate(const std::string& command, const std::strin
 
 void CommandProcessor::saveCommand(Command* command)
 {
-    if (command != nullptr)
-        this->commands->push_back(command);
-        Notify(this);
+    if (command != nullptr){
+        this->commands.push_back(command);
+        notify(this);
+    }
 }
 
 Command* CommandProcessor::readCommand()
@@ -190,15 +199,15 @@ Command* CommandProcessor::readCommand()
 }
 
 std::string CommandProcessor::stringToLog() {
-    return "Command: ";
+    return "Command: " + this->commands.back()->toString();
 }
 
 std::ostream &operator<<(std::ostream &stream, const CommandProcessor &commandProcessor)
 {
     stream << "Commands[";
     int counter = 1;
-    for (Command* command: *commandProcessor.commands){
-        if (counter++ < commandProcessor.commands->size())
+    for (Command* command: commandProcessor.commands){
+        if (counter++ < commandProcessor.commands.size())
             stream << command->getCommand() << ",";
         else
             stream << command->getCommand();
@@ -220,7 +229,7 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProces
 
 FileCommandProcessorAdapter &FileCommandProcessorAdapter::operator= (const FileCommandProcessorAdapter &fileCommandProcessorAdapter)
 {
-    this->commands = new std::vector<Command*>(*fileCommandProcessorAdapter.commands);
+    this->commands = std::vector<Command*>(fileCommandProcessorAdapter.commands);
     return *this;
 }
 

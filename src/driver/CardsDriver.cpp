@@ -15,7 +15,7 @@ int main(){
     hand->addCard(deck->draw());
     cout << *hand << endl;
 
-    OrderList* orderList = new OrderList();
+    auto* orderList = new OrderList();
 
     // Call play method on all cards in hand
     for (Card* card: hand->getCards()){
