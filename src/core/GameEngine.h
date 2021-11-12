@@ -72,6 +72,7 @@ private:
     void loadMap(const std::string& mapName);
     void validateMap();
     void addPlayer(const std::string& playerName);
+    void removePlayer(const std::string& playerName);
     void gameStart();
     void registerPlayer(Player*);
 };

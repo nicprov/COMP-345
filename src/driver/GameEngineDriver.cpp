@@ -11,6 +11,7 @@ void gameEngineDriver() {
     cout << "==========================" << endl;
 
     gameEngine.startupPhase(gameEngine);
+    gameEngine.mainGameLoop();
     /*int choice = 0;
     while (choice != 11){
         listAvailableCommands(gameEngine);
