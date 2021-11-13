@@ -34,6 +34,14 @@ Territory::Territory(int tid, string tn, int contID)
     contIndex = contID;
 }
 
+/**
+ * Parameterized constructor
+ * @param tid Territory Id
+ * @param tn Territory Name
+ * @param contID Corresponding continent id to the territory.
+ * @param numArmies number of armies in a territory
+ * @param p player owning the territory
+ */
 Territory::Territory(int tid, string tn, int contID, int numArmies, Player* p)
 {
     terrIndex = tid;
@@ -87,46 +95,73 @@ Territory::~Territory()
     }
 }
 
+/**
+ * Get the territory index
+ */
 int Territory::getTerrIndex()
 {
     return terrIndex;
 }
 
+/**
+ * Get the territory name
+ */
 string Territory::getTerrName()
 {
     return terrName;
 }
 
+/**
+ * Get the continent index
+ */
 int Territory::getContIndex()
 {
     return contIndex;
 }
 
+/**
+ * Get the number of armies
+ */
 int Territory::getNumberOfArmies()
 {
     return numberOfArmies;
 }
 
+/**
+ * Set the territory index
+ */
 void Territory::setTerrIndex(int tid)
 {
     terrIndex = tid;
 }
 
+/**
+ * Set the territory name
+ */
 void Territory::setTerrName(string tn)
 {
     terrName = tn;
 }
 
+/**
+ * Set the contient index
+ */
 void Territory::setContIndex(int contID)
 {
     contIndex = contID;
 }
 
+/**
+ * Set the number of armies
+ */
 void Territory::setNumberOfArmies(int numArmies)
 {
     numberOfArmies = numArmies;
 }
 
+/**
+ * Get the name of adjacent territories
+ */
 Territory* Territory::getAdjTerritoryByName(string name)
 {
     for (int i = 0; i < this->listOfAdjTerr.size(); i++)
@@ -158,10 +193,16 @@ ostream& operator << (ostream& out, const Territory& t)
     return out << "Territory [" << t.terrName << ", " << t.terrIndex << "]";
 }
 
+/**
+ * Check if 2 territories are the same
+ */
 bool Territory::operator==(const Territory &territory) const {
     return this->listOfAdjTerr == territory.listOfAdjTerr && this->terrName == territory.terrName && this->contIndex == territory.contIndex && this->terrIndex == territory.terrIndex && this->owner == territory.owner && this->numberOfArmies == territory.numberOfArmies;
 }
 
+/**
+ * Stream output operator
+ */
 ostream &operator<<(ostream &out, const std::vector<Territory*> territoryList) {
     if (territoryList.empty())
         return out << "No territories in list";
@@ -312,42 +353,65 @@ Continent::~Continent()
     }
 }
 
+/**
+ * Get the continent index
+ */
 int Continent::getCIndex()
 {
     return cIndex;
 }
 
+/**
+ * Get the continent name
+ */
 string Continent::getContName()
 {
     return contName;
 }
 
+/**
+ * Get the army value of a continent
+ */
 int Continent::getArmyValue()
 {
     return armyValue;
 }
 
+/**
+ * Set the continent index
+ */
 void Continent::setCIndex(int cid)
 {
     cIndex = cid;
 }
 
+/**
+ * Set the continent name
+ */
 void Continent::setContName(string cn)
 {
     contName = cn;
 }
 
+/**
+ * Set the army value
+ */
 void Continent::setArmyValue(int armyV)
 {
     armyValue = armyV;
 }
 
+/**
+ * Add a territory
+ */
 void Continent::addTerritory(Territory* t)
 {
     listOfTerritories.push_back(t);
 }
 
-
+/**
+ * Get a territory
+ */
 Territory* Continent::getTerritory(int id)
 {
     for (int i = 0; i < listOfTerritories.size(); i++)
@@ -360,7 +424,7 @@ Territory* Continent::getTerritory(int id)
 }
 
 /**
- * Output Stream for Continents.
+ * Output Stream for Continents
  */
 ostream& operator << (ostream& out, const Continent& c)
 {
@@ -375,10 +439,16 @@ ostream& operator << (ostream& out, const Continent& c)
     return out;
 }
 
+/**
+ * Check if 2 continents are the same
+ */
 bool Continent::operator==(const Continent &continent) const {
     return this->listOfTerritories == continent.listOfTerritories && this->contName == continent.contName && this->armyValue == continent.armyValue && this->cIndex == continent.cIndex && this->listOfAdjCont == continent.listOfAdjCont;
 }
 
+/**
+ * Check if the continent is owned by a player
+ */
 bool Continent::isOwnedByPlayer(Player* player) {
     for (Territory* territory: this->listOfTerritories){
         if (territory->getOwner() != player)
@@ -448,41 +518,65 @@ Map::~Map()
     }
 }
 
+/**
+ * Get the name of the map
+ */
 string Map::getMapName()
 {
     return mapName;
 }
 
+/**
+ * Set the name of the map
+ */
 void Map::setMapName(string mn)
 {
     mapName = mn;
 }
 
+/**
+ * Add a continent
+ */
 void Map::addContinent(Continent* c)
 {
     listOfContinents.push_back(c);
 }
 
+/**
+ * Add a territory
+ */
 void Map::addTerritory(Territory* t)
 {
     listOfTerritories.push_back(t);
 }
 
+/**
+ * Add an adjacent territory
+ */
 void Map::addAdjTerritory(Territory* t1, Territory* t2)
 {
     t1->listOfAdjTerr.push_back(t2);
 }
 
+/**
+ * Add an adjacent continent
+ */
 void Map::addAdjContinent(Continent* c1, Continent* c2)
 {
     c1->listOfAdjCont.push_back(c2);
 }
 
+/**
+ * Get a contient
+ */
 Continent* Map::getContinent(int cid)
 {
     return listOfContinents[cid - 1];
 }
 
+/**
+ * Get a territory
+ */
 Territory* Map::getTerritory(int tid)
 {
     return listOfTerritories[tid - 1];
@@ -655,10 +749,16 @@ ostream& operator << (ostream& out, const Map& m)
     return out;
 }
 
+/**
+ * Check if 2 maps are the same
+ */
 bool Map::operator==(const Map &map) const {
     return this->listOfContinents == map.listOfContinents && this->listOfTerritories == map.listOfTerritories && this->mapName == map.mapName;
 }
 
+/**
+ * vector containing list of player territories
+ */
 vector<Territory*> Map::getTerritoriesByPlayer(Player *player) {
     vector<Territory*> territoriesByPlayer;
     for (Territory* territory: this->listOfTerritories){

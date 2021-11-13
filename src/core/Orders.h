@@ -27,10 +27,10 @@ public:
     Order& operator= (const Order&); // Assignment operator
     friend std::ostream& operator<< (std::ostream&, const Order&); // Stream output operator
     friend std::ostream& operator<< (std::ostream&, const OrderType&); // Stream output operator
-    bool operator== (const Order&) const;
-    OrderType& getOrderType();
-    virtual void execute() = 0;
-    virtual bool validate() = 0;
+    bool operator== (const Order&) const; //equals operator
+    OrderType& getOrderType(); //accessor for OrderType
+    virtual void execute() = 0; //execute order method, virtual to avoid ambiguity with subclass methods
+    virtual bool validate() = 0; //validate order method, virtual to avoid ambiguity with subclass methods
     virtual std::string stringToLog() =0;
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = { deploy, advance, bomb, blockade, airlift, negotiate };
 protected:
@@ -48,9 +48,9 @@ public:
     bool validate(); //validate method for deploy orders
     std::string stringToLog();
 private:
-    Player* player;
-    Territory* territory;
-    int numOfArmies;
+    Player* player; //pointer to the player of the order
+    Territory* territory; //pointer to the territory to deploy to
+    int numOfArmies; //integer number of armies
 };
 
 class Advance : public Order {
@@ -64,11 +64,11 @@ public:
     bool validate(); //validate method for advance orders
     std::string stringToLog();
 private:
-    Deck* deck;
-    Player* player;
-    Territory* source;
-    Territory* target;
-    int numOfArmies;
+    Deck* deck; //pointer to the deck
+    Player* player; //pointer to the player of the order
+    Territory* source; //pointer to source territory
+    Territory* target; //pointer to target territory
+    int numOfArmies; //integer number of armies
 };
 
 class Bomb : public Order {
@@ -82,8 +82,8 @@ public:
     bool validate(); //validate method for bomb methods
     std::string stringToLog();
 private:
-    Player* player;
-    Territory* target;
+    Player* player; //pointer to the player of the order
+    Territory* target; //pointer to target territory
 };
 
 class Blockade : public Order {
@@ -97,8 +97,8 @@ public:
     bool validate(); //execute method for validate order
     std::string stringToLog();
 private:
-    Territory* target;
-    Player* player;
+    Territory* target; //pointer to target territory
+    Player* player; //pointer to the player of the order
 };
 
 class Airlift : public Order {
@@ -112,10 +112,10 @@ public:
     bool validate(); //valid method for airlift order
     std::string stringToLog();
 private:
-    Player* player;
-    Territory* source;
-    Territory* target;
-    int numOfArmies;
+    Player* player; //pointer to the player of the order
+    Territory* source; //pointer to source territory
+    Territory* target; //pointer to target territory
+    int numOfArmies; //integer number of armies
 };
 
 class Negotiate : public Order {
@@ -130,24 +130,24 @@ public:
     Player* getEnemy(); //get enemy
     std::string stringToLog();
 private:
-    Player* player;
-    Player* enemy;
+    Player* player; //pointer to the player of the order
+    Player* enemy; //pointer to the enemy player
 };
 
 class OrderList: public Subject {
 public:
-    ~OrderList();
-    OrderList();
+    ~OrderList(); //destructor
+    OrderList(); //default constructor
     OrderList(const OrderList&); // Copy constructor
     OrderList& operator = (const OrderList&); // Assignment operator
     friend std::ostream& operator<< (std::ostream&, const OrderList&); // Stream output operator
-    bool operator== (const OrderList&) const;
-    void add(Order*);
-    void remove(int);
-    void move(Order*, int newIndex, int oldIndex);
-    std::vector<Order*> getOrders();
+    bool operator== (const OrderList&) const; //equals operator
+    void add(Order*); //add method to append a new Order pointer to list
+    void remove(int); //remove method to remove an Order from an index
+    void move(Order*, int newIndex, int oldIndex); //move method to move a specific order from one index to another
+    std::vector<Order*> getOrders(); //accessor method for order list
     int getSize();
     std::string stringToLog();
 private:
-    std::vector<Order*>* orders;
+    std::vector<Order*>* orders; //pointer to list of order pointers
 };
