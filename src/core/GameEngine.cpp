@@ -20,7 +20,7 @@ GameEngine::GameEngine()
 {
     this->current_state = new GameState(GameState::start);
     this->map = new Map();
-    this->players = new vector<Player*>();
+    this->players = vector<Player*>();
     this->deck = new Deck();
 }
 
@@ -31,7 +31,7 @@ GameEngine::GameEngine()
 GameEngine::GameEngine(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
-    this->players = new vector<Player*> (*gameEngine.players);
+    this->players = vector<Player*>(gameEngine.players);
     this->map = new Map(*gameEngine.map);
     this->deck = new Deck(*gameEngine.deck);
 }
@@ -44,7 +44,7 @@ GameEngine::GameEngine(const GameEngine &gameEngine)
 GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
-    this->players = new vector<Player*> (*gameEngine.players);
+    this->players = vector<Player*>(gameEngine.players);
     this->map = new Map(*gameEngine.map);
     this->deck = new Deck(*gameEngine.deck);
     return *this;
@@ -64,7 +64,7 @@ GameEngine::GameState& GameEngine::getGameState()
  * @return list of players
  */
 vector<Player *> &GameEngine::getPlayers() {
-    return *players;
+    return players;
 }
 
 /**
@@ -127,7 +127,7 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
  * Transition game state based on command
  * @param gameCommand Game command to run
  */
-void GameEngine::transition(Command* command, const std::string& param)
+void GameEngine::transition(Command* command)
 {
     std::string effect;
     bool foundCommand = false;
@@ -140,7 +140,7 @@ void GameEngine::transition(Command* command, const std::string& param)
             switch (gameCommand){
                 case load_map:
                     try {
-                        this->loadMap(param);
+                        this->loadMap(command->getParam());
                         effect = "Map loaded";
                         std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = map_loaded;
@@ -168,12 +168,12 @@ void GameEngine::transition(Command* command, const std::string& param)
                     notify(this);
                     break;
                 case add_player:
-                    this->addPlayer(param, command);
+                    this->addPlayer(command);
                     *current_state = players_added;
                     notify(this);
                     break;
                 case game_start:
-                    if (players->size() < 2) {
+                    if (players.size() < 2) {
                         effect = "Insufficient number of players. Please add more players.";
                         std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
                     }
@@ -189,35 +189,30 @@ void GameEngine::transition(Command* command, const std::string& param)
                 case issue_order:
                     std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = issue_orders;
-                    // TODO: effect
                     command->saveEffect(effect);
                     notify(this);
                     break;
                 case end_issue_order:
                     std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
-                    // TODO: effect
                     command->saveEffect(effect);
                     notify(this);
                     break;
                 case execute_order:
                     std::cout << std::endl << "\x1B[32m" << "Execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
-                    // TODO: effect
                     command->saveEffect(effect);
                     notify(this);
                     break;
                 case end_execute_order:
                     std::cout << std::endl << "\x1B[32m" << "End execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
-                    // TODO: effect
                     command->saveEffect(effect);
                     notify(this);
                     break;
                 case win_game:
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
-                    // TODO: effect
                     command->saveEffect(effect);
                     notify(this);
                     break;
@@ -318,11 +313,11 @@ void GameEngine::startupPhase(CommandProcessor* commandProcessor)
     printAvailableCommands();
     auto* command = commandProcessor->getCommand();
     attachExistingObservers(command);
-    transition(command, command->getParam());
+    transition(command);
     while (*(this->current_state) != assign_reinforcement) {
         printAvailableCommands();
         command = commandProcessor->getCommand();
-        transition(command, command->getParam());
+        transition(command);
     }
 }
 
@@ -333,7 +328,7 @@ void GameEngine::reinforcementPhase()
 {
     cout << "*Reinforcement Phase*" << endl << endl;
 
-    for(Player* player: *this->players) {
+    for(Player* player: this->players) {
         int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
         if (size_TerritoriesByPlayer < 3) {    //size of territories less than 3
             player->armyPool += 3;              //default 3 armies
@@ -353,6 +348,7 @@ void GameEngine::reinforcementPhase()
         }
         cout << player->getName() << " can deploy a total of " << player->armyPool << " troops." << endl << endl;
     }
+    transition(new Command(GameEngine::GameCommand::issue_order)); // change state to issue order
 }
 
 /**
@@ -360,52 +356,11 @@ void GameEngine::reinforcementPhase()
  */
 void GameEngine::issueOrdersPhase()
 {
-    cout << "*Issue Order Phase*" << endl << endl; 
-
-    for(Player* player: *this->players) {
-        Order *order = nullptr;
-        while (order == nullptr) {
-            for (Order::OrderType orderType: Order::ALL_ORDER_TYPES) {
-                std::cout << static_cast<int>(orderType) << ": " << orderType << std::endl;
-            }
-            std::cout << "Choice: ";
-            int orderType;
-            std::cin >> orderType;
-            switch (orderType) {
-                case 1:
-                    // Ask for the territory to deploy to (get list: 1..4)
-                    std::cout << "Select a territory to deploy armies to: ";
-                    std::cout << this->map->getTerritoriesByPlayer(player);
-
-                    // Ask for number of armies to deploy
-                    int armies = 0;
-                    std::cout << "Select the number of armies to deploy: ";
-                    std::cin >> armies;
-                    //order = new Deploy(Order::OrderType::deploy, player, armies);
-                    break;
-//                case 2:
-//
-//                    order = new Advance(Order::OrderType::advance, );
-//                    break;
-//                case 3:
-//                    order = new Bomb(Order::OrderType::bomb);
-//                    break;
-//                case 4:
-//                    order = new Blockade(Order::OrderType::blockade);
-//                    break;
-//                case 5:
-//                    order = new Airlift(Order::OrderType::airlift);
-//                    break;
-//                case 6:
-//                    order = new Negotiate(Order::OrderType::negotiate);
-//                    break;
-//                default:
-//                    std::cout << "Invalid choice";
-//                    break;
-            }
-        }
-        player->issueOrder(order);
+    for (Player* player : this->players) {
+        cout << player->getName() << "'s Turn!" << endl << endl;
+        player->issueOrder(deck,map,players);
     }
+    transition(new Command(GameEngine::GameCommand::end_issue_order)); // change state to end issue order
 }
 
 /**
@@ -416,16 +371,19 @@ void GameEngine::executeOrdersPhase()
     cout << "*Execution Phase*" << endl << endl;
 
     std::map<Player*, bool> playerHasOrdersToExecute;
-    for(Player* player: *this->players) {
+    for(Player* player: this->players) {
         playerHasOrdersToExecute[player] = true;   //orderList has content
     }
-    while(containsOrders(playerHasOrdersToExecute)) {
-        for (Player *player:*this->players) {
+    while(containsOrders(playerHasOrdersToExecute)) { // continue while there are still orders to execute
+        for (Player *player: this->players) { // Round-robin fashion for each player
             if (player->orderList->getSize() > 0) {
+                player->orderList->getOrders().at(0)->execute(); //execute order;
                 player->orderList->remove(0);
-            }
+            } else
+                playerHasOrdersToExecute[player] = false;
         }
     }
+    transition(new Command(GameEngine::GameCommand::end_execute_order)); // change state to end execute order
 }
 
 /**
@@ -434,12 +392,13 @@ void GameEngine::executeOrdersPhase()
  * not control at least one territory, player is removed from game
  *
  */
-void GameEngine::mainGameLoop()
+void GameEngine::mainGameLoop(CommandProcessor* commandProcessor)
 {
+    startupPhase(commandProcessor);
     bool playing = true;
     while(playing){
         bool allcontinents;
-        for(Player* player: *this->players) {
+        for(Player* player: this->players) {
             allcontinents = true;
             for(Continent* continent: map->listOfContinents){
                 if(!continent->isOwnedByPlayer(player)){
@@ -503,28 +462,28 @@ void GameEngine::validateMap()
  * Add players to the game (2 to 6 players allowed)
  * @param playerName string
  */
-void GameEngine::addPlayer(const std::string& playerName, Command* command)
+void GameEngine::addPlayer(Command* command)
 {
     std::string effect;
-    if (players->size() == 6) {
+    if (players.size() == 6) {
         effect = "Maximum number of players reached";
         std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
     }
     else {
         bool found = false;
-        for (Player* player: *this->players){
-            if (player->getName() == playerName) {
-                effect = "Player (" + playerName + ") already exist";
+        for (Player* player: this->players){
+            if (player->getName() == command->getParam()) {
+                effect = "Player (" + command->getParam() + ") already exist";
                 std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
                 found = true;
             }
         }
         if (!found) {
-            effect = "Player (" + playerName + ") added";
+            effect = "Player (" + command->getParam() + ") added";
             std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
-            auto* player = new Player(playerName);
+            auto* player = new Player(command->getParam());
             attachExistingObservers(player->orderList);
-            this->players->push_back(new Player(playerName));
+            this->players.push_back(new Player(command->getParam()));
         }
     }
     command->saveEffect(effect);
@@ -536,9 +495,9 @@ void GameEngine::addPlayer(const std::string& playerName, Command* command)
  */
 void GameEngine::removePlayer(const std::string &playerName) {
     int count=0;
-    for(Player* player: *this->players){
+    for(Player* player: this->players){
         if(player->getName() == playerName){
-            players->erase(players->begin()+count);
+            players.erase(players.begin()+count);
             break;
         }
         count++;
@@ -559,30 +518,30 @@ void GameEngine::gameStart()
 
     //Assign territories, armies and draw card sequentially
     auto nbTerr = map->listOfTerritories.size();
-    auto nbPlayers = players->size();
+    auto nbPlayers = players.size();
     int terrCounter = 0;
 
     for (int i = 0; i < nbPlayers; i++) {
         //Assign territories sequentially
         for (int j = 0; j < (nbTerr / nbPlayers); j++) {
-            map->listOfTerritories[terrCounter]->setOwner(this->players->at(i));
+            map->listOfTerritories[terrCounter]->setOwner(this->players.at(i));
             terrCounter++;
         }
         //Add armies to reinforcement pool
-        this->players->at(i)->armyPool = 50;
+        this->players.at(i)->armyPool = 50;
 
         //Draw 2 cards
-        players->at(i)->hand->addCard(deck->draw());
-        players->at(i)->hand->addCard(deck->draw());
+        players.at(i)->hand->addCard(deck->draw());
+        players.at(i)->hand->addCard(deck->draw());
     }
 
     //Randomize player order
-    std::shuffle(players->begin(), players->end(), default_random_engine(0));
+    std::shuffle(players.begin(), players.end(), default_random_engine(0));
 
     //Print order of play
     std::cout << endl << "The order of play will be: " << endl;
 
-    for (const auto* value : *players) {
+    for (const auto* value : players) {
         cout << *value << endl;
     }
 }

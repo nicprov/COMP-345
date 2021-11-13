@@ -3,11 +3,14 @@
 #include <vector>
 #include <iosfwd>
 #include "Orders.h"
+#include "Player.h"
 
 //class forward reference
 class Hand;
 class Deck;
 class OrderList;
+class Player;
+class Map;
 
 //Card class and function declarations
 class Card
@@ -29,8 +32,9 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Card&);
     friend std::ostream& operator<< (std::ostream&, const CardType&);
     bool operator== (const Card&) const; //Comparison of player
-    void play(OrderList*, Hand*, Deck*); //Play card
+    void play(OrderList*, Hand*, Deck*, Player*, Map*, std::vector<Player*>); //Play card
     CardType& getType();    //get card type
+    void attachExistingObservers(Subject*, const std::vector<Observer*>&);
     static constexpr std::initializer_list<CardType> ALL_Card_Type = { bomb, reinforcement, blockade, airlift, diplomacy }; //initialize card type
 private:
     CardType* type;

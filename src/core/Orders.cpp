@@ -152,7 +152,7 @@ void Deploy::execute()
         notify(this);
         cout << "Deploy order executed." << endl;
 
-        //player->removeReinforcements(numOfArmies); something like this to remove the number of armies from the total number available.
+        player->armyPool -= numOfArmies;
         territory->addTroops(numOfArmies);
         cout << "DEPLOY ORDER: Deploying " << numOfArmies << " armies to " << territory->getTerrName() << "." << endl;
     }
@@ -788,7 +788,7 @@ void OrderList::add(Order * order)
  */
 void OrderList::remove(int index)
 {
-    if (index > 0 && index < this->orders->size()) {
+    if (index >= 0 && index < this->orders->size()) {
         Order* order = this->orders->at(index);
         this->orders->erase(this->orders->begin() + index);
         delete order;

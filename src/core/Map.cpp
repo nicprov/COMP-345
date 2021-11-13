@@ -190,7 +190,7 @@ void Territory::printAdjTerritory()
  */
 ostream& operator << (ostream& out, const Territory& t)
 {
-    return out << "Territory [" << t.terrName << ", " << t.terrIndex << "]";
+    return out << "Territory# " << t.terrIndex << "[" << t.terrName << ", Armies <" << t.numberOfArmies << ">, Owner <" << t.owner->getName() << "]";
 }
 
 /**

@@ -40,8 +40,6 @@ add_executable(gameEngine ${CMAKE_SOURCE_DIR}/src/driver/GameEngineDriver.cpp ${
 
 add_executable(map ${CMAKE_SOURCE_DIR}/src/driver/MapDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
 
-add_executable(logObserver ${CMAKE_SOURCE_DIR}/src/driver/LogObserverDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
-
 add_executable(orders ${CMAKE_SOURCE_DIR}/src/driver/OrdersDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
 
 add_executable(player ${CMAKE_SOURCE_DIR}/src/driver/PlayerDriver.cpp ${CMAKE_SOURCE_DIR}/${CORE})
@@ -53,8 +51,6 @@ target_link_libraries(cards Boost::algorithm Boost::assign)
 target_link_libraries(commandProcessing Boost::algorithm Boost::assign)
 
 target_link_libraries(gameEngine Boost::algorithm Boost::assign)
-
-target_link_libraries(logObserver Boost::algorithm Boost::assign)
 
 target_link_libraries(map Boost::algorithm Boost::assign)
 

@@ -1,22 +1,38 @@
 #include <iostream>
 #include <fstream>
 #include "LoggingObserver.h"
-
+/**
+ * default destructor for ILoggable
+ */
 ILoggable::~ILoggable() {}
-
+/**
+ * default constructor for ILoggable
+ */
 ILoggable::ILoggable() {}
 
+/**
+ * default observer constructor
+ */
 Observer::Observer() {}
 
+/**
+ * default observer destructor
+ */
 Observer::~Observer() {}
-
+/**
+ * parameterized constructor
+ * @param filename where to write the file
+ */
 LogObserver::LogObserver(const std::string& filename)
 {
     this->filename = filename;
 }
 
 LogObserver::~LogObserver() {}
-
+/**
+ * Update method to write log to file
+ * @param loggable
+ */
 void LogObserver::update(ILoggable* loggable)
 {
     std::ofstream file(this->filename, std::ofstream::out | std::ofstream::app);
@@ -25,23 +41,33 @@ void LogObserver::update(ILoggable* loggable)
     else
         throw std::runtime_error("Unable to write to log file");
 }
-
+/**
+ * Constructor for subject
+ */
 Subject::Subject()
 {
     observers = std::vector<Observer*>();
 }
-
+/**
+ * Destructor for subject
+ */
 Subject::~Subject()
 {
     for (Observer* observer: this->observers)
         this->detach(observer);
 }
-
+/**
+ * Attach observer to to a subject
+ * @param o observer to attach
+ */
 void Subject::attach(Observer* o)
 {
     observers.push_back(o);
 }
-
+/**
+ * Detach the observer from the subject
+ * @param o observer pointer
+ */
 void Subject::detach(Observer* o)
 {
     int count = 0;
@@ -53,14 +79,20 @@ void Subject::detach(Observer* o)
         count++;
     }
 }
-
+/**
+ * Notification which calls update method
+ * @param i Iloggable instance
+ */
 void Subject::notify(ILoggable* i)
 {
-   auto iterator = observers.begin();
-   for (; iterator != observers.end(); ++iterator)
-      (*iterator)->update(i);
+    auto iterator = observers.begin();
+    for (; iterator != observers.end(); ++iterator)
+        (*iterator)->update(i);
 }
-
+/**
+ * gets observers vector
+ * @return vector of observers
+ */
 std::vector<Observer*> Subject::getObservers() {
     return this->observers;
 }
