@@ -352,6 +352,7 @@ void Advance::execute()
         else if (!player->hasNegotiationWith(target->getOwner()))
         {
             srand((unsigned)time(0));
+
             while (target->getNumberOfArmies() > 0 && source->getNumberOfArmies() > 0)
             {
                 if (rand() % 10 < 6)
