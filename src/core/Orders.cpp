@@ -295,10 +295,10 @@ void Advance::execute()
         }
         else if (!player->hasNegotiationWith(target->getOwner()))
         {
+            srand(time(nullptr));
+            
             while (target->getNumberOfArmies() > 0 || source->getNumberOfArmies() > 0)
             {
-                srand(time(nullptr));
-
                 if (rand() % 10 < 6)
                     target->removeTroops(1);
 
