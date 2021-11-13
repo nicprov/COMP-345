@@ -8,10 +8,10 @@
 class FileLineReader {
 public:
     ~FileLineReader(); //Destructor
-    FileLineReader(const std::string&); //Parameterized constructor
-    FileLineReader(const FileLineReader&); //Copy constructor
-    FileLineReader& operator= (const FileLineReader&); //Assignment operator
-    friend std::ostream& operator<< (std::ostream&, const FileLineReader&); //Stream output operator
+    FileLineReader(const std::string&); //Copy constructor
+    FileLineReader(const FileLineReader&); //Assignment operator
+    FileLineReader& operator= (const FileLineReader&); //Stream output operator
+    friend std::ostream& operator<< (std::ostream&, const FileLineReader&); 
     std::string filename; //Name of a file
     std::string readLineFromFile(); //Method reads lines from a file until the end of the file
 private:
@@ -19,21 +19,8 @@ private:
     int lineCount; //Number of lines in a file
 };
 
-class Command{
+class Command : public Subject{
 public:
-<<<<<<< Updated upstream
-    Command(GameEngine::GameCommand&);
-    Command(GameEngine::GameCommand&, const std::string&);
-    Command(GameEngine::GameCommand&, const std::string&, const std::string&);
-    Command(const Command&);
-    Command& operator= (const Command&);
-    friend std::ostream& operator<< (std::ostream&, const Command&);
-    void saveEffect(const std::string&);
-    Command& getCommand();
-    GameEngine::GameCommand* getGameCommand();
-    std::string getParam();
-    std::string getEffect();
-=======
     Command(const GameEngine::GameCommand&); //Parameterized constructor
     Command(const GameEngine::GameCommand&, const std::string&); //Parameterized constructor
     Command(const GameEngine::GameCommand&, const std::string&, const std::string&); //Parameterized constructor
@@ -46,29 +33,15 @@ public:
     std::string getParam(); //Get the param
     std::string getEffect(); //Get the effect
     std::string stringToLog(); //Output to log
-    std::string toString(); 
->>>>>>> Stashed changes
+    std::string toString(); // Output string with the command and param.
 private:
     GameEngine::GameCommand* command; //Pointer of type gameCommand to the command
     std::string param; //Parameter
     std::string effect; //Effect
 };
 
-class CommandProcessor {
+class CommandProcessor : public Subject{
 public:
-<<<<<<< Updated upstream
-    CommandProcessor(const GameEngine &gameEngine);
-    CommandProcessor(const CommandProcessor&);
-    CommandProcessor& operator= (const CommandProcessor&);
-    friend std::ostream& operator<< (std::ostream&, const CommandProcessor&);
-    void getCommand();
-    Command* validate(const std::string&, const std::string&);
-protected:
-    void saveCommand(Command*);
-    virtual Command* readCommand();
-    std::vector<Command*>* commands;
-    GameEngine& gameEngine;
-=======
     CommandProcessor(const GameEngine &gameEngine); //Parameterized constructor
     CommandProcessor(const CommandProcessor&); //Copy constructor
     CommandProcessor& operator= (const CommandProcessor&); //Assignment operator
@@ -81,7 +54,6 @@ protected:
     virtual Command* readCommand(); //Virtual method to read the command
     std::vector<Command*> commands; //Vector of commands
     GameEngine& gameEngine; //Reference to the gameEngine
->>>>>>> Stashed changes
 };
 
 class FileCommandProcessorAdapter: public CommandProcessor {

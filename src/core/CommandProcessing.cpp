@@ -67,40 +67,29 @@ std::string FileLineReader::readLineFromFile()
 }
 
 // Command class
-<<<<<<< Updated upstream
-Command::Command(GameEngine::GameCommand &gameCommand)
-=======
 /**
 * Parameterized constructor
 * @param gameCommand game command
 */
 Command::Command(const GameEngine::GameCommand &gameCommand)
->>>>>>> Stashed changes
 {
     this->command = new GameEngine::GameCommand(gameCommand);
     this->param = "";
     this->effect = "";
 }
 
-<<<<<<< Updated upstream
-Command::Command(GameEngine::GameCommand &gameCommand, const std::string& param)
-=======
 /**
  * Parameterized constructor
  * @param gameCommand game command
  * @param param parameter
  */
 Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param)
->>>>>>> Stashed changes
 {
     this->command = new GameEngine::GameCommand(gameCommand);
     this->param = param;
     this->effect = "";
 }
 
-<<<<<<< Updated upstream
-Command::Command(GameEngine::GameCommand &gameCommand, const std::string& param, const std::string& effect)
-=======
 /**
  * Parameterized constructor
  * @param gameCommand game command
@@ -108,7 +97,6 @@ Command::Command(GameEngine::GameCommand &gameCommand, const std::string& param,
  * @param effect
 */
 Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param, const std::string& effect)
->>>>>>> Stashed changes
 {
     this->command = new GameEngine::GameCommand(gameCommand);
     this->param = param;
@@ -142,14 +130,11 @@ Command &Command::operator= (const Command &_command)
 */
 std::ostream &operator<<(std::ostream &stream, const Command &_command)
 {
-<<<<<<< Updated upstream
-    return stream << "Command (" << _command.command << "), Effect (" << _command.effect << " )";
-=======
     return stream << "Command (" << *_command.command << "), Param (" << _command.param << ")";
 }
 
 /**
-* @ returns a string with the commad and param.
+* @ returns a string with the command and param.
 */
 std::string Command::toString(){
     std::string strCommand;
@@ -158,7 +143,6 @@ std::string Command::toString(){
             strCommand = it.first;
     }
     return "Command (" + strCommand + "), Param (" + this->param + ")";
->>>>>>> Stashed changes
 }
 
 /**
@@ -168,6 +152,7 @@ std::string Command::toString(){
 void Command::saveEffect(const std::string& effect)
 {
     this->effect = effect;
+    notify(this);
 }
 
 /**
@@ -200,8 +185,6 @@ std::string Command::getEffect() {
     return this->effect;
 }
 
-<<<<<<< Updated upstream
-=======
 /**
 * Outputs to log
 * @return string with the effect of the command.
@@ -210,7 +193,6 @@ std::string Command::stringToLog() {
     return "Command's Effect: " + this->getEffect();
 }
 
->>>>>>> Stashed changes
 // CommandProcessor class
 /**
 * Parameterized constructor
@@ -218,7 +200,7 @@ std::string Command::stringToLog() {
 */
 CommandProcessor::CommandProcessor(const GameEngine &gameEngine): gameEngine(const_cast<GameEngine &>(gameEngine))
 {
-    this->commands = new std::vector<Command*>();
+    this->commands = std::vector<Command*>();
 }
 
 /**
@@ -227,7 +209,7 @@ CommandProcessor::CommandProcessor(const GameEngine &gameEngine): gameEngine(con
 */
 CommandProcessor::CommandProcessor(const CommandProcessor &commandProcessor): gameEngine(commandProcessor.gameEngine)
 {
-    this->commands = new std::vector<Command*>(*commandProcessor.commands);
+    this->commands = std::vector<Command*>(commandProcessor.commands);
 }
 
 /**
@@ -236,21 +218,18 @@ CommandProcessor::CommandProcessor(const CommandProcessor &commandProcessor): ga
 */
 CommandProcessor &CommandProcessor::operator= (const CommandProcessor &commandProcessor)
 {
-    this->commands = new std::vector<Command*>(*commandProcessor.commands);
+    this->commands = std::vector<Command*>(commandProcessor.commands);
     return *this;
 }
 
-<<<<<<< Updated upstream
-void CommandProcessor::getCommand()
-=======
 /**
 * Gets the command
 */
 Command* CommandProcessor::getCommand()
->>>>>>> Stashed changes
 {
     Command* command = this->readCommand();
     this->saveCommand(command);
+    return command;
 }
 
 /**
@@ -283,8 +262,10 @@ Command* CommandProcessor::validate(const std::string& command, const std::strin
 */
 void CommandProcessor::saveCommand(Command* command)
 {
-    if (command != nullptr)
-        this->commands->push_back(command);
+    if (command != nullptr){
+        this->commands.push_back(command);
+        notify(this);
+    }
 }
 
 /**
@@ -303,13 +284,13 @@ Command* CommandProcessor::readCommand()
         std::vector<std::string> inputSplit;
         boost::split(inputSplit, inputCommand, boost::is_any_of("\t "));
         _command = boost::algorithm::to_lower_copy(inputSplit.at(0));
-        if ((_command == "loadmap" || _command == "addplayer") && inputSplit.size() == 2) // Get effect only if command is loadmap or addplayer
+        if ((_command == "loadmap" || _command == "addplayer") && inputSplit.size() == 2) // Get param only if command is loadmap or addplayer
             _param = boost::algorithm::to_lower_copy(inputSplit.at(1));
         else
             _param = "";
         Command* command = this->validate(_command, _param);
         if (command == nullptr){
-            std::cout << "\x1B[31m" << "Invalid command, try again... " << "\033[0m" << std::endl;
+            std::cout << std::endl << "\x1B[31m" << "Invalid command, try again... " << "\033[0m" << std::endl << std::endl;
         } else {
             return command;
         }
@@ -317,8 +298,6 @@ Command* CommandProcessor::readCommand()
     return nullptr;
 }
 
-<<<<<<< Updated upstream
-=======
 /**
 * Outputs to log
 * @return string of the command.
@@ -330,13 +309,12 @@ std::string CommandProcessor::stringToLog() {
 /**
 * Stream output operator
 */
->>>>>>> Stashed changes
 std::ostream &operator<<(std::ostream &stream, const CommandProcessor &commandProcessor)
 {
     stream << "Commands[";
     int counter = 1;
-    for (Command* command: *commandProcessor.commands){
-        if (counter++ < commandProcessor.commands->size())
+    for (Command* command: commandProcessor.commands){
+        if (counter++ < commandProcessor.commands.size())
             stream << command->getCommand() << ",";
         else
             stream << command->getCommand();
@@ -371,7 +349,7 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProces
 */
 FileCommandProcessorAdapter &FileCommandProcessorAdapter::operator= (const FileCommandProcessorAdapter &fileCommandProcessorAdapter)
 {
-    this->commands = new std::vector<Command*>(*fileCommandProcessorAdapter.commands);
+    this->commands = std::vector<Command*>(fileCommandProcessorAdapter.commands);
     return *this;
 }
 

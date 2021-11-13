@@ -4,9 +4,6 @@
 using std::cout;
 using std::endl;
 
-<<<<<<< Updated upstream
-void ordersDriver() {
-=======
 int main() {
 
     // Inintialize the deck for the game
@@ -68,16 +65,16 @@ int main() {
 
     cout << "Player 1 " << *hand1 << endl;
     cout << "Player 2 " << *hand2 << endl;
->>>>>>> Stashed changes
 
     // Add all order types
     OrderList orderList = OrderList();
-    Order* deploy = new Deploy(Order::OrderType::deploy);
-    Order* advance = new Advance(Order::OrderType::advance);
-    Order* bomb = new Bomb(Order::OrderType::bomb);
-    Order* blockade = new Blockade(Order::OrderType::blockade);
-    Order* airlift = new Airlift(Order::OrderType::airlift);
-    Order* negotiate = new Negotiate(Order::OrderType::negotiate);
+    Order* deploy = new Deploy(Order::OrderType::deploy, player1, terr1_1, 2);
+    Order* advance = new Advance(Order::OrderType::advance, deck, player1, terr1_1, terr2_1, 2);
+    Order* bomb = new Bomb(Order::OrderType::bomb, player1, terr2_1);
+    Order* blockade = new Blockade(Order::OrderType::blockade, player1, terr1_2);
+    Order* airlift = new Airlift(Order::OrderType::airlift, player1, terr1_1, terr1_3, 1);
+    Order* negotiate = new Negotiate(Order::OrderType::negotiate, player1, player2);
+    Order* bomb2 = new Bomb(Order::OrderType::bomb, player1, terr2_2);
     orderList.add(deploy);
     orderList.add(advance);
     orderList.add(bomb);
@@ -90,23 +87,27 @@ int main() {
 
     // Validate then execute all orders
     cout << endl;
-    if (deploy->validate())
-        deploy->execute();
+    deploy->execute();
     cout << endl;
-    if (advance->validate())
-        advance->execute();
+
     cout << endl;
-    if (bomb->validate())
-        bomb->execute();
+    advance->execute();
     cout << endl;
-    if (blockade->validate())
-        blockade->execute();
+
     cout << endl;
-    if (airlift->validate())
-        airlift->execute();
+    bomb->execute();
     cout << endl;
-    if (negotiate->validate())
-        negotiate->execute();
+
+    cout << endl;
+    blockade->execute();
+    cout << endl;
+
+    cout << endl;
+    airlift->execute();
+    cout << endl;
+
+    cout << endl;
+    negotiate->execute();
     cout << endl << endl;
 
     // Remove order
