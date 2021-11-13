@@ -25,4 +25,5 @@ int main(int argc, char *argv[]){
     gameEngine.attach(logObserver);
     commandProcessor->attach(logObserver);
     gameEngine.startupPhase(commandProcessor);
+    gameEngine.mainGameLoop();
 }

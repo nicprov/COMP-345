@@ -40,43 +40,107 @@ Card& Card::operator=(const Card &card)
  * @param hand Hand to remove the card from
  * @param deck Deck to place the card back in
  */
-void Card::play(OrderList *orderList, Hand *hand, Deck *deck)
+void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Map* map, std::vector<Player*>* players)
 {
-//    // Add card back to deck
-//    deck->returnCard(this);
-//    hand->removeCard(this);
-//
-//    // Show action and create order
-//    switch (*this->type) {
-//        case bomb: {
-//            std::cout << "Playing bomb card";
-//            Order* bomb = new Bomb(Order::OrderType::bomb);
-//            orderList->add(bomb);
-//            break;
-//        }
-//        case reinforcement: {
-//            std::cout << "Playing reinforcement card";
-//            break;
-//        }
-//        case blockade: {
-//            std::cout << "Playing blockade card";
-//            Order* blockade = new Blockade(Order::OrderType::blockade);
-//            orderList->add(blockade);
-//            break;
-//        }
-//        case airlift:{
-//            std::cout << "Playing airlift card";
-//            Order* airlift = new Airlift(Order::OrderType::airlift);
-//            orderList->add(airlift);
-//            break;
-//        }
-//        case diplomacy: {
-//            std::cout << "Playing diplomacy card";
-//            Order* negotiate = new Negotiate(Order::OrderType::negotiate);
-//            orderList->add(negotiate);
-//            break;
-//        }
-//    }
+    // Add card back to deck
+    deck->returnCard(this);
+    hand->removeCard(this);
+    //Some initializations to make compiler happy
+    Territory* sourceT = nullptr;
+    Territory* destinationT = nullptr;
+    Territory* targetT = nullptr;
+    Player* enemy = nullptr;
+    int armies = 0;
+    int i = 0;
+
+    Order* order = nullptr;
+    for (Territory* ownedTerr : map->getTerritoriesByPlayer(player)) {
+        i++;
+        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+    }
+    // Show action and create order
+    switch (*this->type) {
+        case bomb: {
+            // Display territories available for bombing
+            i = 0;
+            cout << "List of available territories to bomb: " << endl;
+            for (Territory* canAttack : player->toAttack(*map)) {
+                cout << i << ": " << canAttack->getTerrName() << endl;
+                i++;
+            }
+
+            // Ask for territory to bomb
+            int j;
+            cout << "Select territory to bomb: ";
+            cin >> j;
+            targetT = player->toAttack(*map).at(j);
+
+            order = new Bomb(Order::OrderType::bomb, targetT->getOwner(), targetT);
+            orderList->add(order);
+            break;
+        }
+        case blockade: {
+            // List owned territories
+            i = 0;
+            for (Territory* ownedTerr : map->getTerritoriesByPlayer(player)) {
+                i++;
+                std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+            }
+
+            //Ask territory to blockade
+            cout << "Select territory to blockade: ";
+            cin >> i;
+            targetT = map->getTerritoriesByPlayer(player)[i - 1];
+
+            order = new Blockade(Order::OrderType::blockade, player, targetT);
+            orderList->add(order);
+            break;
+        }
+        case airlift:{
+            // Display owned territories
+            i = 0;
+            for (Territory* ownedTerr : map->getTerritoriesByPlayer(player)) {
+                i++;
+                std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+            }
+
+            // Ask source territory
+            std::cout << "Select a territory to mobilize armies from: " << endl;
+            cin >> i;
+            sourceT = map->getTerritoriesByPlayer(player)[i - 1];
+
+            // Ask destination territory
+            std::cout << "Select a territory to mobilize armies to: " << endl;
+            cin >> i;
+            destinationT = map->getTerritoriesByPlayer(player)[i - 1];
+
+            // Ask for number of armies to deploy
+            std::cout << "Select the number of armies to deploy: ";
+            std::cin >> armies;
+
+            order = new Airlift(Order::OrderType::advance, player, sourceT, destinationT, armies);
+            orderList->add(order);
+            break;
+        }
+        case diplomacy: {
+            // Display players in the game
+            i = 0;
+            for (Player* player : *players) {
+                i++;
+                cout << i << ". " << player->getName() << endl;
+            }
+
+            // Ask player to negotiate with
+            cout << "Select player with whom to negotiate (cannot negotiate with oneself): ";
+            cin >> i;
+            enemy = players->at(i - 1);
+
+
+            order = new Negotiate(Order::OrderType::negotiate, player, enemy);
+            orderList->add(order);
+            break;
+        }
+    }
 }
 
 /**
