@@ -5,37 +5,37 @@
 
 class ILoggable{
 public:
-    virtual std::string stringToLog() = 0;
-    ILoggable();
-    ~ILoggable();
+    virtual std::string stringToLog() = 0; //pure virtual method for string to log
+    ILoggable(); //default constructor
+    ~ILoggable(); //default destructor
 };
 
 class Observer {
 public:
-    Observer();
-    ~Observer();
-    virtual void update(ILoggable*) = 0;
+    Observer(); //default constructor
+    ~Observer(); //default destructor
+    virtual void update(ILoggable*) = 0; //pure virtual update method
 };
 
 class Subject : public ILoggable {
 public:
-    void attach(Observer* o);
-    void detach(Observer* o);
-    void notify(ILoggable* I);
-    std::vector<Observer*> getObservers();
-    Subject();
-    ~Subject();
+    void attach(Observer* o); //attach method to attach observer to subject
+    void detach(Observer* o); //detach method to detach observer from subject
+    void notify(ILoggable* I); //notify method to notify of logging event
+    std::vector<Observer*> getObservers(); //return list of observers
+    Subject(); //default constructor for subject
+    ~Subject(); //default destructor for destructor
 private:
-    std::vector<Observer*> observers;
+    std::vector<Observer*> observers; //vector of observer pointer objects
 };
 
 class LogObserver : public Observer{
 public:
-    LogObserver(const std::string&);
-    ~LogObserver();
-    void update(ILoggable*);
+    LogObserver(const std::string&); //log observer parameterized constructor
+    ~LogObserver(); //logobserver default destructor
+    void update(ILoggable*); //overriden update method
 private:
-    std::string filename;
+    std::string filename; //name of file to log to
 };
 
 
