@@ -1,4 +1,4 @@
-#pragma once
+#pragma once    //include guard
 
 #include <vector>
 #include <string>
@@ -6,35 +6,35 @@
 #include "Cards.h"
 #include "Map.h"
 
+//class forward reference
 class Order;
 class OrderList;
 class Hand;
 class Territory;
 class Map;
 
+//Player class and function declarations
 class Player
 {
 public:
-    ~Player();
-    Player(const std::string&);
-    Player(const Hand&, const OrderList&, const std::string&);
-    // Copy constructor
-    Player(const Player&);
-    // Assignment operator
-    Player& operator= (const Player&);
-    // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const Player&);
-    bool operator== (const Player&) const;
-    std::vector<Territory*> toDefend(Map&);
-    std::vector<Territory*> toAttack(Map&);
-    void issueOrder(Order*);
-    std::string& getName();
-    OrderList& getOrderList();
-    OrderList* getOrders();
+
+    ~Player(); //Destructor
+    Player(const std::string&); //Default constructor
+    Player(const Hand&, const OrderList&, const std::string&); //Player constructor
+    Player(const Player&);// Copy constructor
+    Player& operator= (const Player&); // Assignment operator
+    friend std::ostream& operator<< (std::ostream&, const Player&); // Stream output operator
+    bool operator== (const Player&) const; // Comparison of player
+    std::vector<Territory*> toDefend(Map&); // Territories to Defend
+    std::vector<Territory*> toAttack(Map&); // Territories to Attack
+    void issueOrder(Order*); // Adds order to order list
+    std::string& getName(); //get name of player
+    OrderList& getOrderList(); //get the order list
+    OrderList* getOrders(); //get the orders
+    bool hasNegotiationWith(Player* enemy); // checks if players have negotiations with eachother
     Hand* hand;
     OrderList* orderList;
-    bool hasNegotiationWith(Player* enemy);
-    int armyPool;
+    int armyPool; //reinforcement pool
 private:
     std::string name;
 };

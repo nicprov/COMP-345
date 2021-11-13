@@ -1,4 +1,4 @@
-#pragma once
+#pragma once //include guards
 
 #include <boost/assign/list_of.hpp>
 #include <boost/unordered_map.hpp>
@@ -9,10 +9,12 @@
 #include "Cards.h"
 #include "LoggingObserver.h"
 
+//class forward reference
 class CommandProcessor;
 
 class GameEngine : public Subject{
 public:
+    //list of Game states
     enum GameState{
         start=1,
         map_loaded=2,
@@ -23,6 +25,7 @@ public:
         execute_orders=7,
         win=8
     };
+    //list of game commands
     enum GameCommand{
         load_map=1,
         validate_map=2,
@@ -36,24 +39,22 @@ public:
         replay=10,
         quit=11
     };
-    GameEngine();
-    // Copy constructor
-    GameEngine(const GameEngine&);
-    // Assignment operator
-    GameEngine& operator= (const GameEngine&);
+    GameEngine();   //Game Engine Constructor
+    GameEngine(const GameEngine&); // Copy constructor
+    GameEngine& operator= (const GameEngine&); // Assignment operator
     // Stream output operator
     friend std::ostream& operator<< (std::ostream&, const GameEngine&);
     friend std::ostream& operator<< (std::ostream&, const GameCommand&);
-    bool operator== (const GameEngine&) const;
-    GameState& getGameState();
-    vector<Player *> &getPlayers();
-    Map& getMap();
-    Deck& getDeck();
-    void getAvailableCommands(std::vector<GameCommand>&);
-    void transition(GameCommand&, const std::string& param);
-    void startupPhase(CommandProcessor*);
-    void mainGameLoop();
-    std::string stringToLog();
+    bool operator== (const GameEngine&) const; //comparison of player
+    GameState& getGameState();   //getter for current game state
+    vector<Player *> &getPlayers(); //getter of players in a vector pointer
+    Map& getMap();  //getter for map
+    Deck& getDeck(); // getter for deck
+    void getAvailableCommands(std::vector<GameCommand>&);   //get Available Commands
+    void transition(GameCommand&, const std::string& param);    // transition game state based on command
+    void startupPhase(CommandProcessor*);   //Startup phase of the game
+    void mainGameLoop();    //main game loop: includes call to reinforcement phase, issue order phase, and execute orders phase
+    std::string stringToLog();  //current game state to string
 
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 
@@ -62,14 +63,14 @@ private:
     std::vector<Player*>* players;
     Map* map;
     Deck* deck;
-    void printAvailableCommands();
-    void reinforcementPhase();
-    void issueOrdersPhase();
-    void executeOrdersPhase();
-    bool containsOrders(std::map<Player*, bool>);
-    void loadMap(const std::string& mapName);
-    void validateMap();
-    void addPlayer(const std::string& playerName);
-    void removePlayer(const std::string& playerName);
-    void gameStart();
+    void printAvailableCommands();  //prints available commands
+    void reinforcementPhase();      //assign armies to reinforcement pool
+    void issueOrdersPhase();        // call to issue order
+    void executeOrdersPhase();      //executes order
+    bool containsOrders(std::map<Player*, bool>);   //check if player contains orders
+    void loadMap(const std::string& mapName);       //load map
+    void validateMap(); // validate map based on conditions
+    void addPlayer(const std::string& playerName);  //enter players in game
+    void removePlayer(const std::string& playerName);   //remove player
+    void gameStart();   // set-up for start of game
 };
