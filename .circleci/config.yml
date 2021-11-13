@@ -15,6 +15,7 @@ workflows:
                 - dev-nick
                 - dev-rosie
                 - rosie_dev
+                - Comments
 jobs:
   build-and-test:
     docker:
