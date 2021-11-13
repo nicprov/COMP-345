@@ -50,6 +50,7 @@ public:
     Command* validate(const std::string&, const std::string&);
     std::string stringToLog();
 protected:
+    Observer* observer;
     void saveCommand(Command*);
     virtual Command* readCommand();
     std::vector<Command*> commands;

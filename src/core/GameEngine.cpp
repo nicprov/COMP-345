@@ -44,6 +44,9 @@ GameEngine::GameEngine(const GameEngine &gameEngine)
 GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
+    this->players = new vector<Player*> (*gameEngine.players);
+    this->map = new Map(*gameEngine.map);
+    this->deck = new Deck(*gameEngine.deck);
     return *this;
 }
 
@@ -124,86 +127,111 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
  * Transition game state based on command
  * @param gameCommand Game command to run
  */
-void GameEngine::transition(GameCommand &gameCommand, const std::string& param)
+void GameEngine::transition(Command* command, const std::string& param)
 {
+    std::string effect;
     bool foundCommand = false;
     std::vector<GameCommand> commands;
     getAvailableCommands(commands);
-    for (GameCommand gameCommand_: commands){
-        if (gameCommand_ == gameCommand) {
+    for (GameCommand gameCommand: commands){
+        if (gameCommand == *command->getGameCommand()) {
             foundCommand = true;
             // Perform move
             switch (gameCommand){
                 case load_map:
                     try {
                         this->loadMap(param);
-                        std::cout << std::endl << "\x1B[32m" << "Map loaded" << "\033[0m" << std::endl << std::endl;
+                        effect = "Map loaded";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = map_loaded;
                     } catch (std::runtime_error&) {
-                        std::cout << endl << "\x1B[31m" << "Could not load map. Try again." << "\033[0m" << endl << endl;
+                        effect = "Could not load map. Try again.";
+                        std::cout << endl << "\x1B[31m" << effect << "\033[0m" << endl << endl;
                     }
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case validate_map:
                     if (map != nullptr && map->validate()) {
                         this->validateMap();
-                        std::cout << std::endl << "\x1B[32m" << "Map validated" << "\033[0m" << std::endl << std::endl;
+                        effect = "Map validated";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = map_validated;
-                        notify(this);
                     }
                     else {
                         map->~Map();
-                        cerr << "Invalid Map File.";
+                        effect = "Invalid Map File";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = start;
                     }
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case add_player:
-                    this->addPlayer(param);
+                    this->addPlayer(param, command);
                     *current_state = players_added;
                     notify(this);
                     break;
                 case game_start:
-                    if (players->size() < 2)
-                        std::cout << std::endl << "\x1B[31m" << "Insufficient number of players. Please add more players." << "\033[0m" << std::endl << std::endl;
+                    if (players->size() < 2) {
+                        effect = "Insufficient number of players. Please add more players.";
+                        std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
+                    }
                     else {
                         this->gameStart();
-                        std::cout << std::endl << "\x1B[32m" << "Game started. Proceed to 'play' phase." << "\033[0m" << std::endl << std::endl;
+                        effect = "Game started. Proceed to 'play' phase.";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = assign_reinforcement;
                     }
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case issue_order:
                     std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = issue_orders;
+                    // TODO: effect
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case end_issue_order:
                     std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
+                    // TODO: effect
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case execute_order:
                     std::cout << std::endl << "\x1B[32m" << "Execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
+                    // TODO: effect
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case end_execute_order:
                     std::cout << std::endl << "\x1B[32m" << "End execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
+                    // TODO: effect
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case win_game:
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
+                    // TODO: effect
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case replay:
-                    std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
+                    effect = "Game restarted";
+                    std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
+                    command->saveEffect(effect);
                     notify(this);
                     break;
                 case quit:
-                    std::cout << std::endl << "\x1B[32m" << "Exiting game" << "\033[0m" << std::endl << std::endl;
+                    effect = "Exiting game";
+                    std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
+                    command->saveEffect(effect);
                     exit(0);
             }
         }
@@ -288,12 +316,13 @@ void GameEngine::startupPhase(CommandProcessor* commandProcessor)
 {
     std::cout << std::endl << "*Startup Phase*" << std::endl << std::endl;
     printAvailableCommands();
-    Command* command = commandProcessor->getCommand();    
-    transition(*command->getGameCommand(), command->getParam());
+    auto* command = commandProcessor->getCommand();
+    attachExistingObservers(command);
+    transition(command, command->getParam());
     while (*(this->current_state) != assign_reinforcement) {
         printAvailableCommands();
         command = commandProcessor->getCommand();
-        transition(*command->getGameCommand(), command->getParam());
+        transition(command, command->getParam());
     }
 }
 
@@ -442,23 +471,31 @@ void GameEngine::validateMap()
     }
 }
 
-void GameEngine::addPlayer(const std::string& playerName)
+void GameEngine::addPlayer(const std::string& playerName, Command* command)
 {
-    if (players->size() == 6)
-        std::cout << std::endl << "\x1B[31m" << "Maximum number of players reached." << "\033[0m" << std::endl << std::endl;
+    std::string effect;
+    if (players->size() == 6) {
+        effect = "Maximum number of players reached";
+        std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
+    }
     else {
         bool found = false;
         for (Player* player: *this->players){
             if (player->getName() == playerName) {
-                std::cout << std::endl << "\x1B[31m" << "Player (" << playerName << ") already exist" << "\033[0m" << std::endl << std::endl;
+                effect = "Player (" + playerName + ") already exist";
+                std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
                 found = true;
             }
         }
         if (!found) {
+            effect = "Player (" + playerName + ") added";
+            std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
+            auto* player = new Player(playerName);
+            attachExistingObservers(player->orderList);
             this->players->push_back(new Player(playerName));
-            std::cout << std::endl << "\x1B[32m" << "Players added" << "\033[0m" << std::endl << std::endl;
         }
     }
+    command->saveEffect(effect);
 }
 void GameEngine::removePlayer(const std::string &playerName) {
     int count=0;
@@ -524,4 +561,9 @@ std::string GameEngine::stringToLog() {
             strGameState = it.first;
     }
     return "Game Engine new state: " + strGameState;
+}
+
+void GameEngine::attachExistingObservers(Subject *subject) {
+    for (Observer* observer: this->getObservers())
+        subject->attach(observer);
 }

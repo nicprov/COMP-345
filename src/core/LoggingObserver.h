@@ -22,6 +22,7 @@ public:
     void attach(Observer* o);
     void detach(Observer* o);
     void notify(ILoggable* I);
+    std::vector<Observer*> getObservers();
     Subject();
     ~Subject();
 private:
