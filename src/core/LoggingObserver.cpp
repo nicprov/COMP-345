@@ -47,7 +47,7 @@ void Subject::detach(Observer* o)
     int count = 0;
     for(Observer* observer : observers){
         if(observer == o){
-            observers.erase(observers.begin()+count);
+            observers.erase(observers.begin() + count);
             break;
         }
         count++;
@@ -59,4 +59,8 @@ void Subject::notify(ILoggable* i)
    auto iterator = observers.begin();
    for (; iterator != observers.end(); ++iterator)
       (*iterator)->update(i);
+}
+
+std::vector<Observer*> Subject::getObservers() {
+    return this->observers;
 }

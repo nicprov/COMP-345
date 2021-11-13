@@ -10,6 +10,7 @@
 #include "LoggingObserver.h"
 
 class CommandProcessor;
+class Command;
 
 class GameEngine : public Subject{
 public:
@@ -46,11 +47,11 @@ public:
     friend std::ostream& operator<< (std::ostream&, const GameCommand&);
     bool operator== (const GameEngine&) const;
     GameState& getGameState();
-    vector<Player *> &getPlayers();
+    vector<Player*> &getPlayers();
     Map& getMap();
     Deck& getDeck();
     void getAvailableCommands(std::vector<GameCommand>&);
-    void transition(GameCommand&, const std::string& param);
+    void transition(Command*, const std::string& param);
     void startupPhase(CommandProcessor*);
     void mainGameLoop();
     std::string stringToLog();
@@ -63,6 +64,7 @@ private:
     std::vector<Player*>* players;
     Map* map;
     Deck* deck;
+    void attachExistingObservers(Subject*);
     void printAvailableCommands();
     void reinforcementPhase();
     void issueOrdersPhase();
@@ -70,7 +72,7 @@ private:
     bool containsOrders(std::map<Player*, bool>);
     void loadMap(const std::string& mapName);
     void validateMap();
-    void addPlayer(const std::string& playerName);
+    void addPlayer(const std::string&, Command*);
     void removePlayer(const std::string& playerName);
     void gameStart();
 };
