@@ -75,6 +75,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             targetT = player->toAttack(*map).at(j);
 
             order = new Bomb(Order::OrderType::bomb, targetT->getOwner(), targetT);
+            orderList->add(order);
             break;
         }
         case blockade: {
@@ -91,6 +92,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             targetT = map->getTerritoriesByPlayer(player)[i - 1];
 
             order = new Blockade(Order::OrderType::blockade, player, targetT);
+            orderList->add(order);
             break;
         }
         case airlift:{
@@ -116,6 +118,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             std::cin >> armies;
 
             order = new Airlift(Order::OrderType::advance, player, sourceT, destinationT, armies);
+            orderList->add(order);
             break;
         }
         case diplomacy: {
@@ -133,6 +136,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
 
 
             order = new Negotiate(Order::OrderType::negotiate, player, enemy);
+            orderList->add(order);
             break;
         }
     }
