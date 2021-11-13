@@ -8,11 +8,4 @@ int main(){
     auto* player = new Player(*hand, *orderlist, name); //create a Player
 
     std::cout << *player << std::endl;
-
-    //new deploy order
-    Order* deploy = new Deploy(Order::OrderType::deploy, new Player("john"), new Territory(), 0);
-   //pass deploy in issueOrder()
-    player->issueOrder(deploy);
-
-    std::cout << *player << std::endl;
 }
