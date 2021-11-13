@@ -1,60 +1,66 @@
-#include "LoggingObserver.h"
 #include <iostream>
 #include <fstream>
+#include "LoggingObserver.h"
 
+ILoggable::~ILoggable() {}
 
-ILoggable::ILoggable() {};
-ILoggable::~ILoggable() {};
+ILoggable::ILoggable() {}
 
-Observer::Observer(){
-};
-Observer::~Observer(){
-};
+Observer::Observer() {}
 
-LogObserver::LogObserver(){
+Observer::~Observer() {}
 
-};
-
-LogObserver::LogObserver(Subject* s) {
-    _subject = s;
-    _subject->Attach(this);
-};
-
-LogObserver::~LogObserver() {
-    _subject->Detach(this);
-};
-
-void LogObserver::Update(ILoggable* I) {
-    std::ofstream file("gamelog.txt", std::ofstream::out | std::ofstream::app);
-    if(file.is_open()){
-        std::string logOut= _subject->stringToLog();
-        file << logOut << std::endl;
-    }
-
-};
-
-Subject::Subject(){
-    _observers = new std::vector<Observer*>;
+LogObserver::LogObserver(const std::string& filename)
+{
+    this->filename = filename;
 }
-Subject::~Subject(){
-    delete _observers;
+
+LogObserver::~LogObserver() {}
+
+void LogObserver::update(ILoggable* loggable)
+{
+    std::ofstream file(this->filename, std::ofstream::out | std::ofstream::app);
+    if(file.is_open())
+        file << loggable->stringToLog() << std::endl;
+    else
+        throw std::runtime_error("Unable to write to log file");
 }
-void Subject::Attach(Observer* o){
-    _observers->push_back(o);
-};
-void Subject::Detach(Observer* o){
+
+Subject::Subject()
+{
+    observers = std::vector<Observer*>();
+}
+
+Subject::~Subject()
+{
+    for (Observer* observer: this->observers)
+        this->detach(observer);
+}
+
+void Subject::attach(Observer* o)
+{
+    observers.push_back(o);
+}
+
+void Subject::detach(Observer* o)
+{
     int count = 0;
-    for(Observer* observer : *_observers){
+    for(Observer* observer : observers){
         if(observer == o){
-            _observers->erase(_observers->begin()+count);
+            observers.erase(observers.begin() + count);
             break;
         }
         count++;
     }
-};
+}
 
-void Subject::Notify(ILoggable* i){
-   std::vector<Observer *>::iterator l = _observers->begin();
-   for (; l != _observers->end(); ++l)
-      (*l)->Update(i);
-};
+void Subject::notify(ILoggable* i)
+{
+   auto iterator = observers.begin();
+   for (; iterator != observers.end(); ++iterator)
+      (*iterator)->update(i);
+}
+
+std::vector<Observer*> Subject::getObservers() {
+    return this->observers;
+}

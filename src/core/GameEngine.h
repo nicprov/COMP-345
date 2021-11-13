@@ -11,6 +11,7 @@
 
 //class forward reference
 class CommandProcessor;
+class Command;
 
 class GameEngine : public Subject{
 public:
@@ -51,11 +52,12 @@ public:
     Map& getMap();  //getter for map
     Deck& getDeck(); // getter for deck
     void getAvailableCommands(std::vector<GameCommand>&);   //get Available Commands
-    void transition(GameCommand&, const std::string& param);    // transition game state based on command
+    void transition(Command*, const std::string& param);    // transition game state based on command
     void startupPhase(CommandProcessor*);   //Startup phase of the game
     void mainGameLoop();    //main game loop: includes call to reinforcement phase, issue order phase, and execute orders phase
     std::string stringToLog();  //current game state to string
 
+    static const boost::unordered_map<std::string, GameState> gameStateMapping;
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 
 private:
@@ -63,6 +65,7 @@ private:
     std::vector<Player*>* players;
     Map* map;
     Deck* deck;
+    void attachExistingObservers(Subject*); // Attach all current observers to the passed subject
     void printAvailableCommands();  //prints available commands
     void reinforcementPhase();      //assign armies to reinforcement pool
     void issueOrdersPhase();        // call to issue order
@@ -70,7 +73,7 @@ private:
     bool containsOrders(std::map<Player*, bool>);   //check if player contains orders
     void loadMap(const std::string& mapName);       //load map
     void validateMap(); // validate map based on conditions
-    void addPlayer(const std::string& playerName);  //enter players in game
+    void addPlayer(const std::string& playerName, Command*);  //enter players in game
     void removePlayer(const std::string& playerName);   //remove player
     void gameStart();   // set-up for start of game
 };

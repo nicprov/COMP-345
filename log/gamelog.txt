@@ -1,0 +1,4 @@
+Command: Command (loadmap), Param (test)
+Game Engine with State: 1
+Command: Command (loadmap), Param (test)
+Game Engine with State: start
