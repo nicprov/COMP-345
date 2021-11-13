@@ -4,7 +4,6 @@
 /*
  * Order destructor, gets overwritten by subclasses
  */
-Order::~Order() = default;
 /**
  * Order parameterized constructor
  * @param orderType type of order
