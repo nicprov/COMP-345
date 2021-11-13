@@ -300,22 +300,22 @@ void GameEngine::reinforcementPhase()
     for(Player* player: *this->players) {
         int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
         if (size_TerritoriesByPlayer < 3) {    //size of territories less than 3
-            player->armyPool += 3;              //default 3 armies
+            *(player->armyPool) += 3;              //default 3 armies
             cout << player->getName() << " gets default 3 armies." << endl;
         }
         else {
             int armiesToGive = size_TerritoriesByPlayer / 3;
-            player->armyPool += armiesToGive;
+            *(player->armyPool) += armiesToGive;
             cout << player->getName() << " gets default " << armiesToGive << " armies." << endl;
         }
         for(Continent *continent : this->map->listOfContinents) {
             if (continent->isOwnedByPlayer(player)) {           //if player owns all territories of continent
                 int continentBonusValue = continent->getArmyValue();
-                player->armyPool += continentBonusValue;
+                *(player->armyPool) += continentBonusValue;
                 cout << player->getName() << " gets additional " << continentBonusValue << " armies as continent bonus for owning the entirety of " << continent->getContName() << endl;
             }
         }
-        cout << player->getName() << " can deploy a total of " << player->armyPool << " troops." << endl << endl;
+        cout << player->getName() << " can deploy a total of " << *player->armyPool << " troops." << endl << endl;
     }
 }
 
@@ -334,14 +334,12 @@ void GameEngine::executeOrdersPhase()
 
     std::map<Player*, bool> playerHasOrdersToExecute;
     for(Player* player: *this->players) {
-        playerHasOrdersToExecute[player] = true;   //orderList has content
-    }
-    while(containsOrders(playerHasOrdersToExecute)) {
-        for (Player *player:*this->players) {
-            if (player->orderList->getSize() > 0) {
-                player->orderList->remove(0);
+        if (playerHasOrdersToExecute[player]) {
+            for (Order* order : (player->orderList->getOrders())){
+                order->execute();
             }
-        }
+                //execute order;
+        }  //orderList has content
     }
 }
 
@@ -443,7 +441,7 @@ void GameEngine::gameStart()
             terrCounter++;
         }
         //Add armies to reinforcement pool
-        this->players->at(i)->armyPool = 50;
+        this->players->at(i)->armyPool = new int(50);
 
         //Draw 2 cards
         players->at(i)->hand->addCard(deck->draw());

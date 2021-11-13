@@ -28,14 +28,15 @@ public:
     bool operator== (const Player&) const;
     std::vector<Territory*> toDefend(Map&);
     std::vector<Territory*> toAttack(Map&);
-    void issueOrder(Deck*, Map*,std::vector<Player*>*);
+    bool issueOrder(Deck*, Map*,std::vector<Player*>*);
     std::string& getName();
     OrderList& getOrderList();
     OrderList* getOrders();
     Hand* hand;
     OrderList* orderList;
     bool hasNegotiationWith(Player* enemy);
-    int armyPool;
+    int* armyPool;
 private:
     std::string name;
+    Order* advance(Map*, Deck*);
 };

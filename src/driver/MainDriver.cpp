@@ -21,4 +21,5 @@ int main(int argc, char *argv[]){
             throw std::runtime_error("Must include either -console or -file <filename> when launching program");
     }
     gameEngine.startupPhase(commandProcessor);
+    gameEngine.mainGameLoop();
 }

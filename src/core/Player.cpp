@@ -82,11 +82,16 @@ std::ostream &operator<<(std::ostream &stream, const Player &player)
  * Add order to orderlist
  * @param order
  */
-void Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
+bool Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
     int armies = 0;
-    int armiesNotDeployed =armyPool;
+    int armiesNotDeployed = *(this->armyPool);
+    int i = 0;
     Order* order = nullptr;
-     while(armiesNotDeployed>0){
+    for (Territory* ownedTerr : map->getTerritoriesByPlayer(this)) {
+        i++;
+        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+    }
+     do {
         cout << "Armies left to deploy: " << armiesNotDeployed << endl << endl;
 
         // Ask for the territory to deploy to (get list: 1..4
@@ -99,15 +104,39 @@ void Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
         std::cout << "Select the number of armies to deploy: ";
         std::cin >> armies;
         order = new Deploy(Order::OrderType::deploy, this, deployToT, armies);
-
         this->orderList->add(order);
         armiesNotDeployed = armiesNotDeployed - armies;
         armies = 0;
-    }
-    if(!this->hand->getCards().empty()){
-        this->hand->getCards().at(0)->play(orderList,hand,deck,this,map,players);
-    }
+    } while(armiesNotDeployed>0);
+     std::string choice ="";
+    while (choice != "card") {
+        // Ask for choice
+        std::cout << "Card <card>, Advance <advance> or End Turn <endturn>?: ";
+        std::cin >> choice;
+        if (choice == "advance") {
+            order = advance(map,deck);
+            orderList->add(order);
+        } else if (choice == "card") {
+            if (!this->hand->getCards().empty())
+                this->hand->getCards().at(0)->play(orderList, hand, deck, this, map, players);
 
+        }
+        else if (choice == "endturn")
+            return true;
+    }
+    while (true){
+        std::cout << "Advance <advance> or End Turn <endturn>?: ";
+        std::cin >> choice;
+        if (choice == "advance") {
+            order = advance(map,deck);
+            orderList->add(order);
+        }
+        else if (choice == "endturn") {
+            return true;
+        }
+
+
+    }
 }
 
 /**
@@ -173,4 +202,39 @@ bool Player::hasNegotiationWith(Player* enemy)
         }
     }
     return false;
+}
+
+Order *Player::advance(Map * map, Deck* deck) {
+    Territory *sourceT = nullptr;
+    Territory *destinationT = nullptr;
+    // Display owned territories
+    int i = 0;
+    for (Territory *ownedTerr: map->getTerritoriesByPlayer(this)) {
+        i++;
+        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+    }
+
+    // Ask source territory
+    std::cout << "Select a territory to mobilize armies from: " << endl;
+    cin >> i;
+    sourceT = map->getTerritoriesByPlayer(this)[i - 1];
+
+    // Display territories adjacent to source territory
+    i = 0;
+    for (Territory *ownedTerr: sourceT->listOfAdjTerr) {
+        i++;
+        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+    }
+    // Ask destination territory
+    std::cout << "Select a territory to mobilize armies to: " << endl;
+    cin >> i;
+    destinationT = map->getTerritoriesByPlayer(this)[i - 1];
+
+    // Ask for number of armies to deploy
+    int armies = 0;
+    std::cout << "Select the number of armies to deploy: ";
+    std::cin >> armies;
+
+    Order* order = new Advance(Order::OrderType::advance, deck, this, sourceT, destinationT, armies);
+    return order;
 }
