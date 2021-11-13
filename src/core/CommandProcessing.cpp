@@ -2,11 +2,19 @@
 #include "CommandProcessing.h"
 
 // FileLineReader class
+/**
+* Destructor
+* Closes the input stream.
+*/
 FileLineReader::~FileLineReader()
 {
     this->stream->close();
 }
 
+/**
+* Parameterized constructor
+* @param filename name of the file
+*/
 FileLineReader::FileLineReader(const std::string &filename)
 {
     this->filename = filename;
@@ -14,22 +22,37 @@ FileLineReader::FileLineReader(const std::string &filename)
     this->stream->open(this->filename);
 }
 
+/**
+ * Copy Constructor makes a copy of FileLineReader
+ * @param fileRineReader fileLineReader
+ */
 FileLineReader::FileLineReader(const FileLineReader &fileLineReader)
 {
     this->filename = fileLineReader.filename;
 }
 
+/**
+* Assignment operator
+* @param fileRineReader fileLineReader
+*/
 FileLineReader &FileLineReader::operator=(const FileLineReader &fileLineReader)
 {
     this->filename = fileLineReader.filename;
     return *this;
 }
 
+/**
+* Stream output operator
+*/
 std::ostream &operator<<(std::ostream &stream, const FileLineReader &fileLineReader)
 {
     return stream << "Filename (" << fileLineReader.filename << ")";
 }
 
+/**
+* Read lines from a file until the end of the file.
+* @return command returns commands.
+*/
 std::string FileLineReader::readLineFromFile()
 {
     std::string command;
@@ -44,6 +67,10 @@ std::string FileLineReader::readLineFromFile()
 }
 
 // Command class
+/**
+* Parameterized constructor
+* @param gameCommand game command
+*/
 Command::Command(const GameEngine::GameCommand &gameCommand)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
@@ -51,6 +78,11 @@ Command::Command(const GameEngine::GameCommand &gameCommand)
     this->effect = "";
 }
 
+/**
+ * Parameterized constructor
+ * @param gameCommand game command
+ * @param param parameter
+ */
 Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
@@ -58,6 +90,12 @@ Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& 
     this->effect = "";
 }
 
+/**
+ * Parameterized constructor
+ * @param gameCommand game command
+ * @param param parameter
+ * @param effect
+*/
 Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param, const std::string& effect)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
@@ -65,6 +103,10 @@ Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& 
     this->effect = effect;
 }
 
+/**
+ * Copy Constructor makes a copy of Command
+ * @param command Command
+ */
 Command::Command(const Command &_command)
 {
     this->command = _command.command;
@@ -72,6 +114,10 @@ Command::Command(const Command &_command)
     this->effect = _command.effect;
 }
 
+/**
+* Assignment operator
+ * @param command Command
+*/
 Command &Command::operator= (const Command &_command)
 {
     this->command = _command.command;
@@ -79,11 +125,17 @@ Command &Command::operator= (const Command &_command)
     return *this;
 }
 
+/**
+* Stream output operator
+*/
 std::ostream &operator<<(std::ostream &stream, const Command &_command)
 {
     return stream << "Command (" << *_command.command << "), Param (" << _command.param << ")";
 }
 
+/**
+* @ returns a string with the command and param.
+*/
 std::string Command::toString(){
     std::string strCommand;
     for (auto& it: GameEngine::gameCommandMapping){
@@ -93,51 +145,86 @@ std::string Command::toString(){
     return "Command (" + strCommand + "), Param (" + this->param + ")";
 }
 
+/**
+* Saves the effect and notifies.
+* @param effect the effect
+*/
 void Command::saveEffect(const std::string& effect)
 {
     this->effect = effect;
     notify(this);
 }
 
+/**
+* Gets the command
+*/
 Command& Command::getCommand()
 {
     return *this;
 }
 
+/**
+* Gets the game command
+*/
 GameEngine::GameCommand* Command::getGameCommand()
 {
     return this->command;
 }
 
+/**
+* Gets the param
+*/
 std::string Command::getParam() {
     return this->param;
 }
 
+/**
+* Gets the effect
+*/
 std::string Command::getEffect() {
     return this->effect;
 }
 
+/**
+* Outputs to log
+* @return string with the effect of the command.
+*/
 std::string Command::stringToLog() {
     return "Command's Effect: " + this->getEffect();
 }
 
 // CommandProcessor class
+/**
+* Parameterized constructor
+* @param gameEngine the game engine
+*/
 CommandProcessor::CommandProcessor(const GameEngine &gameEngine): gameEngine(const_cast<GameEngine &>(gameEngine))
 {
     this->commands = std::vector<Command*>();
 }
 
+/**
+* Copy constructor
+* @param commandProcessor CommandProcessor
+*/
 CommandProcessor::CommandProcessor(const CommandProcessor &commandProcessor): gameEngine(commandProcessor.gameEngine)
 {
     this->commands = std::vector<Command*>(commandProcessor.commands);
 }
 
+/**
+* Assignment operator
+* @param commandProcessor CommandProcessor
+*/
 CommandProcessor &CommandProcessor::operator= (const CommandProcessor &commandProcessor)
 {
     this->commands = std::vector<Command*>(commandProcessor.commands);
     return *this;
 }
 
+/**
+* Gets the command
+*/
 Command* CommandProcessor::getCommand()
 {
     Command* command = this->readCommand();
@@ -145,6 +232,11 @@ Command* CommandProcessor::getCommand()
     return command;
 }
 
+/**
+* Checks if the command is valid
+* @param command the command
+* @param param the parameter
+*/
 Command* CommandProcessor::validate(const std::string& command, const std::string& param)
 {
     try {
@@ -164,6 +256,10 @@ Command* CommandProcessor::validate(const std::string& command, const std::strin
     return nullptr;
 }
 
+/**
+* Saves the command and notifies
+* @param command the command
+*/
 void CommandProcessor::saveCommand(Command* command)
 {
     if (command != nullptr){
@@ -172,6 +268,10 @@ void CommandProcessor::saveCommand(Command* command)
     }
 }
 
+/**
+* Reads the command
+* @return command returns the command that was read
+*/
 Command* CommandProcessor::readCommand()
 {
     std::string inputCommand;
@@ -198,10 +298,17 @@ Command* CommandProcessor::readCommand()
     return nullptr;
 }
 
+/**
+* Outputs to log
+* @return string of the command.
+*/
 std::string CommandProcessor::stringToLog() {
     return "Command: " + this->commands.back()->toString();
 }
 
+/**
+* Stream output operator
+*/
 std::ostream &operator<<(std::ostream &stream, const CommandProcessor &commandProcessor)
 {
     stream << "Commands[";
@@ -217,27 +324,47 @@ std::ostream &operator<<(std::ostream &stream, const CommandProcessor &commandPr
 }
 
 // FileCommandProcessorAdapter class
+/**
+* Parameterized constructor
+* @param gameEngine the game engine
+* @param fileName name of the file
+*/
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const GameEngine &gameEngine, const std::string &filename): CommandProcessor(gameEngine)
 {
     this->fileLineReader = new FileLineReader(filename);
 }
 
+/**
+* Copy constructor
+* @param fileCommandProcessorAdaptor
+*/
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter &fileCommandProcessorAdapter): CommandProcessor(fileCommandProcessorAdapter)
 {
     this->fileLineReader = fileCommandProcessorAdapter.fileLineReader;
 }
 
+/**
+* Assignment operator
+* @param fileCommandProcessorAdaptor
+*/
 FileCommandProcessorAdapter &FileCommandProcessorAdapter::operator= (const FileCommandProcessorAdapter &fileCommandProcessorAdapter)
 {
     this->commands = std::vector<Command*>(fileCommandProcessorAdapter.commands);
     return *this;
 }
 
+/**
+* Stream output operator
+*/
 std::ostream &operator<<(std::ostream &stream, const FileCommandProcessorAdapter &fileCommandProcessorAdapter)
 {
     return stream << "FileCommandProcessorAdaptor (" << fileCommandProcessorAdapter.fileLineReader->filename;
 }
 
+/**
+* Reads the command
+* @return command returns the command that was read
+*/
 Command* FileCommandProcessorAdapter::readCommand()
 {
     std::string _command;
