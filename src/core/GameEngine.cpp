@@ -326,6 +326,9 @@ void GameEngine::startupPhase(CommandProcessor* commandProcessor)
     }
 }
 
+/**
+ * Assign armies to reinforcement pool
+ */
 void GameEngine::reinforcementPhase()
 {
     cout << "*Reinforcement Phase*" << endl << endl;
@@ -352,6 +355,9 @@ void GameEngine::reinforcementPhase()
     }
 }
 
+/**
+ * For each player, issue order. Call to issueOrder()
+ */
 void GameEngine::issueOrdersPhase()
 {
     cout << "*Issue Order Phase*" << endl << endl; 
@@ -402,6 +408,9 @@ void GameEngine::issueOrdersPhase()
     }
 }
 
+/**
+ * Executes the order. Removes order from orderlist
+ */
 void GameEngine::executeOrdersPhase()
 {
     cout << "*Execution Phase*" << endl << endl;
@@ -419,6 +428,12 @@ void GameEngine::executeOrdersPhase()
     }
 }
 
+/**
+ * Main Game Loop containing 3 phases: Reinforcement Phase, Issue Orders Phase, and execute Orders Phase
+ * Loop continues until one of the players owns all territories in map. If player does
+ * not control at least one territory, player is removed from game
+ *
+ */
 void GameEngine::mainGameLoop()
 {
     bool playing = true;
@@ -446,6 +461,11 @@ void GameEngine::mainGameLoop()
     }
 }
 
+/**
+ * uses hash map to determine if player has orders
+ * @param playerHasOrdersToExecute hash map of player and boolean value
+ * @return true if player has orders, else false
+ */
 bool GameEngine::containsOrders(std::map<Player*, bool> playerHasOrdersToExecute) {
     for (auto it = playerHasOrdersToExecute.begin(); it != playerHasOrdersToExecute.end(); ++it) {
         if(it->second)
@@ -453,6 +473,11 @@ bool GameEngine::containsOrders(std::map<Player*, bool> playerHasOrdersToExecute
     }
     return false;
 }
+
+/**
+ * load map
+ * @param mapName string
+ */
 void GameEngine::loadMap(const std::string& mapName)
 {
     this->map->setMapName(mapName);
@@ -460,6 +485,9 @@ void GameEngine::loadMap(const std::string& mapName)
     mapLoader.readMap(map);
 }
 
+/**
+ * Validate map
+ */
 void GameEngine::validateMap()
 {
     if (map != nullptr && map->validate()) {
@@ -471,6 +499,10 @@ void GameEngine::validateMap()
     }
 }
 
+/**
+ * Add players to the game (2 to 6 players allowed)
+ * @param playerName string
+ */
 void GameEngine::addPlayer(const std::string& playerName, Command* command)
 {
     std::string effect;
@@ -497,6 +529,11 @@ void GameEngine::addPlayer(const std::string& playerName, Command* command)
     }
     command->saveEffect(effect);
 }
+
+/**
+ * remove player from game
+ * @param player name string
+ */
 void GameEngine::removePlayer(const std::string &playerName) {
     int count=0;
     for(Player* player: *this->players){
@@ -508,6 +545,13 @@ void GameEngine::removePlayer(const std::string &playerName) {
     }
 }
 
+/**
+ * Fairly distribute all territories to the players
+ * Determine order of play of players
+ * Initialize 50 armies to reinforcement pool to each player
+ * Draw 2 cards
+ * switch the game to play phase
+ */
 void GameEngine::gameStart()
 {
     //Create deck for this game
@@ -542,7 +586,9 @@ void GameEngine::gameStart()
         cout << *value << endl;
     }
 }
-
+/**
+ * Prints available commands
+ */
 void GameEngine::printAvailableCommands(){
     cout << "Available commands:" << endl;
     vector<GameEngine::GameCommand> commands;
@@ -552,7 +598,10 @@ void GameEngine::printAvailableCommands(){
         cout << counter++ << ". " << command << endl;
     }
 }
-
+/**
+ * Game state to string
+ * @return currentState of game
+ */
 std::string GameEngine::stringToLog() {
     std::string currentState = std::to_string(this->getGameState());
     std::string strGameState;

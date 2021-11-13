@@ -15,6 +15,7 @@ Card::Card(CardType type)
 
 /**
  * Card copy constructor
+ * Makes a copy of Card
  * @param card CardType enum
  */
 Card::Card(const Card &card)
@@ -205,7 +206,7 @@ void Hand::removeCard(Card *card)
  * Hand stream insertion operator
  * @param stream Output stream
  * @param hand Hand to print
- * @return
+ * @return output stream
  */
 std::ostream& operator<< (std::ostream &stream, const Hand &hand)
 {
