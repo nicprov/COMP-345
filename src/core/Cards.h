@@ -3,10 +3,13 @@
 #include <vector>
 #include <iosfwd>
 #include "Orders.h"
+#include "Player.h"
 
 class Hand;
 class Deck;
 class OrderList;
+class Player;
+class Map;
 
 class Card
 {
@@ -28,7 +31,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Card&);
     friend std::ostream& operator<< (std::ostream&, const CardType&);
     bool operator== (const Card&) const;
-    void play(OrderList*, Hand*, Deck*);
+    void play(OrderList*, Hand*, Deck*, Player*, Map*, std::vector<Player*>*);
     CardType& getType();
     static constexpr std::initializer_list<CardType> ALL_Card_Type = { bomb, reinforcement, blockade, airlift, diplomacy };
 private:

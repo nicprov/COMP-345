@@ -82,18 +82,32 @@ std::ostream &operator<<(std::ostream &stream, const Player &player)
  * Add order to orderlist
  * @param order
  */
-void Player::issueOrder(Order* order) {
-//    if (armyPool == 0) {
-//        this->orderList->add(order);
-//    }
-//    else {
-//        this->orderList->add(new Deploy(Order::OrderType::deploy));
-//        armyPool -= 1;
-//    }
-//    if(!this->hand->getCards().empty()){
-//        this->hand->getCards();
-//        //**********call play()********************
-//    }
+void Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
+    int armies = 0;
+    int armiesNotDeployed =armyPool;
+    Order* order = nullptr;
+     while(armiesNotDeployed>0){
+        cout << "Armies left to deploy: " << armiesNotDeployed << endl << endl;
+
+        // Ask for the territory to deploy to (get list: 1..4
+        std::cout << "Select a territory to deploy armies to: " << endl;
+        int j = 0;
+        cin >> j;
+        Territory* deployToT = map->getTerritoriesByPlayer(this)[j - 1];
+
+        // Ask for number of armies to deploy
+        std::cout << "Select the number of armies to deploy: ";
+        std::cin >> armies;
+        order = new Deploy(Order::OrderType::deploy, this, deployToT, armies);
+
+        this->orderList->add(order);
+        armiesNotDeployed = armiesNotDeployed - armies;
+        armies = 0;
+    }
+    if(!this->hand->getCards().empty()){
+        this->hand->getCards().at(0)->play(orderList,hand,deck,this,map,players);
+    }
+
 }
 
 /**

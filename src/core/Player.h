@@ -11,6 +11,7 @@ class OrderList;
 class Hand;
 class Territory;
 class Map;
+class Deck;
 
 class Player
 {
@@ -27,7 +28,7 @@ public:
     bool operator== (const Player&) const;
     std::vector<Territory*> toDefend(Map&);
     std::vector<Territory*> toAttack(Map&);
-    void issueOrder(Order*);
+    void issueOrder(Deck*, Map*,std::vector<Player*>*);
     std::string& getName();
     OrderList& getOrderList();
     OrderList* getOrders();
