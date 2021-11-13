@@ -9,6 +9,10 @@ const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gam
         ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
         ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit);
 
+const boost::unordered_map<std::string, GameEngine::GameState> GameEngine::gameStateMapping = boost::assign::map_list_of("start", GameEngine::GameState::start)
+        ("map loaded", GameEngine::GameState::map_loaded) ("map validated", GameEngine::GameState::map_validated) ("players added", GameEngine::GameState::players_added) ("assign reinforcement", GameEngine::GameState::assign_reinforcement)
+        ("issue orders", GameEngine::GameState::issue_orders) ("execute orders", GameEngine::GameState::execute_orders) ("start", GameEngine::GameState::start) ("win", GameEngine::GameState::win);
+
 /**
  * Game Engine constructor
  */
@@ -16,7 +20,7 @@ GameEngine::GameEngine()
 {
     this->current_state = new GameState(GameState::start);
     this->map = new Map();
-    this->players = new vector<Player*>();
+    this->players = vector<Player*>();
     this->deck = new Deck();
 }
 
@@ -27,7 +31,7 @@ GameEngine::GameEngine()
 GameEngine::GameEngine(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
-    this->players = new vector<Player*> (*gameEngine.players);
+    this->players = vector<Player*>(gameEngine.players);
     this->map = new Map(*gameEngine.map);
     this->deck = new Deck(*gameEngine.deck);
 }
@@ -40,6 +44,9 @@ GameEngine::GameEngine(const GameEngine &gameEngine)
 GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
+    this->players = vector<Player*>(gameEngine.players);
+    this->map = new Map(*gameEngine.map);
+    this->deck = new Deck(*gameEngine.deck);
     return *this;
 }
 
@@ -57,7 +64,7 @@ GameEngine::GameState& GameEngine::getGameState()
  * @return list of players
  */
 vector<Player *> &GameEngine::getPlayers() {
-    return *players;
+    return players;
 }
 
 /**
@@ -120,86 +127,106 @@ void GameEngine::getAvailableCommands(std::vector<GameEngine::GameCommand> &avai
  * Transition game state based on command
  * @param gameCommand Game command to run
  */
-void GameEngine::transition(GameCommand &gameCommand, const std::string& param)
+void GameEngine::transition(Command* command)
 {
+    std::string effect;
     bool foundCommand = false;
     std::vector<GameCommand> commands;
     getAvailableCommands(commands);
-    for (GameCommand gameCommand_: commands){
-        if (gameCommand_ == gameCommand) {
+    for (GameCommand gameCommand: commands){
+        if (gameCommand == *command->getGameCommand()) {
             foundCommand = true;
             // Perform move
             switch (gameCommand){
                 case load_map:
                     try {
-                        this->loadMap(param);
-                        std::cout << std::endl << "\x1B[32m" << "Map loaded" << "\033[0m" << std::endl << std::endl;
+                        this->loadMap(command->getParam());
+                        effect = "Map loaded";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = map_loaded;
                     } catch (std::runtime_error&) {
-                        std::cout << endl << "\x1B[31m" << "Could not load map. Try again." << "\033[0m" << endl << endl;
+                        effect = "Could not load map. Try again.";
+                        std::cout << endl << "\x1B[31m" << effect << "\033[0m" << endl << endl;
                     }
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case validate_map:
                     if (map != nullptr && map->validate()) {
                         this->validateMap();
-                        std::cout << std::endl << "\x1B[32m" << "Map validated" << "\033[0m" << std::endl << std::endl;
+                        effect = "Map validated";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = map_validated;
-                        Notify(this);
                     }
                     else {
                         map->~Map();
-                        cerr << "Invalid Map File.";
+                        effect = "Invalid Map File";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = start;
                     }
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case add_player:
-                    this->addPlayer(param);
+                    this->addPlayer(command);
                     *current_state = players_added;
-                    Notify(this);
+                    notify(this);
                     break;
                 case game_start:
-                    if (players->size() < 2)
-                        std::cout << std::endl << "\x1B[31m" << "Insufficient number of players. Please add more players." << "\033[0m" << std::endl << std::endl;
+                    if (players.size() < 2) {
+                        effect = "Insufficient number of players. Please add more players.";
+                        std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
+                    }
                     else {
                         this->gameStart();
-                        std::cout << std::endl << "\x1B[32m" << "Game started. Proceed to 'play' phase." << "\033[0m" << std::endl << std::endl;
+                        effect = "Game started. Proceed to 'play' phase.";
+                        std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = assign_reinforcement;
                     }
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case issue_order:
                     std::cout << std::endl << "\x1B[32m" << "Issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = issue_orders;
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case end_issue_order:
                     std::cout << std::endl << "\x1B[32m" << "End issue orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case execute_order:
                     std::cout << std::endl << "\x1B[32m" << "Execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = execute_orders;
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case end_execute_order:
                     std::cout << std::endl << "\x1B[32m" << "End execute orders" << "\033[0m" << std::endl << std::endl;
                     *current_state = assign_reinforcement;
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case win_game:
                     std::cout << std::endl << "\x1B[32m" << "Win game" << "\033[0m" << std::endl << std::endl;
                     *current_state = win;
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case replay:
-                    std::cout << std::endl << "\x1B[32m" << "Play game" << "\033[0m" << std::endl << std::endl;
+                    effect = "Game restarted";
+                    std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                     *current_state = start;
-                    Notify(this);
+                    command->saveEffect(effect);
+                    notify(this);
                     break;
                 case quit:
-                    std::cout << std::endl << "\x1B[32m" << "Exiting game" << "\033[0m" << std::endl << std::endl;
+                    effect = "Exiting game";
+                    std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
+                    command->saveEffect(effect);
                     exit(0);
             }
         }
@@ -284,71 +311,94 @@ void GameEngine::startupPhase(CommandProcessor* commandProcessor)
 {
     std::cout << std::endl << "*Startup Phase*" << std::endl << std::endl;
     printAvailableCommands();
-    Command* command = commandProcessor->getCommand();    
-    transition(*command->getGameCommand(), command->getParam());
+    auto* command = commandProcessor->getCommand();
+    attachExistingObservers(command);
+    transition(command);
     while (*(this->current_state) != assign_reinforcement) {
         printAvailableCommands();
         command = commandProcessor->getCommand();
-        transition(*command->getGameCommand(), command->getParam());
+        transition(command);
     }
 }
 
+/**
+ * Assign armies to reinforcement pool
+ */
 void GameEngine::reinforcementPhase()
 {
     cout << "*Reinforcement Phase*" << endl << endl;
 
-    for(Player* player: *this->players) {
+    for(Player* player: this->players) {
         int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
         if (size_TerritoriesByPlayer < 3) {    //size of territories less than 3
-            *(player->armyPool) += 3;              //default 3 armies
+            player->armyPool += 3;              //default 3 armies
             cout << player->getName() << " gets default 3 armies." << endl;
         }
         else {
             int armiesToGive = size_TerritoriesByPlayer / 3;
-            *(player->armyPool) += armiesToGive;
+            player->armyPool += armiesToGive;
             cout << player->getName() << " gets default " << armiesToGive << " armies." << endl;
         }
         for(Continent *continent : this->map->listOfContinents) {
             if (continent->isOwnedByPlayer(player)) {           //if player owns all territories of continent
                 int continentBonusValue = continent->getArmyValue();
-                *(player->armyPool) += continentBonusValue;
+                player->armyPool += continentBonusValue;
                 cout << player->getName() << " gets additional " << continentBonusValue << " armies as continent bonus for owning the entirety of " << continent->getContName() << endl;
             }
         }
-        cout << player->getName() << " can deploy a total of " << *player->armyPool << " troops." << endl << endl;
+        cout << player->getName() << " can deploy a total of " << player->armyPool << " troops." << endl << endl;
     }
+    transition(new Command(GameEngine::GameCommand::issue_order)); // change state to issue order
 }
 
+/**
+ * For each player, issue order. Call to issueOrder()
+ */
 void GameEngine::issueOrdersPhase()
 {
-    for (Player* player : *this->players) {
+    for (Player* player : this->players) {
         cout << player->getName() << "'s Turn!" << endl << endl;
         player->issueOrder(deck,map,players);
-
     }
+    transition(new Command(GameEngine::GameCommand::end_issue_order)); // change state to end issue order
 }
 
+/**
+ * Executes the order. Removes order from orderlist
+ */
 void GameEngine::executeOrdersPhase()
 {
     cout << "*Execution Phase*" << endl << endl;
 
     std::map<Player*, bool> playerHasOrdersToExecute;
-    for(Player* player: *this->players) {
-        if (playerHasOrdersToExecute[player]) {
-            for (Order* order : (player->orderList->getOrders())){
-                order->execute();
-            }
-                //execute order;
-        }  //orderList has content
+    for(Player* player: this->players) {
+        playerHasOrdersToExecute[player] = true;   //orderList has content
     }
+    while(containsOrders(playerHasOrdersToExecute)) { // continue while there are still orders to execute
+        for (Player *player: this->players) { // Round-robin fashion for each player
+            if (player->orderList->getSize() > 0) {
+                player->orderList->getOrders().at(0)->execute(); //execute order;
+                player->orderList->remove(0);
+            } else
+                playerHasOrdersToExecute[player] = false;
+        }
+    }
+    transition(new Command(GameEngine::GameCommand::end_execute_order)); // change state to end execute order
 }
 
-void GameEngine::mainGameLoop()
+/**
+ * Main Game Loop containing 3 phases: Reinforcement Phase, Issue Orders Phase, and execute Orders Phase
+ * Loop continues until one of the players owns all territories in map. If player does
+ * not control at least one territory, player is removed from game
+ *
+ */
+void GameEngine::mainGameLoop(CommandProcessor* commandProcessor)
 {
+    startupPhase(commandProcessor);
     bool playing = true;
     while(playing){
         bool allcontinents;
-        for(Player* player: *this->players) {
+        for(Player* player: this->players) {
             allcontinents = true;
             for(Continent* continent: map->listOfContinents){
                 if(!continent->isOwnedByPlayer(player)){
@@ -370,6 +420,11 @@ void GameEngine::mainGameLoop()
     }
 }
 
+/**
+ * uses hash map to determine if player has orders
+ * @param playerHasOrdersToExecute hash map of player and boolean value
+ * @return true if player has orders, else false
+ */
 bool GameEngine::containsOrders(std::map<Player*, bool> playerHasOrdersToExecute) {
     for (auto it = playerHasOrdersToExecute.begin(); it != playerHasOrdersToExecute.end(); ++it) {
         if(it->second)
@@ -377,6 +432,11 @@ bool GameEngine::containsOrders(std::map<Player*, bool> playerHasOrdersToExecute
     }
     return false;
 }
+
+/**
+ * load map
+ * @param mapName string
+ */
 void GameEngine::loadMap(const std::string& mapName)
 {
     this->map->setMapName(mapName);
@@ -384,6 +444,9 @@ void GameEngine::loadMap(const std::string& mapName)
     mapLoader.readMap(map);
 }
 
+/**
+ * Validate map
+ */
 void GameEngine::validateMap()
 {
     if (map != nullptr && map->validate()) {
@@ -395,35 +458,59 @@ void GameEngine::validateMap()
     }
 }
 
-void GameEngine::addPlayer(const std::string& playerName)
+/**
+ * Add players to the game (2 to 6 players allowed)
+ * @param playerName string
+ */
+void GameEngine::addPlayer(Command* command)
 {
-    if (players->size() == 6)
-        std::cout << std::endl << "\x1B[31m" << "Maximum number of players reached." << "\033[0m" << std::endl << std::endl;
+    std::string effect;
+    if (players.size() == 6) {
+        effect = "Maximum number of players reached";
+        std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
+    }
     else {
         bool found = false;
-        for (Player* player: *this->players){
-            if (player->getName() == playerName) {
-                std::cout << std::endl << "\x1B[31m" << "Player (" << playerName << ") already exist" << "\033[0m" << std::endl << std::endl;
+        for (Player* player: this->players){
+            if (player->getName() == command->getParam()) {
+                effect = "Player (" + command->getParam() + ") already exist";
+                std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
                 found = true;
             }
         }
         if (!found) {
-            this->players->push_back(new Player(playerName));
-            std::cout << std::endl << "\x1B[32m" << "Players added" << "\033[0m" << std::endl << std::endl;
+            effect = "Player (" + command->getParam() + ") added";
+            std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
+            auto* player = new Player(command->getParam());
+            attachExistingObservers(player->orderList);
+            this->players.push_back(new Player(command->getParam()));
         }
     }
+    command->saveEffect(effect);
 }
+
+/**
+ * remove player from game
+ * @param player name string
+ */
 void GameEngine::removePlayer(const std::string &playerName) {
     int count=0;
-    for(Player* player: *this->players){
+    for(Player* player: this->players){
         if(player->getName() == playerName){
-            players->erase(players->begin()+count);
+            players.erase(players.begin()+count);
             break;
         }
         count++;
     }
 }
 
+/**
+ * Fairly distribute all territories to the players
+ * Determine order of play of players
+ * Initialize 50 armies to reinforcement pool to each player
+ * Draw 2 cards
+ * switch the game to play phase
+ */
 void GameEngine::gameStart()
 {
     //Create deck for this game
@@ -431,34 +518,36 @@ void GameEngine::gameStart()
 
     //Assign territories, armies and draw card sequentially
     auto nbTerr = map->listOfTerritories.size();
-    auto nbPlayers = players->size();
+    auto nbPlayers = players.size();
     int terrCounter = 0;
 
     for (int i = 0; i < nbPlayers; i++) {
         //Assign territories sequentially
         for (int j = 0; j < (nbTerr / nbPlayers); j++) {
-            map->listOfTerritories[terrCounter]->setOwner(this->players->at(i));
+            map->listOfTerritories[terrCounter]->setOwner(this->players.at(i));
             terrCounter++;
         }
         //Add armies to reinforcement pool
-        this->players->at(i)->armyPool = new int(50);
+        this->players.at(i)->armyPool = 50;
 
         //Draw 2 cards
-        players->at(i)->hand->addCard(deck->draw());
-        players->at(i)->hand->addCard(deck->draw());
+        players.at(i)->hand->addCard(deck->draw());
+        players.at(i)->hand->addCard(deck->draw());
     }
 
     //Randomize player order
-    std::shuffle(players->begin(), players->end(), default_random_engine(0));
+    std::shuffle(players.begin(), players.end(), default_random_engine(0));
 
     //Print order of play
     std::cout << endl << "The order of play will be: " << endl;
 
-    for (const auto* value : *players) {
+    for (const auto* value : players) {
         cout << *value << endl;
     }
 }
-
+/**
+ * Prints available commands
+ */
 void GameEngine::printAvailableCommands(){
     cout << "Available commands:" << endl;
     vector<GameEngine::GameCommand> commands;
@@ -468,8 +557,21 @@ void GameEngine::printAvailableCommands(){
         cout << counter++ << ". " << command << endl;
     }
 }
-
+/**
+ * Game state to string
+ * @return currentState of game
+ */
 std::string GameEngine::stringToLog() {
     std::string currentState = std::to_string(this->getGameState());
-    return "Game Engine with State: " + currentState;
+    std::string strGameState;
+    for (auto& it: GameEngine::gameStateMapping){
+        if (it.second == *this->current_state)
+            strGameState = it.first;
+    }
+    return "Game Engine new state: " + strGameState;
+}
+
+void GameEngine::attachExistingObservers(Subject *subject) {
+    for (Observer* observer: this->getObservers())
+        subject->attach(observer);
 }

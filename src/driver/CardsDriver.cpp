@@ -5,6 +5,8 @@ using namespace std;
 
 int main(){
     // Create a deck of Warzone cards
+    Map* map = new Map();
+    Player* player = new Player("john");
     Deck* deck = new Deck();
     cout << *deck << endl;
 
@@ -15,11 +17,11 @@ int main(){
     hand->addCard(deck->draw());
     cout << *hand << endl;
 
-    OrderList* orderList = new OrderList();
+    auto* orderList = new OrderList();
 
     // Call play method on all cards in hand
     for (Card* card: hand->getCards()){
-        card->play(orderList, hand, deck);
+        card->play(orderList, hand, deck, player, map, std::vector<Player*>());
         cout << endl;
         hand->removeCard(card);
     }

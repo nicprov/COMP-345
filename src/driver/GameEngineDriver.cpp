@@ -7,5 +7,5 @@ int main() {
     cout << "==========================" << endl;
     cout << "Welcome to Warzone" << endl;
     cout << "==========================" << endl;
-    gameEngine.startupPhase(new CommandProcessor(gameEngine));
+    gameEngine.mainGameLoop(new CommandProcessor(gameEngine));
 }

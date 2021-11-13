@@ -1,2 +1,5 @@
-loadmap a
-loadmap 1
+loadmap ../solar.map
+validatemap
+addplayer nick
+addplayer john
+gamestart

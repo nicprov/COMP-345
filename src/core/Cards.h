@@ -5,15 +5,18 @@
 #include "Orders.h"
 #include "Player.h"
 
+//class forward reference
 class Hand;
 class Deck;
 class OrderList;
 class Player;
 class Map;
 
+//Card class and function declarations
 class Card
 {
 public:
+    // CardType enum. list of cards
     enum CardType
     {
         bomb = 1,
@@ -22,56 +25,51 @@ public:
         airlift = 4,
         diplomacy = 5
     };
-    Card(CardType);
-    // Copy constructor
-    Card(const Card&);
-    // Assignment operator
-    Card& operator= (const Card&);
+    Card(CardType); //Card constructor
+    Card(const Card&); // Copy constructor
+    Card& operator= (const Card&); // Assignment operator
     // Stream output operator
     friend std::ostream& operator<< (std::ostream&, const Card&);
     friend std::ostream& operator<< (std::ostream&, const CardType&);
-    bool operator== (const Card&) const;
-    void play(OrderList*, Hand*, Deck*, Player*, Map*, std::vector<Player*>*);
-    CardType& getType();
-    static constexpr std::initializer_list<CardType> ALL_Card_Type = { bomb, reinforcement, blockade, airlift, diplomacy };
+    bool operator== (const Card&) const; //Comparison of player
+    void play(OrderList*, Hand*, Deck*, Player*, Map*, std::vector<Player*>); //Play card
+    CardType& getType();    //get card type
+    void attachExistingObservers(Subject*, const std::vector<Observer*>&);
+    static constexpr std::initializer_list<CardType> ALL_Card_Type = { bomb, reinforcement, blockade, airlift, diplomacy }; //initialize card type
 private:
     CardType* type;
 };
 
+//Hand class and function declarations
 class Hand
 {
 public:
-    ~Hand();
-    Hand();
-    // Copy constructor
-    Hand(const Hand&);
-    // Assignment operator
-    Hand& operator= (const Hand&);
-    // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const Hand&);
-    bool operator== (const Hand&) const;
-    void addCard(Card*);
-    void removeCard(Card*);
-    std::vector<Card*> getCards();
+    ~Hand();    //Destructor
+    Hand();     // Hand Constructor
+    Hand(const Hand&);  // Copy constructor
+    Hand& operator= (const Hand&); // Assignment operator
+    friend std::ostream& operator<< (std::ostream&, const Hand&); // Stream output operator
+    bool operator== (const Hand&) const;    //Compare cards
+    void addCard(Card*);   //add Card to hand
+    void removeCard(Card*); //remove card from hand
+    std::vector<Card*> getCards();  //vector of cards
 private:
     std::vector<Card*>* cards;
 };
 
+//Deck class and function declarations
 class Deck {
 public:
-    ~Deck();
-    Deck();
-    // Copy constructor
-    Deck(const Deck&);
-    // Assignment operator
-    Deck& operator= (const Deck&);
-    // Stream output operator
-    friend std::ostream& operator<< (std::ostream&, const Deck&);
-    bool operator== (const Deck&) const;
-    Card* draw();
-    void returnCard(Card*);
-    std::vector<Card*> getCards();
-    static constexpr int NUM_CARDS_PER_TYPE = 10;
+    ~Deck();    //Destructor
+    Deck();     //Deck Constructor
+    Deck(const Deck&); // Copy constructor
+    Deck& operator= (const Deck&); // Assignment operator
+    friend std::ostream& operator<< (std::ostream&, const Deck&); // Stream output operator
+    bool operator== (const Deck&) const; //Compare Deck
+    Card* draw();   //draw a card
+    void returnCard(Card*); //return card
+    std::vector<Card*> getCards();  //vector of cards
+    static constexpr int NUM_CARDS_PER_TYPE = 10; //constant number of cards per type
 private:
     std::vector<Card*>* cards;
 };

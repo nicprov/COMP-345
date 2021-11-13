@@ -1,6 +1,5 @@
 #include <iostream>
 #include <random>
-#include <algorithm>
 #include "Cards.h"
 
 // Card methods
@@ -15,6 +14,7 @@ Card::Card(CardType type)
 
 /**
  * Card copy constructor
+ * Makes a copy of Card
  * @param card CardType enum
  */
 Card::Card(const Card &card)
@@ -39,7 +39,7 @@ Card& Card::operator=(const Card &card)
  * @param hand Hand to remove the card from
  * @param deck Deck to place the card back in
  */
-void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Map* map, std::vector<Player*>* players)
+void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Map* map, std::vector<Player*> players)
 {
     // Add card back to deck
     deck->returnCard(this);
@@ -92,6 +92,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             targetT = map->getTerritoriesByPlayer(player)[i - 1];
 
             order = new Blockade(Order::OrderType::blockade, player, targetT);
+            attachExistingObservers(order, player->orderList->getObservers());
             orderList->add(order);
             break;
         }
@@ -118,13 +119,14 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             std::cin >> armies;
 
             order = new Airlift(Order::OrderType::advance, player, sourceT, destinationT, armies);
+            attachExistingObservers(order, player->orderList->getObservers());
             orderList->add(order);
             break;
         }
         case diplomacy: {
             // Display players in the game
             i = 0;
-            for (Player* player : *players) {
+            for (Player* player : players) {
                 i++;
                 cout << i << ". " << player->getName() << endl;
             }
@@ -132,10 +134,11 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             // Ask player to negotiate with
             cout << "Select player with whom to negotiate (cannot negotiate with oneself): ";
             cin >> i;
-            enemy = players->at(i - 1);
+            enemy = players.at(i - 1);
 
 
             order = new Negotiate(Order::OrderType::negotiate, player, enemy);
+            attachExistingObservers(order, player->orderList->getObservers());
             orderList->add(order);
             break;
         }
@@ -269,7 +272,7 @@ void Hand::removeCard(Card *card)
  * Hand stream insertion operator
  * @param stream Output stream
  * @param hand Hand to print
- * @return
+ * @return output stream
  */
 std::ostream& operator<< (std::ostream &stream, const Hand &hand)
 {
@@ -418,4 +421,9 @@ bool Deck::operator==(const Deck &deck) const
 void Deck::returnCard(Card *card)
 {
     this->cards->push_back(card);
+}
+
+void Card::attachExistingObservers(Subject *subject, const std::vector<Observer*>& observerList) {
+    for (Observer* observer: observerList)
+        subject->attach(observer);
 }

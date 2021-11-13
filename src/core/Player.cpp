@@ -18,7 +18,8 @@ Player::~Player()
 
 /**
  * Player default constructor
- * @param name
+ * Provides default values to the Player object
+ * @param name string
  */
 Player::Player(const std::string &name) {
     this->name = name;
@@ -29,9 +30,10 @@ Player::Player(const std::string &name) {
 
 /**
  * Player Constructor
- * @param hand
- * @param orderlist
- * @param name
+ * @param hand Hand
+ * @param orderlist OrderList
+ * @param name string
+ * @param territoryList vector of pointers to pointers
  */
 Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &name)
 {
@@ -43,7 +45,8 @@ Player::Player(const Hand &hand, const OrderList &orderlist, const std::string &
 
 /**
  * Player copy constructor
- * @param player
+ * Makes a copy of Player
+ * @param player Player
  */
 Player::Player(const Player &player)
 {
@@ -54,9 +57,9 @@ Player::Player(const Player &player)
 }
 
 /**
- * Card assignment operator
- * @param player
- * @return reference to Player
+ * Player assignment operator
+ * @param player Player
+ * @return Player reference
  */
 Player& Player::operator= (const Player& player)
 {
@@ -69,8 +72,8 @@ Player& Player::operator= (const Player& player)
 
 /**
  * Stream insertion operator for Player
- * @param stream
- * @param player
+ * @param stream Output stream
+ * @param player Player
  * @return output stream
  */
 std::ostream &operator<<(std::ostream &stream, const Player &player)
@@ -79,12 +82,14 @@ std::ostream &operator<<(std::ostream &stream, const Player &player)
 }
 
 /**
- * Add order to orderlist
- * @param order
+ * Create orders for execution
+ * @param deck Deck
+ * @param map Map
+ * @param players vector of pointers to pointers
  */
-bool Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
+bool Player::issueOrder(Deck* deck, Map* map,std::vector<Player*> players) {
     int armies = 0;
-    int armiesNotDeployed = *(this->armyPool);
+    int armiesNotDeployed = (this->armyPool);
     int i = 0;
     Order* order = nullptr;
     for (Territory* ownedTerr : map->getTerritoriesByPlayer(this)) {
@@ -95,7 +100,7 @@ bool Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
         cout << "Armies left to deploy: " << armiesNotDeployed << endl << endl;
 
         // Ask for the territory to deploy to (get list: 1..4
-        std::cout << "Select a territory to deploy armies to: " << endl;
+        std::cout << "Select a territory to deploy armies to: ";
         int j = 0;
         cin >> j;
         Territory* deployToT = map->getTerritoriesByPlayer(this)[j - 1];
@@ -104,6 +109,7 @@ bool Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
         std::cout << "Select the number of armies to deploy: ";
         std::cin >> armies;
         order = new Deploy(Order::OrderType::deploy, this, deployToT, armies);
+        attachExistingObservers(order, this->orderList->getObservers());
         this->orderList->add(order);
         armiesNotDeployed = armiesNotDeployed - armies;
         armies = 0;
@@ -119,7 +125,6 @@ bool Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
         } else if (choice == "card") {
             if (!this->hand->getCards().empty())
                 this->hand->getCards().at(0)->play(orderList, hand, deck, this, map, players);
-
         }
         else if (choice == "endturn")
             return true;
@@ -134,14 +139,12 @@ bool Player::issueOrder( Deck* deck, Map* map,std::vector<Player*>* players) {
         else if (choice == "endturn") {
             return true;
         }
-
-
     }
 }
 
 /**
  * Comparison of player by looking at its type
- * @param player
+ * @param player Player compared to
  * @return bool value of true (match) or false (does not match)
  */
 bool Player::operator==(const Player &player) const {
@@ -150,7 +153,8 @@ bool Player::operator==(const Player &player) const {
 
 /**
  * Create and display territories to defend
- * @return content of territory
+ * based on territories owned
+ * @return list of territories to defend
  */
 std::vector<Territory*> Player::toDefend(Map& map) {
     return map.getTerritoriesByPlayer(this);
@@ -158,7 +162,8 @@ std::vector<Territory*> Player::toDefend(Map& map) {
 
 /**
  * Create and display territories to attack
- * @return content of territory
+ * based on adjacent territories
+ * @return list of territories to attack
  */
 std::vector<Territory *> Player::toAttack(Map& map) {
     auto neighbouringTerritories = vector<Territory*>();
@@ -173,7 +178,7 @@ std::vector<Territory *> Player::toAttack(Map& map) {
 
 /**
  * Get Player name
- * @return name
+ * @return name of player
  */
 std::string &Player::getName()
 {
@@ -182,13 +187,18 @@ std::string &Player::getName()
 
 /**
  * Get Orderlist
- * @return orderList
+ * @return orderList of player
  */
 OrderList &Player::getOrderList()
 {
     return *this->orderList;
 }
 
+/**
+ * Verifies if players have negotiation with eachother
+ * @param enemy Player
+ * @return true if negotiation is needed, false otherwise
+ */
 bool Player::hasNegotiationWith(Player* enemy)
 {
     for (int i = 0; i < orderList->getOrders().size(); i++)
@@ -215,9 +225,9 @@ Order *Player::advance(Map * map, Deck* deck) {
     }
 
     // Ask source territory
-    std::cout << "Select a territory to mobilize armies from: " << endl;
+    std::cout << "Select a territory to mobilize armies from: ";
     cin >> i;
-    sourceT = map->getTerritoriesByPlayer(this)[i - 1];
+    sourceT = map->getTerritoriesByPlayer(this).at(i - 1);
 
     // Display territories adjacent to source territory
     i = 0;
@@ -228,7 +238,7 @@ Order *Player::advance(Map * map, Deck* deck) {
     // Ask destination territory
     std::cout << "Select a territory to mobilize armies to: " << endl;
     cin >> i;
-    destinationT = map->getTerritoriesByPlayer(this)[i - 1];
+    destinationT = map->getTerritoriesByPlayer(this).at(i - 1);
 
     // Ask for number of armies to deploy
     int armies = 0;
@@ -236,5 +246,11 @@ Order *Player::advance(Map * map, Deck* deck) {
     std::cin >> armies;
 
     Order* order = new Advance(Order::OrderType::advance, deck, this, sourceT, destinationT, armies);
+    attachExistingObservers(order, this->orderList->getObservers());
     return order;
+}
+
+void Player::attachExistingObservers(Subject *subject, const std::vector<Observer*>& observerList) {
+    for (Observer* observer: observerList)
+        subject->attach(observer);
 }

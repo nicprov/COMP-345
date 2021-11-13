@@ -2,6 +2,8 @@
 #include "../core/CommandProcessing.h"
 
 int main(int argc, char *argv[]){
+    const std::string logFile = "../log/gamelog.txt";
+    auto* logObserver = new LogObserver(logFile);
     GameEngine gameEngine;
     CommandProcessor* commandProcessor;
     switch (argc) {
@@ -20,6 +22,7 @@ int main(int argc, char *argv[]){
         default:
             throw std::runtime_error("Must include either -console or -file <filename> when launching program");
     }
-    gameEngine.startupPhase(commandProcessor);
-    gameEngine.mainGameLoop();
+    gameEngine.attach(logObserver);
+    commandProcessor->attach(logObserver);
+    gameEngine.mainGameLoop(commandProcessor);
 }

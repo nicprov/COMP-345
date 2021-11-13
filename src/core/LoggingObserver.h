@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <vector>
 
@@ -7,37 +8,34 @@ public:
     virtual std::string stringToLog() = 0;
     ILoggable();
     ~ILoggable();
-
 };
 
 class Observer {
 public:
     Observer();
     ~Observer();
-    virtual void Update(ILoggable*) =0;
+    virtual void update(ILoggable*) = 0;
 };
 
 class Subject : public ILoggable {
 public:
-    virtual void Attach(Observer* o);
-    virtual void Detach(Observer* o);
-    virtual void Notify(ILoggable* I);
+    void attach(Observer* o);
+    void detach(Observer* o);
+    void notify(ILoggable* I);
+    std::vector<Observer*> getObservers();
     Subject();
     ~Subject();
 private:
-    std::vector<Observer*>* _observers;
+    std::vector<Observer*> observers;
 };
 
 class LogObserver : public Observer{
 public:
-    LogObserver();
-    LogObserver(Subject*);
+    LogObserver(const std::string&);
     ~LogObserver();
-    void Update(ILoggable*);
+    void update(ILoggable*);
 private:
-    Subject* _subject;
-
-
+    std::string filename;
 };
 
 
