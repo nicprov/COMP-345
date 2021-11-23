@@ -92,22 +92,6 @@ std::vector<Player*> &GameEngine::getPlayers() {
 }
 
 /**
- * Get current map in the game
- * @return current map
- */
-Map &GameEngine::getMap() {
-    return *map;
-}
-
-/**
- * Get current deck in the game
- * @return current deck
- */
-Deck &GameEngine::getDeck() {
-    return *deck;
-}
-
-/**
  * Get a list of available commands based on the current game state
  * @param availableCommands list of available commands to run
  */
@@ -349,25 +333,22 @@ void GameEngine::startupPhase(CommandProcessor* commandProcessor)
  */
 void GameEngine::reinforcementPhase()
 {
-
     std::cout << "*Reinforcement Phase*" << std::endl << std::endl;
-
     for(Player* player: this->players) {
-        int size_TerritoriesByPlayer = map->getTerritoriesByPlayer(player).size();
-        if (size_TerritoriesByPlayer < 3) {    //size of territories less than 3
+        int numberTerritoriesByPlayer = this->map->getTerritoriesByPlayer(player).size();
+        if (numberTerritoriesByPlayer < 3) {    //size of territories less than 3
             player->armyPool += 3;              //default 3 armies
             std::cout << player->getName() << " gets default 3 armies." << std::endl;
         }
         else {
-            int armiesToGive = size_TerritoriesByPlayer / 3;
+            int armiesToGive = numberTerritoriesByPlayer / 3;
             player->armyPool += armiesToGive;
             std::cout << player->getName() << " gets default " << armiesToGive << " armies." << std::endl;
         }
         for(Continent *continent : this->map->listOfContinents) {
             if (continent->isOwnedByPlayer(player)) {           //if player owns all territories of continent
-                int continentBonusValue = continent->getArmyValue();
-                player->armyPool += continentBonusValue;
-                std::cout << player->getName() << " gets additional " << continentBonusValue << " armies as continent bonus for owning the entirety of " << continent->getContName() << std::endl;
+                player->armyPool += continent->getArmyValue();
+                std::cout << player->getName() << " gets additional " << continent->getArmyValue() << " armies as continent bonus for owning the entirety of " << continent->getContName() << std::endl;
             }
         }
         std::cout << player->getName() << " can deploy a total of " << player->armyPool << " troops." << std::endl << std::endl;

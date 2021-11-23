@@ -39,11 +39,11 @@ Card& Card::operator=(const Card &card)
  * @param hand Hand to remove the card from
  * @param deck Deck to place the card back in
  */
-void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Map* map, std::vector<Player*> players)
+void Card::play(Deck* deck, Player* player, Map* map, std::vector<Player*> players)
 {
     // Add card back to deck
     deck->returnCard(this);
-    hand->removeCard(this);
+    player->hand->removeCard(this);
     //Some initializations to make compiler happy
     Territory* sourceT = nullptr;
     Territory* destinationT = nullptr;
@@ -63,7 +63,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             // Display territories available for bombing
             i = 0;
             std::cout << "List of available territories to bomb: " << std::endl;
-            for (Territory* canAttack : player->toAttack(*map)) {
+            for (Territory* canAttack : player->toAttack(map)) {
                 std::cout << i << ": " << canAttack->getTerrName() << std::endl;
                 i++;
             }
@@ -72,10 +72,10 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             int j;
             std::cout << "Select territory to bomb: ";
             std::cin >> j;
-            targetT = player->toAttack(*map).at(j);
+            targetT = player->toAttack(map).at(j);
 
             order = new Bomb(Order::OrderType::bomb, targetT->getOwner(), targetT);
-            orderList->add(order);
+            player->orderList->add(order);
             break;
         }
         case blockade: {
@@ -93,7 +93,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
 
             order = new Blockade(Order::OrderType::blockade, player, targetT);
             attachExistingObservers(order, player->orderList->getObservers());
-            orderList->add(order);
+            player->orderList->add(order);
             break;
         }
         case airlift:{
@@ -120,7 +120,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
 
             order = new Airlift(Order::OrderType::advance, player, sourceT, destinationT, armies);
             attachExistingObservers(order, player->orderList->getObservers());
-            orderList->add(order);
+            player->orderList->add(order);
             break;
         }
         case diplomacy: {
@@ -139,7 +139,7 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
 
             order = new Negotiate(Order::OrderType::negotiate, player, enemy);
             attachExistingObservers(order, player->orderList->getObservers());
-            orderList->add(order);
+            player->orderList->add(order);
             break;
         }
     }
