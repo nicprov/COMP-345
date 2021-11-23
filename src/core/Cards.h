@@ -32,7 +32,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Card&);
     friend std::ostream& operator<< (std::ostream&, const CardType&);
     bool operator== (const Card&) const; //Comparison of player
-    void play(Deck*, Player*, Map*, std::vector<Player*>); //Play card
+    void play(Deck*, Player*, Order*); //Play card
     CardType& getType();    //get card type
     void attachExistingObservers(Subject*, const std::vector<Observer*>&);
     static constexpr std::initializer_list<CardType> ALL_Card_Type = { bomb, reinforcement, blockade, airlift, diplomacy }; //initialize card type

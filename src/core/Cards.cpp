@@ -29,7 +29,10 @@ Card::Card(const Card &card)
  */
 Card& Card::operator=(const Card &card)
 {
-    this->type = new CardType(*card.type);
+    if (this != &card){
+        delete this->type;
+        this->type = new CardType(*card.type);
+    }
     return *this;
 }
 
@@ -38,117 +41,14 @@ Card& Card::operator=(const Card &card)
  * @param hand Hand to remove the card from
  * @param deck Deck to place the card back in
  */
-void Card::play(Deck* deck, Player* player, Map* map, std::vector<Player*> players)
+void Card::play(Deck* deck, Player* player, Order* order)
 {
     // Add card back to deck
     deck->returnCard(this);
     player->hand->removeCard(this);
 
-    Order* order;
-    Territory* territoryTo;
-    Territory* territoryToAttack;
-    Territory* territoryFrom;
-    Territory* territoryToBlockade;
-    Player* enemy;
-    int index = 0;
-
-    switch (*this->type) {
-        case bomb:
-            std::cout << "Playing bomb card..." << std::endl;
-
-            // Display territories available for bombing
-            index = 1;
-            std::cout << "List of available territories to bomb: " << std::endl;
-            for (Territory* canAttack : player->toAttack(map)) {
-                std::cout << index++ << ". " << canAttack->getTerrName() << std::endl;
-            }
-
-            // Ask for territory to bomb
-            std::cout << "Select territory to bomb: ";
-            int territoryToAttackIndex;
-            getValidatedInput(territoryToAttackIndex, 1, player->toAttack(map).size());
-            territoryToAttack = player->toAttack(map).at(territoryToAttackIndex-1);
-
-            // Create order and add to order list
-            order = new Bomb(Order::OrderType::bomb, territoryToAttack->getOwner(), territoryToAttack);
-            player->orderList->add(order);
-            break;
-        case blockade:
-            std::cout << "Playing blockade card..." << std::endl;
-
-            // List owned territories
-            index = 1;
-            std::cout << "List of available territories to blockade: " << std::endl;
-            for (Territory* canAttack : player->toDefend(map)) {
-                std::cout << index++ << ". " << canAttack->getTerrName() << std::endl;
-            }
-
-            //Ask territory to blockade
-            std::cout << "Select territory to blockade: ";
-            int territoryToBlockadeIndex;
-            getValidatedInput(territoryToBlockadeIndex, 1, player->toDefend(map).size());
-            territoryToBlockade = player->toDefend(map).at(territoryToBlockadeIndex-1);
-
-            order = new Blockade(Order::OrderType::blockade, player, territoryToBlockade);
-            attachExistingObservers(order, player->orderList->getObservers());
-            player->orderList->add(order);
-            break;
-        case airlift:
-            std::cout << "Playing airlift card..." << std::endl;
-
-            // List owned territories
-            index = 1;
-            std::cout << "List of available territories owned: " << std::endl;
-            for (Territory* canAttack : player->toDefend(map)) {
-                std::cout << index++ << ". " << canAttack->getTerrName() << " (armies: " << canAttack->getNumberOfArmies() << ")" << std::endl;
-            }
-
-            // Ask source territory
-            std::cout << "Select a territory to mobilize armies from: " << std::endl;
-            int territoryFromIndex;
-            getValidatedInput(territoryFromIndex, 1, player->toDefend(map).size());
-            territoryFrom = player->toDefend(map).at(territoryFromIndex-1);
-
-            // Ask destination territory
-            std::cout << "Select a territory to mobilize armies to: " << std::endl;
-            int territoryToIndex;
-            getValidatedInput(territoryToIndex, 1, player->toDefend(map).size());
-            territoryTo = player->toDefend(map).at(territoryToIndex-1);
-
-            // Ask for number of armies to deploy
-            std::cout << "Select the number of armies to deploy: ";
-            int armiesToDeploy;
-            getValidatedInput(armiesToDeploy, 1, territoryFrom->getNumberOfArmies());
-
-            order = new Airlift(Order::OrderType::advance, player, territoryFrom, territoryTo, armiesToDeploy);
-            attachExistingObservers(order, player->orderList->getObservers());
-            player->orderList->add(order);
-            break;
-        case diplomacy:
-            std::cout << "Playing diplomacy card..." << std::endl;
-
-            // Display players in the game
-            index = 0;
-            for (Player* _player : players) {
-                std::cout << index++ << ". " << player->getName() << std::endl;
-            }
-
-            // Ask player to negotiate with
-            std::cout << "Select player with whom to negotiate (cannot negotiate with oneself): ";
-            int enemyIndex;
-            getValidatedInput(enemyIndex, 1, players.size());
-            enemy = players.at(enemyIndex-1);
-
-            order = new Negotiate(Order::OrderType::negotiate, player, enemy);
-            attachExistingObservers(order, player->orderList->getObservers());
-            player->orderList->add(order);
-            break;
-        case reinforcement:
-            std::cout << "Playing reinforcement card..." << std::endl;
-            // Immediately adds 5 armies in the reinforcement pool
-            player->armyPool += 5;
-            break;
-    }
+    // Add order to order-list;
+    player->orderList->add(order);
 }
 
 /**

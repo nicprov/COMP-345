@@ -1,4 +1,7 @@
 #include "Orders.h"
+#include "Map.h"
+#include "Player.h"
+#include "Cards.h"
 
 const boost::unordered_map<Order::OrderType, std::string> Order::orderTypeMapping = boost::assign::map_list_of(OrderType::deploy, "deploy")
     (OrderType::advance, "advance") (OrderType::bomb, "bomb") (OrderType::blockade, "blockade") (OrderType::airlift, "airlift") (OrderType::negotiate, "negotiate");
@@ -229,7 +232,7 @@ void Blockade::execute()
     {
         notify(this);
         target->addTroops(target->getNumberOfArmies()); // Double players
-        target->setOwner(new Player("Neutral")); //neutral player, come back to this when neutral player implemented
+        target->setOwner(new Player("Neutral", PlayerStrategy::neutral)); //neutral player, come back to this when neutral player implemented
         std::cout << "Blockade order: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " \narmies and belongs to " << target->getOwner()->getName() << std::endl;
     }
 }

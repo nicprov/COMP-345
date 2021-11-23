@@ -22,21 +22,21 @@ private:
 class Command : public Subject{
 public:
     Command(const GameEngine::GameCommand&); //Parameterized constructor
-    Command(const GameEngine::GameCommand&, const std::string&); //Parameterized constructor
-    Command(const GameEngine::GameCommand&, const std::string&, const std::string&); //Parameterized constructor
+    Command(const GameEngine::GameCommand&, const std::vector<std::string>&); //Parameterized constructor
+    Command(const GameEngine::GameCommand&, const std::vector<std::string>&, const std::string&); //Parameterized constructor
     Command(const Command&); //Copy constructor
     Command& operator= (const Command&); //Assignment operator
     friend std::ostream& operator<< (std::ostream&, const Command&); //Stream output operator
     void saveEffect(const std::string&); //Saves the effect
     Command& getCommand(); //Get the command
     GameEngine::GameCommand* getGameCommand(); //Get the game command
-    std::string getParam(); //Get the param
+    std::vector<std::string> getParams(); //Get the param
     std::string getEffect(); //Get the effect
     std::string stringToLog(); //Output to log
     std::string toString(); // Output string with the command and param
 private:
     GameEngine::GameCommand* command; //Pointer of type gameCommand to the command
-    std::string param; //Parameter
+    std::vector<std::string> params; //Parameter
     std::string effect; //Effect
 };
 
@@ -47,7 +47,7 @@ public:
     CommandProcessor& operator= (const CommandProcessor&); //Assignment operator
     friend std::ostream& operator<< (std::ostream&, const CommandProcessor&); //Stream output operator
     Command* getCommand(); //Get the command
-    Command* validate(const std::string&, const std::string&); //Checks if the command is valid
+    Command* validate(const std::string&, const std::vector<std::string>&); //Checks if the command is valid
     std::string stringToLog(); //Output to log
 protected:
     void saveCommand(Command*); //Saves the command

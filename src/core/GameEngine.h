@@ -38,7 +38,8 @@ public:
         end_execute_order=8,
         win_game=9,
         replay=10,
-        quit=11
+        quit=11,
+        tournament=12
     };
     GameEngine();   //Game Engine Constructor
     GameEngine(const GameEngine&); // Copy constructor

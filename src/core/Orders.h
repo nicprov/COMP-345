@@ -6,9 +6,6 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/unordered_map.hpp>
 #include "LoggingObserver.h"
-#include "Map.h"
-#include "Player.h"
-#include "Cards.h"
 
 class Player;
 class Territory;
@@ -50,7 +47,7 @@ public:
     void execute(); //execute method for deploy orders
     bool validate(); //validate method for deploy orders
 private:
-    Player* player{}; //pointer to the player of the order
+    Player* player; //pointer to the player of the order
     Territory* territory; //pointer to the territory to deploy to
     int numOfArmies; //integer number of armies
 };
