@@ -31,9 +31,11 @@ GameEngine::GameEngine()
 GameEngine::GameEngine(const GameEngine &gameEngine)
 {
     this->current_state = new GameState(*gameEngine.current_state);
-    this->players = vector<Player*>(gameEngine.players);
     this->map = new Map(*gameEngine.map);
     this->deck = new Deck(*gameEngine.deck);
+    this->players = vector<Player*>();
+    for (Player* player: gameEngine.players)
+        this->players.push_back(new Player(*player));
 }
 
 /**
@@ -43,10 +45,32 @@ GameEngine::GameEngine(const GameEngine &gameEngine)
  */
 GameEngine& GameEngine::operator=(const GameEngine &gameEngine)
 {
-    this->current_state = new GameState(*gameEngine.current_state);
-    this->players = vector<Player*>(gameEngine.players);
-    this->map = new Map(*gameEngine.map);
-    this->deck = new Deck(*gameEngine.deck);
+    if (this != &gameEngine){
+        // Copy players
+        for (Player* player: this->players)
+            delete player;
+        this->players = std::vector<Player*>();
+        for (Player* player: gameEngine.players)
+            this->players.push_back(new Player(*player));
+
+        // Copy game-state
+        delete this->current_state;
+        this->current_state = new GameState(*gameEngine.current_state);
+
+        // Copy map
+        delete this->map;
+        this->map = new Map(*gameEngine.map);
+
+        // Copy deck
+        for (Card* card: this->deck->getCards())
+            delete card;
+
+        // Copy deck
+        auto* newCards = new std::vector<Card*>();
+        for (Card* card: gameEngine.deck->getCards())
+            newCards->push_back(new Card(*card));
+        this->deck->setCards(*newCards);
+    }
     return *this;
 }
 
@@ -63,7 +87,7 @@ GameEngine::GameState& GameEngine::getGameState()
  * Get list of current players in the game
  * @return list of players
  */
-vector<Player *> &GameEngine::getPlayers() {
+vector<Player*> &GameEngine::getPlayers() {
     return players;
 }
 
@@ -316,8 +340,7 @@ void GameEngine::startupPhase(CommandProcessor* commandProcessor)
     transition(command);
     while (*(this->current_state) != assign_reinforcement) {
         printAvailableCommands();
-        command = commandProcessor->getCommand();
-        transition(command);
+        transition(commandProcessor->getCommand());
     }
 }
 
@@ -326,6 +349,7 @@ void GameEngine::startupPhase(CommandProcessor* commandProcessor)
  */
 void GameEngine::reinforcementPhase()
 {
+
     cout << "*Reinforcement Phase*" << endl << endl;
 
     for(Player* player: this->players) {
@@ -425,9 +449,9 @@ void GameEngine::mainGameLoop(CommandProcessor* commandProcessor)
  * @param playerHasOrdersToExecute hash map of player and boolean value
  * @return true if player has orders, else false
  */
-bool GameEngine::containsOrders(std::map<Player*, bool> playerHasOrdersToExecute) {
-    for (auto it = playerHasOrdersToExecute.begin(); it != playerHasOrdersToExecute.end(); ++it) {
-        if(it->second)
+bool GameEngine::containsOrders(const std::map<Player*, bool>& playerHasOrdersToExecute) {
+    for (auto & it : playerHasOrdersToExecute) {
+        if(it.second)
             return true;    //there is a true value
     }
     return false;
@@ -483,7 +507,7 @@ void GameEngine::addPlayer(Command* command)
             std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
             auto* player = new Player(command->getParam());
             attachExistingObservers(player->orderList);
-            this->players.push_back(new Player(command->getParam()));
+            this->players.push_back(player);
         }
     }
     command->saveEffect(effect);
@@ -497,7 +521,7 @@ void GameEngine::removePlayer(const std::string &playerName) {
     int count=0;
     for(Player* player: this->players){
         if(player->getName() == playerName){
-            players.erase(players.begin()+count);
+            players.erase(players.begin() + count);
             break;
         }
         count++;
@@ -513,36 +537,36 @@ void GameEngine::removePlayer(const std::string &playerName) {
  */
 void GameEngine::gameStart()
 {
-    //Create deck for this game
+    // Create deck for this game
     deck = new Deck();
 
-    //Assign territories, armies and draw card sequentially
-    auto nbTerr = map->listOfTerritories.size();
-    auto nbPlayers = players.size();
-    int terrCounter = 0;
+    // Randomize player order
+    std::shuffle(players.begin(), players.end(), std::random_device {});
 
-    for (int i = 0; i < nbPlayers; i++) {
-        //Assign territories sequentially
-        for (int j = 0; j < (nbTerr / nbPlayers); j++) {
-            map->listOfTerritories[terrCounter]->setOwner(this->players.at(i));
-            terrCounter++;
-        }
-        //Add armies to reinforcement pool
-        this->players.at(i)->armyPool = 50;
+    // Randomize territories
+    std::shuffle(map->listOfTerritories.begin(), map->listOfTerritories.end(), std::random_device {});
 
-        //Draw 2 cards
-        players.at(i)->hand->addCard(deck->draw());
-        players.at(i)->hand->addCard(deck->draw());
-    }
-
-    //Randomize player order
-    std::shuffle(players.begin(), players.end(), default_random_engine(0));
-
-    //Print order of play
+    // Print order of play
     std::cout << endl << "The order of play will be: " << endl;
 
-    for (const auto* value : players) {
-        cout << *value << endl;
+    // Keep track of territories handed out
+    int terrCounter = 0;
+
+    for (auto* player : players) {
+        // Assign territories sequentially
+        for (int j = 0; j < (map->listOfTerritories.size() / players.size()); j++) {
+            map->listOfTerritories[terrCounter]->setOwner(player);
+            terrCounter++;
+        }
+        // Add armies to reinforcement pool
+        player->armyPool = 50;
+
+        // Draw 2 cards
+        player->hand->addCard(deck->draw());
+        player->hand->addCard(deck->draw());
+
+        // Print player to show order
+        cout << *player;
     }
 }
 /**

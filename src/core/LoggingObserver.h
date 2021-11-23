@@ -6,14 +6,10 @@
 class ILoggable{
 public:
     virtual std::string stringToLog() = 0; //pure virtual method for string to log
-    ILoggable(); //default constructor
-    ~ILoggable(); //default destructor
 };
 
 class Observer {
 public:
-    Observer(); //default constructor
-    ~Observer(); //default destructor
     virtual void update(ILoggable*) = 0; //pure virtual update method
 };
 
@@ -32,7 +28,6 @@ private:
 class LogObserver : public Observer{
 public:
     LogObserver(const std::string&); //log observer parameterized constructor
-    ~LogObserver(); //logobserver default destructor
     void update(ILoggable*); //overriden update method
 private:
     std::string filename; //name of file to log to

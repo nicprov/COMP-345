@@ -54,7 +54,7 @@ public:
     void removeCard(Card*); //remove card from hand
     std::vector<Card*> getCards();  //vector of cards
 private:
-    std::vector<Card*>* cards;
+    std::vector<Card*> cards;
 };
 
 //Deck class and function declarations
@@ -68,9 +68,10 @@ public:
     bool operator== (const Deck&) const; //Compare Deck
     Card* draw();   //draw a card
     void returnCard(Card*); //return card
-    std::vector<Card*> getCards();  //vector of cards
+    void setCards(std::vector<Card*>&); // Set cards
+    std::vector<Card*> getCards();  // Get cards
     static constexpr int NUM_CARDS_PER_TYPE = 10; //constant number of cards per type
 private:
-    std::vector<Card*>* cards;
+    std::vector<Card*> cards;
 };
 #endif //TEST1_CARDS_H

@@ -50,7 +50,6 @@ public:
     Command* validate(const std::string&, const std::string&); //Checks if the command is valid
     std::string stringToLog(); //Output to log
 protected:
-    Observer* observer; //Observer
     void saveCommand(Command*); //Saves the command
     virtual Command* readCommand(); //Virtual method to read the command
     std::vector<Command*> commands; //Vector of commands

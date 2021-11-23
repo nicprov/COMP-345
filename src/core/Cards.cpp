@@ -209,18 +209,18 @@ bool Card::operator==(const Card &card) const
  */
 Hand::~Hand()
 {
-    for (Card* card: *this->cards)
+    for (Card* card: this->cards)
     {
         delete card;
     }
-    delete this->cards;
 }
 
 /**
  * Hand constructor
  */
-Hand::Hand() {
-    this->cards = new std::vector<Card*>;
+Hand::Hand()
+{
+    this->cards = std::vector<Card*>();
 }
 
 /**
@@ -229,7 +229,9 @@ Hand::Hand() {
  */
 Hand::Hand(const Hand &hand)
 {
-    this->cards = new std::vector(*hand.cards);
+    this->cards = std::vector<Card*>();
+    for (auto* card: hand.cards)
+        this->cards.push_back(new Card(*card));
 }
 
 /**
@@ -239,7 +241,13 @@ Hand::Hand(const Hand &hand)
  */
 Hand& Hand::operator=(const Hand &hand)
 {
-    this->cards = new std::vector(*hand.cards);
+    if (this != &hand){
+        for (Card* card: this->cards)
+            delete card;
+        this->cards = std::vector<Card*>();
+        for (Card* card: hand.cards)
+            this->cards.push_back(new Card(*card));
+    }
     return *this;
 }
 
@@ -249,7 +257,7 @@ Hand& Hand::operator=(const Hand &hand)
  */
 void Hand::addCard(Card *card)
 {
-    this->cards->push_back(card);
+    this->cards.push_back(card);
 }
 
 /**
@@ -258,11 +266,11 @@ void Hand::addCard(Card *card)
  */
 void Hand::removeCard(Card *card)
 {
-    for (int i=this->cards->size()-1; i >= 0; i--)
+    for (int i=this->cards.size()-1; i >= 0; i--)
     {
-        if (this->cards->at(i)->getType() == card->getType())
+        if (this->cards.at(i)->getType() == card->getType())
         {
-            this->cards->erase(this->cards->cbegin()+i);
+            this->cards.erase(this->cards.cbegin()+i);
             break;
         }
     }
@@ -278,9 +286,9 @@ std::ostream& operator<< (std::ostream &stream, const Hand &hand)
 {
     stream << "Hand[";
     int counter = 1;
-    for (Card *card: *hand.cards)
+    for (Card *card: hand.cards)
     {
-        if (counter++ < hand.cards->size())
+        if (counter++ < hand.cards.size())
             stream << card->getType() << ",";
         else
             stream << card->getType();
@@ -295,7 +303,7 @@ std::ostream& operator<< (std::ostream &stream, const Hand &hand)
  */
 std::vector<Card*> Hand::getCards()
 {
-    return *this->cards;
+    return this->cards;
 }
 
 /**
@@ -305,7 +313,7 @@ std::vector<Card*> Hand::getCards()
  */
 bool Hand::operator==(const Hand &hand) const
 {
-    return *hand.cards == *this->cards;
+    return hand.cards == this->cards;
 }
 
 // Deck methods
@@ -314,11 +322,10 @@ bool Hand::operator==(const Hand &hand) const
  */
 Deck::~Deck()
 {
-    for (Card* card: *this->cards)
+    for (Card* card: this->cards)
     {
         delete card;
     }
-    delete this->cards;
 }
 
 /**
@@ -326,14 +333,14 @@ Deck::~Deck()
  */
 Deck::Deck()
 {
-    this->cards = new std::vector<Card*>;
+    this->cards = std::vector<Card*>();
     // Generates 50 cards (10 cards of each type)
     for (Card::CardType cardType: Card::ALL_Card_Type)
     {
         for (int i=0; i < Deck::NUM_CARDS_PER_TYPE; i++)
         {
             Card* card = new Card(cardType);
-            this->cards->push_back(card);
+            this->cards.push_back(card);
         }
     }
 }
@@ -344,7 +351,9 @@ Deck::Deck()
  */
 Deck::Deck(const Deck &deck)
 {
-    this->cards = new std::vector(*deck.cards);
+    this->cards = std::vector<Card*>();
+    for (Card* card: deck.cards)
+        this->cards.push_back(new Card(*card));
 }
 
 /**
@@ -354,7 +363,13 @@ Deck::Deck(const Deck &deck)
  */
 Deck& Deck::operator=(const Deck &deck)
 {
-    this->cards = new std::vector(*deck.cards);
+    if (this != &deck){
+        for (Card* card: this->cards)
+            delete card;
+        this->cards = std::vector<Card*>();
+        for (Card* card: deck.cards)
+            this->cards.push_back(new Card(*card));
+    }
     return *this;
 }
 
@@ -364,11 +379,11 @@ Deck& Deck::operator=(const Deck &deck)
  */
 Card* Deck::draw()
 {
-    if (this->cards->size() > 0)
+    if (this->cards.size() > 0)
     {
-        shuffle(cards->begin(), cards->end(), std::random_device {});
-        Card* card = new Card(*cards->front());
-        cards->erase(cards->begin());
+        shuffle(cards.begin(), cards.end(), std::random_device {});
+        Card* card = new Card(*cards.front());
+        cards.erase(cards.begin());
         return card;
     } else
         throw std::runtime_error("No more cards to draw");
@@ -384,9 +399,9 @@ std::ostream& operator<< (std::ostream &stream, const Deck &deck)
 {
     stream << "Deck[";
     int counter = 1;
-    for (Card* card: *deck.cards)
+    for (Card* card: deck.cards)
     {
-        if (counter++ < deck.cards->size())
+        if (counter++ < deck.cards.size())
             stream << card->getType() << ",";
         else
             stream << card->getType();
@@ -401,7 +416,7 @@ std::ostream& operator<< (std::ostream &stream, const Deck &deck)
  */
 std::vector<Card*> Deck::getCards()
 {
-    return *this->cards;
+    return this->cards;
 }
 
 /**
@@ -411,7 +426,7 @@ std::vector<Card*> Deck::getCards()
  */
 bool Deck::operator==(const Deck &deck) const
 {
-    return *this->cards == *deck.cards;
+    return this->cards == deck.cards;
 }
 
 /**
@@ -420,7 +435,12 @@ bool Deck::operator==(const Deck &deck) const
  */
 void Deck::returnCard(Card *card)
 {
-    this->cards->push_back(card);
+    this->cards.push_back(card);
+}
+
+void Deck::setCards(std::vector<Card*>& _cards)
+{
+    this->cards = _cards;
 }
 
 void Card::attachExistingObservers(Subject *subject, const std::vector<Observer*>& observerList) {

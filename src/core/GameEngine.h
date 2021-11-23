@@ -58,7 +58,6 @@ public:
 
     static const boost::unordered_map<std::string, GameState> gameStateMapping;
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
-
 private:
     GameState* current_state;
     std::vector<Player*> players;
@@ -70,7 +69,7 @@ private:
     void reinforcementPhase();      //assign armies to reinforcement pool
     void issueOrdersPhase();        // call to issue order
     void executeOrdersPhase();      //executes order
-    bool containsOrders(std::map<Player*, bool>);   //check if player contains orders
+    bool containsOrders(const std::map<Player*, bool>&);   //check if player contains orders
     void loadMap(const std::string& mapName);       //load map
     void validateMap(); // validate map based on conditions
     void addPlayer(Command*);  //enter players in game

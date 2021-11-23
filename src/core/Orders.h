@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <boost/assign/list_of.hpp>
+#include <boost/unordered_map.hpp>
 #include "LoggingObserver.h"
 #include "Map.h"
 #include "Player.h"
@@ -31,8 +33,9 @@ public:
     OrderType& getOrderType(); //accessor for OrderType
     virtual void execute() = 0; //execute order method, virtual to avoid ambiguity with subclass methods
     virtual bool validate() = 0; //validate order method, virtual to avoid ambiguity with subclass methods
-    virtual std::string stringToLog() =0;
+    std::string stringToLog();
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = { deploy, advance, bomb, blockade, airlift, negotiate };
+    static const boost::unordered_map<OrderType, std::string> orderTypeMapping;
 protected:
     OrderType* orderType; //pointer to ordertype of order
 };
@@ -46,9 +49,8 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Deploy&); // Stream output operator
     void execute(); //execute method for deploy orders
     bool validate(); //validate method for deploy orders
-    std::string stringToLog();
 private:
-    Player* player; //pointer to the player of the order
+    Player* player{}; //pointer to the player of the order
     Territory* territory; //pointer to the territory to deploy to
     int numOfArmies; //integer number of armies
 };
@@ -62,7 +64,6 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Advance&); // Stream output operator
     void execute(); //execute method for advance orders
     bool validate(); //validate method for advance orders
-    std::string stringToLog();
 private:
     Deck* deck; //pointer to the deck
     Player* player; //pointer to the player of the order
@@ -80,7 +81,6 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Bomb&); // Stream output operator
     void execute(); //execute method for bomb orders
     bool validate(); //validate method for bomb methods
-    std::string stringToLog();
 private:
     Player* player; //pointer to the player of the order
     Territory* target; //pointer to target territory
@@ -95,7 +95,6 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
     void execute(); //execute method for blockade order
     bool validate(); //execute method for validate order
-    std::string stringToLog();
 private:
     Territory* target; //pointer to target territory
     Player* player; //pointer to the player of the order
@@ -110,7 +109,6 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Airlift&); // Stream output operator
     void execute(); //execute method for airlift order
     bool validate(); //valid method for airlift order
-    std::string stringToLog();
 private:
     Player* player; //pointer to the player of the order
     Territory* source; //pointer to source territory
@@ -128,7 +126,6 @@ public:
     void execute(); //execute method for negotiate order
     bool validate(); //validate method for negotiate order
     Player* getEnemy(); //get enemy
-    std::string stringToLog();
 private:
     Player* player; //pointer to the player of the order
     Player* enemy; //pointer to the enemy player
@@ -149,5 +146,5 @@ public:
     int getSize();
     std::string stringToLog();
 private:
-    std::vector<Order*>* orders; //pointer to list of order pointers
+    std::vector<Order*> orders; //pointer to list of order pointers
 };

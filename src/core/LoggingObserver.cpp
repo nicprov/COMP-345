@@ -1,24 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "LoggingObserver.h"
-/**
- * default destructor for ILoggable
- */
-ILoggable::~ILoggable() {}
-/**
- * default constructor for ILoggable
- */
-ILoggable::ILoggable() {}
 
-/**
- * default observer constructor
- */
-Observer::Observer() {}
-
-/**
- * default observer destructor
- */
-Observer::~Observer() {}
 /**
  * parameterized constructor
  * @param filename where to write the file
@@ -28,7 +11,6 @@ LogObserver::LogObserver(const std::string& filename)
     this->filename = filename;
 }
 
-LogObserver::~LogObserver() {}
 /**
  * Update method to write log to file
  * @param loggable

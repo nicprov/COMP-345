@@ -20,15 +20,18 @@ FileLineReader::FileLineReader(const std::string &filename)
     this->filename = filename;
     this->stream = new std::ifstream;
     this->stream->open(this->filename);
+    lineCount = 0;
 }
 
 /**
  * Copy Constructor makes a copy of FileLineReader
- * @param fileRineReader fileLineReader
+ * @param fileLineReader fileLineReader
  */
 FileLineReader::FileLineReader(const FileLineReader &fileLineReader)
 {
     this->filename = fileLineReader.filename;
+    this->lineCount = fileLineReader.lineCount;
+    this->stream = fileLineReader.stream;
 }
 
 /**
@@ -37,7 +40,11 @@ FileLineReader::FileLineReader(const FileLineReader &fileLineReader)
 */
 FileLineReader &FileLineReader::operator=(const FileLineReader &fileLineReader)
 {
-    this->filename = fileLineReader.filename;
+    if (this != &fileLineReader) {
+        this->filename = fileLineReader.filename;
+        this->stream = fileLineReader.stream;
+        this->lineCount = 0;
+    }
     return *this;
 }
 
@@ -149,9 +156,9 @@ std::string Command::toString(){
 * Saves the effect and notifies.
 * @param effect the effect
 */
-void Command::saveEffect(const std::string& effect)
+void Command::saveEffect(const std::string& _effect)
 {
-    this->effect = effect;
+    this->effect = _effect;
     notify(this);
 }
 
@@ -209,7 +216,10 @@ CommandProcessor::CommandProcessor(const GameEngine &gameEngine): gameEngine(con
 */
 CommandProcessor::CommandProcessor(const CommandProcessor &commandProcessor): gameEngine(commandProcessor.gameEngine)
 {
-    this->commands = std::vector<Command*>(commandProcessor.commands);
+    this->commands = std::vector<Command*>();
+    for (Command* command: commandProcessor.commands)
+        this->commands.push_back(new Command(*command));
+    this->gameEngine = commandProcessor.gameEngine;
 }
 
 /**
@@ -218,7 +228,14 @@ CommandProcessor::CommandProcessor(const CommandProcessor &commandProcessor): ga
 */
 CommandProcessor &CommandProcessor::operator= (const CommandProcessor &commandProcessor)
 {
-    this->commands = std::vector<Command*>(commandProcessor.commands);
+    if (this != &commandProcessor){
+        for (Command* command: this->commands)
+            delete command;
+        this->commands = std::vector<Command*>();
+        for (Command* command: commandProcessor.commands)
+            this->commands.push_back(new Command(*command));
+        this->gameEngine = commandProcessor.gameEngine;
+    }
     return *this;
 }
 
@@ -349,7 +366,16 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProces
 */
 FileCommandProcessorAdapter &FileCommandProcessorAdapter::operator= (const FileCommandProcessorAdapter &fileCommandProcessorAdapter)
 {
-    this->commands = std::vector<Command*>(fileCommandProcessorAdapter.commands);
+    if (this != &fileCommandProcessorAdapter){
+        for (Command* command: this->commands){
+            delete command;
+        }
+        this->commands = std::vector<Command*>();
+        for (Command* command: fileCommandProcessorAdapter.commands)
+            this->commands.push_back(new Command(*command));
+        delete this->fileLineReader;
+        this->fileLineReader = new FileLineReader(*fileCommandProcessorAdapter.fileLineReader);
+    }
     return *this;
 }
 
