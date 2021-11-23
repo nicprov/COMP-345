@@ -40,7 +40,7 @@ protected:
 class Deploy : public Order {
 public:
     ~Deploy();
-    Deploy(OrderType, Player*, Territory*, int); //parameterized constructor
+    Deploy(Player*, Territory*, int); //parameterized constructor
     Deploy(const Deploy&); //copy constructor
     Deploy& operator= (const Deploy&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Deploy&); // Stream output operator
@@ -55,7 +55,7 @@ private:
 class Advance : public Order {
 public:
     ~Advance();
-    Advance(OrderType, Deck*, Player*, Territory*, Territory*, int); //parameterized constructor
+    Advance(Deck*, Player*, Territory*, Territory*, int); //parameterized constructor
     Advance(const Advance&); //copy constructor
     Advance& operator= (const Advance&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Advance&); // Stream output operator
@@ -72,7 +72,7 @@ private:
 class Bomb : public Order {
 public:
     ~Bomb();
-    Bomb(OrderType, Player*, Territory*); //parameterized constructor
+    Bomb(Player*, Territory*); //parameterized constructor
     Bomb(const Bomb&); //copy constructor
     Bomb& operator= (const Bomb&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Bomb&); // Stream output operator
@@ -86,7 +86,7 @@ private:
 class Blockade : public Order {
 public:
     ~Blockade();
-    Blockade(OrderType, Player*, Territory*); //parameterized constructor
+    Blockade(Player*, Territory*); //parameterized constructor
     Blockade(const Blockade&); //copy constructors
     Blockade& operator= (const Blockade&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
@@ -100,7 +100,7 @@ private:
 class Airlift : public Order {
 public:
     ~Airlift();
-    Airlift(OrderType, Player*, Territory*, Territory*, int); //parameterized constructor
+    Airlift(Player*, Territory*, Territory*, int); //parameterized constructor
     Airlift(const Airlift&); //copy constructor
     Airlift& operator= (const Airlift&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Airlift&); // Stream output operator
@@ -116,7 +116,7 @@ private:
 class Negotiate : public Order {
 public:
     ~Negotiate();
-    Negotiate(OrderType, Player*, Player*);  //parameterized constructor
+    Negotiate(Player*, Player*);  //parameterized constructor
     Negotiate(const Negotiate&); //copy constructor
     Negotiate& operator= (const Negotiate&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Negotiate&); // Stream output operator

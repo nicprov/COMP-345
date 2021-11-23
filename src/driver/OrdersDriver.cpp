@@ -1,5 +1,8 @@
 #include <iostream>
 #include "../core/Orders.h"
+#include "../core/Cards.h"
+#include "../core/Player.h"
+#include "../core/Map.h"
 
 int main() {
 
@@ -22,7 +25,7 @@ int main() {
     hand1->addCard(card4);
     // Inintialize player 1 with their hand, order list and name
     auto* name1 = "Jonathan";
-    auto* player1 = new Player(*hand1, *orderlist1, name1);
+    auto* player1 = new Player(PlayerStrategy::human, *hand1, *orderlist1, name1);
 
     // Inintialize order list of player 2
     auto* orderlist2 = new OrderList();
@@ -30,7 +33,7 @@ int main() {
     auto* hand2 = new Hand();
     // Inintialize player 2 with their hand, order list and name
     auto* name2 = "Janet";
-    auto* player2 = new Player(*hand2, *orderlist2, name2);
+    auto* player2 = new Player(PlayerStrategy::human, *hand2, *orderlist2, name2);
 
     // Load map to play with
     std::string mapName = "../solar.map";
@@ -65,13 +68,13 @@ int main() {
 
     // Add all order types
     OrderList orderList = OrderList();
-    Order* deploy = new Deploy(Order::OrderType::deploy, player1, terr1_1, 2);
-    Order* advance = new Advance(Order::OrderType::advance, deck, player1, terr1_1, terr2_1, 2);
-    Order* bomb = new Bomb(Order::OrderType::bomb, player1, terr2_1);
-    Order* blockade = new Blockade(Order::OrderType::blockade, player1, terr1_2);
-    Order* airlift = new Airlift(Order::OrderType::airlift, player1, terr1_1, terr1_3, 1);
-    Order* negotiate = new Negotiate(Order::OrderType::negotiate, player1, player2);
-    Order* bomb2 = new Bomb(Order::OrderType::bomb, player1, terr2_2);
+    Order* deploy = new Deploy(player1, terr1_1, 2);
+    Order* advance = new Advance(deck, player1, terr1_1, terr2_1, 2);
+    Order* bomb = new Bomb(player1, terr2_1);
+    Order* blockade = new Blockade(player1, terr1_2);
+    Order* airlift = new Airlift(player1, terr1_1, terr1_3, 1);
+    Order* negotiate = new Negotiate(player1, player2);
+    Order* bomb2 = new Bomb(player1, terr2_2);
     orderList.add(deploy);
     orderList.add(advance);
     orderList.add(bomb);

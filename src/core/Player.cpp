@@ -303,7 +303,7 @@ Order* Player::advance(Map* map, Deck* deck)
     std::cout << "Select the number of armies to deploy to " << territoryTo->getTerrName() << ": ";
     getValidatedInput(armiesToDeploy, 1, territoryFrom->getNumberOfArmies());
 
-    order = new Advance(Order::OrderType::advance, deck, this, territoryFrom, territoryTo, armiesToDeploy);
+    order = new Advance(deck, this, territoryFrom, territoryTo, armiesToDeploy);
     attachExistingObservers(order, this->orderList->getObservers());
     return order;
 }
@@ -333,7 +333,7 @@ void Player::issueDeployOrders(Map* map)
         getValidatedInput(numArmiesToDeploy, 1, (this->armyPool-armiesDeployed));
 
         // Create new order
-        order = new Deploy(Order::OrderType::deploy, this, territoryToDeployTo, numArmiesToDeploy);
+        order = new Deploy(this, territoryToDeployTo, numArmiesToDeploy);
 
         // Attach log observer to order
         attachExistingObservers(order, this->orderList->getObservers());
@@ -380,7 +380,7 @@ void Player::issueAdvanceOrders(Map* map, Deck* deck, std::vector<Player*> playe
 }
 
 Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& players) {
-    Order* order;
+    Order *order = nullptr;
     Territory* territoryTo;
     Territory* territoryToAttack;
     Territory* territoryFrom;
@@ -406,7 +406,7 @@ Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& p
             territoryToAttack = this->toAttack(map).at(territoryToAttackIndex-1);
 
             // Create order and add to order list
-            order = new Bomb(Order::OrderType::bomb, territoryToAttack->getOwner(), territoryToAttack);
+            order = new Bomb(territoryToAttack->getOwner(), territoryToAttack);
             this->orderList->add(order);
             break;
         case Card::CardType::blockade:
@@ -425,7 +425,7 @@ Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& p
             getValidatedInput(territoryToBlockadeIndex, 1, this->toDefend(map).size());
             territoryToBlockade = this->toDefend(map).at(territoryToBlockadeIndex-1);
 
-            order = new Blockade(Order::OrderType::blockade, this, territoryToBlockade);
+            order = new Blockade(this, territoryToBlockade);
             attachExistingObservers(order, this->orderList->getObservers());
             this->orderList->add(order);
             break;
@@ -456,7 +456,7 @@ Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& p
             int armiesToDeploy;
             getValidatedInput(armiesToDeploy, 1, territoryFrom->getNumberOfArmies());
 
-            order = new Airlift(Order::OrderType::advance, this, territoryFrom, territoryTo, armiesToDeploy);
+            order = new Airlift(this, territoryFrom, territoryTo, armiesToDeploy);
             attachExistingObservers(order, this->orderList->getObservers());
             this->orderList->add(order);
             break;
@@ -475,7 +475,7 @@ Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& p
             getValidatedInput(enemyIndex, 1, players.size());
             enemy = players.at(enemyIndex-1);
 
-            order = new Negotiate(Order::OrderType::negotiate, this, enemy);
+            order = new Negotiate(this, enemy);
             attachExistingObservers(order, this->orderList->getObservers());
             this->orderList->add(order);
             break;
