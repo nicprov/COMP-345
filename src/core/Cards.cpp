@@ -55,23 +55,23 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
     Order* order = nullptr;
     for (Territory* ownedTerr : map->getTerritoriesByPlayer(player)) {
         i++;
-        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+        std::cout << i << ": " << ownedTerr->getTerrName() << std::endl;
     }
     // Show action and create order
     switch (*this->type) {
         case bomb: {
             // Display territories available for bombing
             i = 0;
-            cout << "List of available territories to bomb: " << endl;
+            std::cout << "List of available territories to bomb: " << std::endl;
             for (Territory* canAttack : player->toAttack(*map)) {
-                cout << i << ": " << canAttack->getTerrName() << endl;
+                std::cout << i << ": " << canAttack->getTerrName() << std::endl;
                 i++;
             }
 
             // Ask for territory to bomb
             int j;
-            cout << "Select territory to bomb: ";
-            cin >> j;
+            std::cout << "Select territory to bomb: ";
+            std::cin >> j;
             targetT = player->toAttack(*map).at(j);
 
             order = new Bomb(Order::OrderType::bomb, targetT->getOwner(), targetT);
@@ -83,12 +83,12 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             i = 0;
             for (Territory* ownedTerr : map->getTerritoriesByPlayer(player)) {
                 i++;
-                std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+                std::cout << i << ": " << ownedTerr->getTerrName() << std::endl;
             }
 
             //Ask territory to blockade
-            cout << "Select territory to blockade: ";
-            cin >> i;
+            std::cout << "Select territory to blockade: ";
+            std::cin >> i;
             targetT = map->getTerritoriesByPlayer(player)[i - 1];
 
             order = new Blockade(Order::OrderType::blockade, player, targetT);
@@ -101,17 +101,17 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             i = 0;
             for (Territory* ownedTerr : map->getTerritoriesByPlayer(player)) {
                 i++;
-                std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+                std::cout << i << ": " << ownedTerr->getTerrName() << std::endl;
             }
 
             // Ask source territory
-            std::cout << "Select a territory to mobilize armies from: " << endl;
-            cin >> i;
+            std::cout << "Select a territory to mobilize armies from: " << std::endl;
+            std::cin >> i;
             sourceT = map->getTerritoriesByPlayer(player)[i - 1];
 
             // Ask destination territory
-            std::cout << "Select a territory to mobilize armies to: " << endl;
-            cin >> i;
+            std::cout << "Select a territory to mobilize armies to: " << std::endl;
+            std::cin >> i;
             destinationT = map->getTerritoriesByPlayer(player)[i - 1];
 
             // Ask for number of armies to deploy
@@ -128,12 +128,12 @@ void Card::play(OrderList *orderList, Hand *hand, Deck *deck, Player* player, Ma
             i = 0;
             for (Player* player : players) {
                 i++;
-                cout << i << ". " << player->getName() << endl;
+                std::cout << i << ". " << player->getName() << std::endl;
             }
 
             // Ask player to negotiate with
-            cout << "Select player with whom to negotiate (cannot negotiate with oneself): ";
-            cin >> i;
+            std::cout << "Select player with whom to negotiate (cannot negotiate with oneself): ";
+            std::cin >> i;
             enemy = players.at(i - 1);
 
 
@@ -426,7 +426,11 @@ std::vector<Card*> Deck::getCards()
  */
 bool Deck::operator==(const Deck &deck) const
 {
-    return this->cards == deck.cards;
+    int counter = 0;
+    for (Card* card: deck.cards)
+        if (!(*this->cards.at(counter++) == *card))
+            return false;
+    return true;
 }
 
 /**

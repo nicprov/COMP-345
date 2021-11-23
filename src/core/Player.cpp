@@ -94,15 +94,15 @@ bool Player::issueOrder(Deck* deck, Map* map,std::vector<Player*> players) {
     Order* order = nullptr;
     for (Territory* ownedTerr : map->getTerritoriesByPlayer(this)) {
         i++;
-        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+        std::cout << i << ": " << ownedTerr->getTerrName() << std::endl;
     }
      do {
-        cout << "Armies left to deploy: " << armiesNotDeployed << endl << endl;
+         std::cout << "Armies left to deploy: " << armiesNotDeployed << std::endl << std::endl;
 
         // Ask for the territory to deploy to (get list: 1..4
         std::cout << "Select a territory to deploy armies to: ";
         int j = 0;
-        cin >> j;
+         std::cin >> j;
         Territory* deployToT = map->getTerritoriesByPlayer(this)[j - 1];
 
         // Ask for number of armies to deploy
@@ -166,7 +166,7 @@ std::vector<Territory*> Player::toDefend(Map& map) {
  * @return list of territories to attack
  */
 std::vector<Territory *> Player::toAttack(Map& map) {
-    auto neighbouringTerritories = vector<Territory*>();
+    auto neighbouringTerritories = std::vector<Territory*>();
     for (Territory* playerTerritory: map.getTerritoriesByPlayer(this)){
         for (Territory* neighbouringTerritory: playerTerritory->listOfAdjTerr){
             if (!(std::find(neighbouringTerritories.begin(), neighbouringTerritories.end(), neighbouringTerritory) != neighbouringTerritories.end())) // Check if territory is already in list
@@ -221,23 +221,23 @@ Order *Player::advance(Map * map, Deck* deck) {
     int i = 0;
     for (Territory *ownedTerr: map->getTerritoriesByPlayer(this)) {
         i++;
-        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+        std::cout << i << ": " << ownedTerr->getTerrName() << std::endl;
     }
 
     // Ask source territory
     std::cout << "Select a territory to mobilize armies from: ";
-    cin >> i;
+    std::cin >> i;
     sourceT = map->getTerritoriesByPlayer(this).at(i - 1);
 
     // Display territories adjacent to source territory
     i = 0;
     for (Territory *ownedTerr: sourceT->listOfAdjTerr) {
         i++;
-        std::cout << i << ": " << ownedTerr->getTerrName() << endl;
+        std::cout << i << ": " << ownedTerr->getTerrName() << std::endl;
     }
     // Ask destination territory
-    std::cout << "Select a territory to mobilize armies to: " << endl;
-    cin >> i;
+    std::cout << "Select a territory to mobilize armies to: " << std::endl;
+    std::cin >> i;
     destinationT = map->getTerritoriesByPlayer(this).at(i - 1);
 
     // Ask for number of armies to deploy

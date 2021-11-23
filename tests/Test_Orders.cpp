@@ -30,15 +30,15 @@ TEST_CASE("Order assignment operator initializes")
 
 TEST_CASE("OrderList constructor initializes")
 {
-    OrderList* orderList = new OrderList();
+    auto* orderList = new OrderList();
     REQUIRE(orderList->getOrders() == std::vector<Order*>{});
 }
 
 TEST_CASE("OrderList copy constructor initializes")
 {
-    OrderList* orderList = new OrderList();
+    auto* orderList = new OrderList();
     orderList->add(new Deploy(Order::OrderType::deploy, new Player("test"), new Territory(), 0));
-    OrderList* orderList2 = new OrderList(*orderList);
+    auto* orderList2 = new OrderList(*orderList);
     REQUIRE(*orderList == *orderList2);
 }
 

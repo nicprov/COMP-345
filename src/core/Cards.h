@@ -1,5 +1,5 @@
-#ifndef TEST1_CARDS_H
-#define TEST1_CARDS_H
+#pragma once
+
 #include <vector>
 #include <iosfwd>
 #include "Orders.h"
@@ -74,4 +74,3 @@ public:
 private:
     std::vector<Card*> cards;
 };
-#endif //TEST1_CARDS_H
