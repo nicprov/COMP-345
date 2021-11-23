@@ -162,15 +162,9 @@ OrderList &Player::getOrderList()
 bool Player::hasNegotiationWith(Player* enemy)
 {
     for (int i = 0; i < orderList->getOrders().size(); i++)
-    {
         if (orderList->getOrders().at(i)->getOrderType() == 6)
-        {
             if (dynamic_cast<Negotiate*>(orderList->getOrders().at(i))->getEnemy() == enemy)
-            {
                 return true;
-            }
-        }
-    }
     return false;
 }
 
@@ -185,40 +179,40 @@ Order* Player::advance(Map* map, Deck* deck)
     Territory* territoryTo;
     int choice;
 
-    std::cout << "Choose which kind of mobilization you would like";
-    std::cout << "1. Move armies to defend";
-    std::cout << "2. Move armies to attack";
+    std::cout << std::endl << "Choose which kind of mobilization you would like:" << std::endl;
+    std::cout << "1. Move armies to defend" << std::endl;
+    std::cout << "2. Move armies to attack" << std::endl;
     std::cout << "Select an option: ";
 
-    choice = getValidatedInput(choice, 1, 2);
+    getValidatedInput(choice, 1, 2);
 
     for (Territory* territory: this->toDefend(map))
         std::cout << index++ << ": " << territory->getTerrName() << " (armies: " << territory->getNumberOfArmies() << ")" << std::endl;
 
-    std::cout << "Select a territory to mobilize armies from: " << std::endl;
-    territoryFromIndex = getValidatedInput(territoryFromIndex, 1, this->toDefend(map).size());
-    territoryFrom = this->toDefend(map).at(territoryFromIndex);
+    std::cout << "Select a territory to mobilize armies from: ";
+    getValidatedInput(territoryFromIndex, 1, this->toDefend(map).size());
+    territoryFrom = this->toDefend(map).at(territoryFromIndex-1);
 
     if (choice == 1) {
         index = 1;
         for (Territory* territory: this->toDefend(map))
             std::cout << index++ << ": " << territory->getTerrName() << " (armies: " << territory->getNumberOfArmies() << ")" << std::endl;
 
-        std::cout << "Select a territory to mobilize armies to: " << std::endl;
-        territoryToIndex = getValidatedInput(territoryToIndex, 1, this->toDefend(map).size());
-        territoryTo = this->toDefend(map).at(territoryToIndex);
+        std::cout << "Select a territory to mobilize armies to: ";
+        getValidatedInput(territoryToIndex, 1, this->toDefend(map).size());
+        territoryTo = this->toDefend(map).at(territoryToIndex-1);
     } else {
         index = 1;
         for (Territory* territory: this->toAttack(map))
             std::cout << index++ << ": " << territory->getTerrName() << " (armies: " << territory->getNumberOfArmies() << ")" << std::endl;
 
         std::cout << "Select a territory to mobilize armies to: " << std::endl;
-        territoryToIndex = getValidatedInput(territoryToIndex, 1, this->toAttack(map).size());
-        territoryTo = this->toDefend(map).at(territoryToIndex);
+        getValidatedInput(territoryToIndex, 1, this->toAttack(map).size());
+        territoryTo = this->toDefend(map).at(territoryToIndex-1);
     }
 
     std::cout << "Select the number of armies to deploy to " << territoryTo->getTerrName() << ": ";
-    armiesToDeploy = getValidatedInput(armiesToDeploy, 1, territoryFrom->getNumberOfArmies());
+    getValidatedInput(armiesToDeploy, 1, territoryFrom->getNumberOfArmies());
 
     order = new Advance(Order::OrderType::advance, deck, this, territoryFrom, territoryTo, armiesToDeploy);
     attachExistingObservers(order, this->orderList->getObservers());
@@ -242,12 +236,12 @@ void Player::issueDeployOrders(Map* map)
             std::cout << index++ << ": " << ownedTerr->getTerrName() << std::endl;
 
         std::cout << std::endl << "Select a territory to deploy armies to: ";
-        territoryToDeployArmies = getValidatedInput(territoryToDeployArmies, 1, (this->toDefend(map).size()));
+        getValidatedInput(territoryToDeployArmies, 1, (this->toDefend(map).size()));
 
         territoryToDeployTo = this->toDefend(map).at(territoryToDeployArmies-1);
 
-        std::cout << std::endl << "Select the number of armies (" << (this->armyPool-armiesDeployed) << " armies left to deploy) to deploy to " << territoryToDeployTo->getTerrName() << " : ";
-        numArmiesToDeploy = getValidatedInput(numArmiesToDeploy, 1, (this->armyPool-armiesDeployed));
+        std::cout << "Select the number of armies (" << (this->armyPool-armiesDeployed) << " armies left to deploy) to deploy to " << territoryToDeployTo->getTerrName() << " : ";
+        getValidatedInput(numArmiesToDeploy, 1, (this->armyPool-armiesDeployed));
 
         // Create new order
         order = new Deploy(Order::OrderType::deploy, this, territoryToDeployTo, numArmiesToDeploy);
@@ -275,7 +269,14 @@ void Player::issueAdvanceOrders(Map* map, Deck* deck, std::vector<Player*> playe
         if (choice == "card"){
             if (!this->hand->getCards().empty()) {
                 isCardPlayed = true;
-                this->hand->getCards().at(0)->play(deck, this, map, players);
+                int index = 1;
+                int cardIndex;
+                std::cout << std::endl << "Cards available to play: " << std::endl;
+                for (Card* card: this->hand->getCards())
+                    std::cout << index++ << ": " << *card << std::endl;
+                std::cout << "Select a card to play: ";
+                getValidatedInput(cardIndex, 1, this->hand->getCards().size());
+                this->hand->getCards().at(cardIndex-1)->play(deck, this, map, players);
             } else
                 std::cout << "\x1B[31m" << "No cards to play" << "\033[0m" << std::endl;
         } else if (choice == "advance") {
@@ -284,7 +285,7 @@ void Player::issueAdvanceOrders(Map* map, Deck* deck, std::vector<Player*> playe
         } else if (choice == "endturn") {
             break;
         } else
-            std::cout << "\x1B[31m" << "Invalid choice, must be either <card>, <advance>, or <endturn>" << "\033[0m";
+            std::cout << "\x1B[31m" << "Invalid choice." << "\033[0m" << std::endl;
     }
 }
 
@@ -296,7 +297,7 @@ void Player::attachExistingObservers(Subject *subject, const std::vector<Observe
 }
 
 
-int getValidatedInput(int& choice, int min, int max)
+void getValidatedInput(int& choice, int min, int max)
 {
     while (choice < min or choice > max){
         if(!(std::cin >> choice)){
@@ -306,5 +307,4 @@ int getValidatedInput(int& choice, int min, int max)
         } else if (choice < min or choice > max)
             std::cout << "\x1B[31m" << "Choice out of range, must be between " << min << ", and " << max << " : " << "\033[0m";
     }
-    return choice;
 }

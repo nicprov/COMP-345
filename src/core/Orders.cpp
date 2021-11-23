@@ -144,17 +144,10 @@ void Deploy::execute()
     if (validate())
     {
         notify(this);
-        std::cout << "Deploy order executed." << std::endl;
-
         player->armyPool -= numOfArmies;
         territory->addTroops(numOfArmies);
-        std::cout << "DEPLOY ORDER: Deploying " << numOfArmies << " armies to " << territory->getTerrName() << "." << std::endl;
+        std::cout << "Deploy Order: Deploying " << numOfArmies << " armies to " << territory->getTerrName() << "." << std::endl;
     }
-    else
-    {
-        std::cout << "Deploy order invalid: execute() method fails to execute." << std::endl;
-    }
-
 }
 /**
  * Validate method for Deploy
@@ -167,7 +160,7 @@ bool Deploy::validate()
         std::cout << "Deploy order validated." << std::endl;
         return true;
     }
-    std::cout << "Deploy order is invalid." << std::endl;
+    std::cout << "Deploy order is invalid. Player (" << player << ") does not own territory (" << territory->getOwner() << ")." << std::endl;
     return false;
 }
 
@@ -235,13 +228,10 @@ void Blockade::execute()
     if (validate())
     {
         notify(this);
-        std::cout << "Blockade order executed." << std::endl;
-        target->addTroops(target->getNumberOfArmies());
+        target->addTroops(target->getNumberOfArmies()); // Double players
         target->setOwner(new Player("Neutral")); //neutral player, come back to this when neutral player implemented
-        std::cout << "BLOCKADE ORDER: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " \narmies and belongs to " << target->getOwner()->getName() << std::endl;
+        std::cout << "Blockade order: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " \narmies and belongs to " << target->getOwner()->getName() << std::endl;
     }
-    else
-        std::cout << "Blockade order invalid: execute() method fails to execute." << std::endl;
 }
 /**
  * Validate method for Blockade class, validating the owner of the target territory is myself
@@ -249,20 +239,12 @@ void Blockade::execute()
  */
 bool Blockade::validate()
 {
-    for (int i = 0; i < player->hand->getCards().size(); i++)
+    if (target->getOwner() == player)
     {
-        if (player->hand->getCards().at(i)->getType() == Card::blockade)
-
-        {
-            if (target->getOwner() == player)
-            {
-                std::cout << "Blockade order validated." << std::endl;
-                return true;
-            }
-            std::cout << "Blockade order is invalid." << std::endl;
-            return false;
-        }
+        std::cout << "Blockade order validated." << std::endl;
+        return true;
     }
+    std::cout << "Blockade order is invalid. Player (" << player << ") does not own territory (" << target->getOwner() << ")." << std::endl;
     return false;
 }
 
@@ -341,14 +323,13 @@ void Advance::execute()
     if (validate())
     {
         notify(this);
-        std::cout << "Advance order executed." << std::endl;
 
         if (target->getOwner() == player)
         {
             source->removeTroops(numOfArmies);
             target->addTroops(numOfArmies);
 
-            std::cout << "ADVANCE ORDER: Advancing " << numOfArmies << " armies from " << source->getTerrName() << " to " << target->getTerrName() << "." << std::endl;
+            std::cout << "Advance order: Advancing " << numOfArmies << " armies from " << source->getTerrName() << " to " << target->getTerrName() << "." << std::endl;
         }
         else if (!player->hasNegotiationWith(target->getOwner()))
         {
@@ -369,16 +350,14 @@ void Advance::execute()
                 source->removeTroops(source->getNumberOfArmies());
                 Card* newCard = deck->draw();
                 player->hand->addCard(newCard);
-                std::cout << "ADVANCE ORDER: You Attacked and WON! Advancing " << target->getNumberOfArmies() << " armies from " << source->getTerrName() << " to " << target->getTerrName() << ", " << target->getOwner()->getName() << " now owns this territory. You also picked up a new card: " << newCard->getType() << std::endl;
+                std::cout << "Advance order: You Attacked and WON! Advancing " << target->getNumberOfArmies() << " armies from " << source->getTerrName() << " to " << target->getTerrName() << ", " << target->getOwner()->getName() << " now owns this territory. You also picked up a new card: " << newCard->getType() << std::endl;
             }
             if (source->getNumberOfArmies() == 0)
-                std::cout << "ADVANCE ORDER: You Attacked and LOST! You are left with 0 armies on " << source->getTerrName() << "." << std::endl;
+                std::cout << "Advance order: You Attacked and LOST! You are left with 0 armies on " << source->getTerrName() << "." << std::endl;
         }
         else
             std::cout << "Advance order invalid: execute() method fails to execute due to negotiations." << std::endl;
     }
-    else
-        std::cout << "Advance order invalid: execute() method fails to execute." << std::endl;
 }
 
 /**
@@ -392,7 +371,7 @@ bool Advance::validate()
         std::cout << "Advance order validated." << std::endl;
         return true;
     }
-    std::cout << "Advance order is invalid." << std::endl;
+    std::cout << "Advance order is invalid. Player (" << player << ") does not own source territory (" << source << "), or the source territory is not adjacent to the target (" << target << ")" << std::endl;
     return false;
 }
 
@@ -454,48 +433,36 @@ std::ostream& operator<<(std::ostream & stream, const Bomb & bomb)
 * Execute if player has no negotiations and validate returns true
 * Removes half the armies from the targetted territory
 */
-void Bomb::execute() {
-
-    if (!player->hasNegotiationWith(target->getOwner()))
-    {
-        if (validate())
-        {
+void Bomb::execute()
+{
+    if (validate()) {
+        if (!player->hasNegotiationWith(target->getOwner())) {
             notify(this);
             std::cout << "Bomb order executed." << std::endl;
-            int numDestroyed = target->getNumberOfArmies() / 2;
-            target->removeTroops(numDestroyed);
-            std::cout << "BOMB ORDER: Bombing " << target->getTerrName() << " territory, reducing 1/2 of its forces. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " armies left." << std::endl;
-        }
-        else
-            std::cout << "Bomb order invalid: execute() method fails to execute." << std::endl;
+            target->removeTroops(target->getNumberOfArmies() / 2);
+            std::cout << "Bomb order: Bombing " << target->getTerrName() << " territory, reducing 1/2 of its forces. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " armies left." << std::endl;
+        } else
+            std::cout << "Bomb execute() failed. Cannot bomb a player that you're in negotiations with.";
     }
-    else
-        std::cout << "Bomb order invalid: execute() method fails to execute due to negotiations." << std::endl;
-
 }
+
 /**
 *Validate method for Bomb class, validating the currentand next territories are adjacent
 * @return true if player has bomb card, target is not owned by player and target territory is adjacent to a territory owned by the player, false otherwise.
 */
 bool Bomb::validate()
 {
-    for (Card* card: this->player->hand->getCards()){
-        if (card->getType() == Card::bomb)
-        {
-            if (target->getOwner() != player)
+    if (target->getOwner() != player)
+    {
+        for (Territory* targetTerritory: this->target->listOfAdjTerr){
+            if (targetTerritory->getOwner() == player)
             {
-                for (Territory* targetTerritory: this->target->listOfAdjTerr){
-                    if (targetTerritory->getOwner() == player)
-                    {
-                        std::cout << "Bomb order validated." << std::endl;
-                        return true;
-                    }
-                }
+                std::cout << "Bomb order validated." << std::endl;
+                return true;
             }
-            std::cout << "Bomb order is invalid." << std::endl;
-            return false;
         }
     }
+    std::cout << "Bomb order is invalid. Player (" << player << ") owns the target territory (" << target << "). You cannot attack your own territory." << std::endl;
     return false;
 }
 
@@ -526,7 +493,7 @@ Airlift::Airlift(const Order::OrderType orderType, Player* player, Territory* so
  */
 Airlift::Airlift(const Airlift &airlift) : Order(airlift)
 {
-    this->player = new Player(*player);
+    this->player = new Player(*airlift.player);
     this->source = new Territory(*airlift.source);
     this->target = new Territory(*airlift.target);
     this->numOfArmies = airlift.numOfArmies;
@@ -567,18 +534,11 @@ std::ostream& operator<<(std::ostream & stream, const Airlift & airlift)
  */
 void Airlift::execute()
 {
-    if (validate())
-    {
+    if (validate()) {
         notify(this);
-        std::cout << "Airlift order executed." << std::endl;
-
         source->removeTroops(numOfArmies);
         target->addTroops(numOfArmies);
-        std::cout << "AIRLIFT ORDER: Airlifting " << numOfArmies << " armies from " << source->getTerrName() << " to " << target->getTerrName() << ". " << source->getTerrName() << " has " << source->getNumberOfArmies() << " armies and " << target->getTerrName() << "has " << target->getNumberOfArmies() << " armies." << std::endl;
-    }
-    else
-    {
-        std::cout << "Airlift order invalid: execute() method fails to execute." << std::endl;
+        std::cout << "Airlift order: Airlifting " << numOfArmies << " armies from " << source->getTerrName() << " to " << target->getTerrName() << ". " << source->getTerrName() << " has " << source->getNumberOfArmies() << " armies and " << target->getTerrName() << "has " << target->getNumberOfArmies() << " armies." << std::endl;
     }
 }
 /**
@@ -587,19 +547,11 @@ void Airlift::execute()
  */
 bool Airlift::validate()
 {
-    for (int i = 0; i < player->hand->getCards().size(); i++)
-    {
-        if (player->hand->getCards().at(i)->getType() == Card::airlift)
-        {
-            if (source->getOwner() == player && target->getOwner() == player)
-            {
-                std::cout << "Airlift order validated." << std::endl;
-                return true;
-            }
-            std::cout << "Airlift order is invalid." << std::endl;
-            return false;
-        }
+    if (source->getOwner() == player && target->getOwner() == player) {
+        std::cout << "Airlift order validated." << std::endl;
+        return true;
     }
+    std::cout << "Airlift order is invalid. Player (" << player << ") is not the owner of either the source (" << source << "), or the target (" << target << ")." << std::endl;
     return false;
 }
 
@@ -664,14 +616,11 @@ std::ostream& operator<<(std::ostream & stream, const Negotiate & negotiate)
  */
 void Negotiate::execute()
 {
-    if (validate())
-    {
+    if (validate()) {
         notify(this);
         std::cout << "Negotiate order executed." << std::endl;
-        std::cout << "NEGOTIATE ORDER: Negotiating... No attack is being performed this turn. (do nothing)" << std::endl;
+        std::cout << "Negotiate order: Negotiating... No attack is being performed this turn. (do nothing)" << std::endl;
     }
-    else
-        std::cout << "Negotiate order invalid: execute() method fails to execute." << std::endl;
 }
 /**
  * Validate method for Negotiate
@@ -679,19 +628,12 @@ void Negotiate::execute()
  */
 bool Negotiate::validate()
 {
-    for (int i = 0; i < player->hand->getCards().size(); i++)
+    if (player != enemy)
     {
-        if (player->hand->getCards().at(i)->getType() == Card::diplomacy)
-        {
-            if (player != enemy)
-            {
-                std::cout << "Negotiate order validated." << std::endl;
-                return true;
-            }
-            std::cout << "Negotiate order is invalid." << std::endl;
-            return false;
-        }
+        std::cout << "Negotiate order validated." << std::endl;
+        return true;
     }
+    std::cout << "Negotiate order is invalid. You cannot negotiate with yourself." << std::endl;
     return false;
 }
 /**

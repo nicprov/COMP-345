@@ -43,4 +43,4 @@ private:
     Order* advance(Map*, Deck*);
 };
 
-int getValidatedInput(int&, int, int);
+void getValidatedInput(int&, int, int);
