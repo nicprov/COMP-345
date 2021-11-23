@@ -49,13 +49,10 @@ public:
     bool operator== (const GameEngine&) const; //comparison of player
     GameState& getGameState();   //getter for current game state
     std::vector<Player *> &getPlayers(); //getter of players in a vector pointer
-    Map& getMap();  //getter for map
-    Deck& getDeck(); // getter for deck
     void getAvailableCommands(std::vector<GameCommand>&);   //get Available Commands
     void transition(Command*);    // transition game state based on command
     void mainGameLoop(CommandProcessor*);    //main game loop: includes call to reinforcement phase, issue order phase, and execute orders phase
     std::string stringToLog();  //current game state to string
-
     static const boost::unordered_map<std::string, GameState> gameStateMapping;
     static const boost::unordered_map<std::string, GameCommand> gameCommandMapping;
 private:

@@ -15,11 +15,9 @@ int main(){
     hand->addCard(deck->draw());
     std::cout << *hand << std::endl;
 
-    auto* orderList = new OrderList();
-
     // Call play method on all cards in hand
     for (Card* card: hand->getCards()){
-        card->play(orderList, hand, deck, player, map, std::vector<Player*>());
+        card->play(deck, player, map, std::vector<Player*>());
         std::cout << std::endl;
         hand->removeCard(card);
     }
