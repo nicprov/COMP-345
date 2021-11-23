@@ -1,24 +1,21 @@
 #include <iostream>
 #include "../core/Orders.h"
 
-using std::cout;
-using std::endl;
-
 int main() {
 
     // Inintialize the deck for the game
     Deck* deck = new Deck();
 
     // Inintialize card with their type
-    Card* card1 = new Card(Card::CardType::bomb);
-    Card* card2 = new Card(Card::CardType::blockade);
-    Card* card3 = new Card(Card::CardType::airlift);
-    Card* card4 = new Card(Card::CardType::diplomacy);
+    auto* card1 = new Card(Card::CardType::bomb);
+    auto* card2 = new Card(Card::CardType::blockade);
+    auto* card3 = new Card(Card::CardType::airlift);
+    auto* card4 = new Card(Card::CardType::diplomacy);
 
     // Inintialize order list of player 1
     auto* orderlist1 = new OrderList();
     // Inintialize hand of player 1
-    Hand* hand1 = new Hand();
+    auto* hand1 = new Hand();
     hand1->addCard(card1);
     hand1->addCard(card2);
     hand1->addCard(card3);
@@ -30,18 +27,18 @@ int main() {
     // Inintialize order list of player 2
     auto* orderlist2 = new OrderList();
     // Inintialize hand of player 2
-    Hand* hand2 = new Hand();
+    auto* hand2 = new Hand();
     // Inintialize player 2 with their hand, order list and name
     auto* name2 = "Janet";
     auto* player2 = new Player(*hand2, *orderlist2, name2);
 
     // Load map to play with
-    string mapName = "../solar.map";
-    Map* map = new Map(mapName);
+    std::string mapName = "../solar.map";
+    auto* map = new Map(mapName);
     auto* mapLoader = new MapLoader(mapName);
     mapLoader->readMap(map);
 
-    cout << endl;
+    std::cout << std::endl;
 
     // Give players some Territories
     Territory* terr1_1 = map->getTerritory(1);
@@ -63,8 +60,8 @@ int main() {
     terr2_1->addTroops(5);
     terr2_2->addTroops(5);
 
-    cout << "Player 1 " << *hand1 << endl;
-    cout << "Player 2 " << *hand2 << endl;
+    std::cout << "Player 1 " << *hand1 << std::endl;
+    std::cout << "Player 2 " << *hand2 << std::endl;
 
     // Add all order types
     OrderList orderList = OrderList();
@@ -83,32 +80,32 @@ int main() {
     orderList.add(negotiate);
 
     // Show orders
-    cout << orderList << endl;
+    std::cout << orderList << std::endl;
 
     // Validate then execute all orders
-    cout << endl;
+    std::cout << std::endl;
     deploy->execute();
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << endl;
+    std::cout << std::endl;
     advance->execute();
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << endl;
+    std::cout << std::endl;
     bomb->execute();
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << endl;
+    std::cout << std::endl;
     blockade->execute();
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << endl;
+    std::cout << std::endl;
     airlift->execute();
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << endl;
+    std::cout << std::endl;
     negotiate->execute();
-    cout << endl << endl;
+    std::cout << std::endl << std::endl;
 
     // Remove order
     orderList.remove(1);
@@ -117,5 +114,5 @@ int main() {
     orderList.move(airlift, 1, 3);
 
     //Show orderList again after changes
-    cout << orderList;
+    std::cout << orderList;
 }

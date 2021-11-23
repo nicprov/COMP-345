@@ -4,8 +4,8 @@
 
 int main() {
     GameEngine gameEngine;
-    cout << "==========================" << endl;
-    cout << "Welcome to Warzone" << endl;
-    cout << "==========================" << endl;
+    std::cout << "==========================" << std::endl;
+    std::cout << "Welcome to Warzone" << std::endl;
+    std::cout << "==========================" << std::endl;
     gameEngine.mainGameLoop(new CommandProcessor(gameEngine));
 }
