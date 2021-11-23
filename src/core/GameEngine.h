@@ -48,7 +48,7 @@ public:
     friend std::ostream& operator<< (std::ostream&, const GameCommand&);
     bool operator== (const GameEngine&) const; //comparison of player
     GameState& getGameState();   //getter for current game state
-    vector<Player *> &getPlayers(); //getter of players in a vector pointer
+    std::vector<Player *> &getPlayers(); //getter of players in a vector pointer
     Map& getMap();  //getter for map
     Deck& getDeck(); // getter for deck
     void getAvailableCommands(std::vector<GameCommand>&);   //get Available Commands

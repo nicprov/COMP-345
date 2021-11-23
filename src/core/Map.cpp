@@ -1,12 +1,7 @@
-#include "Map.h"
 #include <string>
 #include <vector>
 #include <iostream>
-#include <fstream>
-#include <sstream>
-
-using namespace std;
-
+#include "Map.h"
 
 //*********************************** TERRITORY *****************************************
 
@@ -27,7 +22,7 @@ Territory::Territory()
  * @param contID Corresponding continent id to the territory.
  */
 
-Territory::Territory(int tid, string tn, int contID)
+Territory::Territory(int tid, std::string tn, int contID)
 {
     terrIndex = tid;
     terrName = tn;
@@ -42,7 +37,7 @@ Territory::Territory(int tid, string tn, int contID)
  * @param numArmies number of armies in a territory
  * @param p player owning the territory
  */
-Territory::Territory(int tid, string tn, int contID, int numArmies, Player* p)
+Territory::Territory(int tid, std::string tn, int contID, int numArmies, Player* p)
 {
     terrIndex = tid;
     terrName = tn;
@@ -106,7 +101,7 @@ int Territory::getTerrIndex()
 /**
  * Get the territory name
  */
-string Territory::getTerrName()
+std::string Territory::getTerrName()
 {
     return terrName;
 }
@@ -138,7 +133,7 @@ void Territory::setTerrIndex(int tid)
 /**
  * Set the territory name
  */
-void Territory::setTerrName(string tn)
+void Territory::setTerrName(std::string tn)
 {
     terrName = tn;
 }
@@ -162,7 +157,7 @@ void Territory::setNumberOfArmies(int numArmies)
 /**
  * Get the name of adjacent territories
  */
-Territory* Territory::getAdjTerritoryByName(string name)
+Territory* Territory::getAdjTerritoryByName(std::string name)
 {
     for (int i = 0; i < this->listOfAdjTerr.size(); i++)
     {
@@ -177,18 +172,18 @@ Territory* Territory::getAdjTerritoryByName(string name)
  */
 void Territory::printAdjTerritory()
 {
-    cout << "Adjacent Territories of Territory " << this->getTerrName() << ": ";
+    std::cout << "Adjacent Territories of Territory " << this->getTerrName() << ": ";
     for (int i = 0; i < this->listOfAdjTerr.size(); i++)
     {
-        cout << this->listOfAdjTerr.at(i)->getTerrName() << " ";
+        std::cout << this->listOfAdjTerr.at(i)->getTerrName() << " ";
     }
-    cout << endl;
+    std::cout << std::endl;
 }
 
 /**
  * Output Stream for Territories.
  */
-ostream& operator << (ostream& out, const Territory& t)
+std::ostream& operator << (std::ostream& out, const Territory& t)
 {
     return out << "Territory# " << t.terrIndex << "[" << t.terrName << ", Armies <" << t.numberOfArmies << ">, Owner <" << t.owner->getName() << "]";
 }
@@ -203,7 +198,7 @@ bool Territory::operator==(const Territory &territory) const {
 /**
  * Stream output operator
  */
-ostream &operator<<(ostream &out, const std::vector<Territory*> territoryList) {
+std::ostream &operator<<(std::ostream &out, const std::vector<Territory*> territoryList) {
     if (territoryList.empty())
         return out << "No territories in list";
 
@@ -233,7 +228,7 @@ void Territory::setOwner(Player* p)
 /**
 * Returns the name of the owner of an adjacent Territory.
 */
-Player* Territory::getOwnerOfAdj(string terrName)
+Player* Territory::getOwnerOfAdj(std::string terrName)
 {
     for (int i = 0; i < listOfAdjTerr.size(); i++)
     {
@@ -269,7 +264,7 @@ bool Territory::removeTroops(int numTroops)
     return false;
 }
 
-bool Territory::isAdjacent(string terrName)
+bool Territory::isAdjacent(std::string terrName)
 {
     for (int i = 0; i < listOfAdjTerr.size(); i++)
     {
@@ -298,7 +293,7 @@ Continent::Continent()
  * @param cn Continent Name
  * @param armyV Army value of the continent.
  */
-Continent::Continent(int cid, string cn, int armyV)
+Continent::Continent(int cid, std::string cn, int armyV)
 {
     cIndex = cid;
     contName = cn;
@@ -364,7 +359,7 @@ int Continent::getCIndex()
 /**
  * Get the continent name
  */
-string Continent::getContName()
+std::string Continent::getContName()
 {
     return contName;
 }
@@ -388,7 +383,7 @@ void Continent::setCIndex(int cid)
 /**
  * Set the continent name
  */
-void Continent::setContName(string cn)
+void Continent::setContName(std::string cn)
 {
     contName = cn;
 }
@@ -426,14 +421,14 @@ Territory* Continent::getTerritory(int id)
 /**
  * Output Stream for Continents
  */
-ostream& operator << (ostream& out, const Continent& c)
+std::ostream& operator << (std::ostream& out, const Continent& c)
 {
     out << "The continent name is '" << c.contName << "'\n\n";
 
     out << "List of Territories of '" << c.contName << "' (id, name)\n\n";
     for (int i = 0; i < c.listOfTerritories.size(); i++)
     {
-        out << i + 1 << ". " << c.listOfTerritories.at(i)->getTerrIndex() << ", " << c.listOfTerritories.at(i)->getTerrName() << endl;
+        out << i + 1 << ". " << c.listOfTerritories.at(i)->getTerrIndex() << ", " << c.listOfTerritories.at(i)->getTerrName() << std::endl;
     }
 
     return out;
@@ -471,7 +466,7 @@ Map::Map()
  * Parameterized constructor
  * @param mn Map name
  */
-Map::Map(string mn)
+Map::Map(std::string mn)
 {
     mapName = mn;
 }
@@ -521,7 +516,7 @@ Map::~Map()
 /**
  * Get the name of the map
  */
-string Map::getMapName()
+std::string Map::getMapName()
 {
     return mapName;
 }
@@ -529,7 +524,7 @@ string Map::getMapName()
 /**
  * Set the name of the map
  */
-void Map::setMapName(string mn)
+void Map::setMapName(std::string mn)
 {
     mapName = mn;
 }
@@ -683,42 +678,42 @@ bool Map::validate()
 
     if (tIsConnected && cIsConnected && only1Cont)
     {
-        cout << "Map is a connected graph.\nContinents are connected subgraphs.\nEach territory belongs to one and only one continent.\n";
+        std::cout << "Map is a connected graph.\nContinents are connected subgraphs.\nEach territory belongs to one and only one continent.\n";
         return true;
     }
     else if (tIsConnected && cIsConnected && !only1Cont)
     {
-        cout << "Map is a connected graph.\nContinents are connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
+        std::cout << "Map is a connected graph.\nContinents are connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
         return false;
     }
     else if (tIsConnected && !cIsConnected && only1Cont)
     {
-        cout << "Map is a connected graph.\nContinents are not connected subgraphs.\nEach territory belongs to one and only one continent.\n";
+        std::cout << "Map is a connected graph.\nContinents are not connected subgraphs.\nEach territory belongs to one and only one continent.\n";
         return false;
     }
     else if (!tIsConnected && cIsConnected && only1Cont)
     {
-        cout << "Map is not a connected graph.\nContinents are connected subgraphs.\nEach territory belongs to one and only one continent.\n";
+        std::cout << "Map is not a connected graph.\nContinents are connected subgraphs.\nEach territory belongs to one and only one continent.\n";
         return false;
     }
     else if (!tIsConnected && !cIsConnected && only1Cont)
     {
-        cout << "Map is not a connected graph.\nContinents are not connected subgraphs.\nEach territory belongs to one and only one continent.\n";
+        std::cout << "Map is not a connected graph.\nContinents are not connected subgraphs.\nEach territory belongs to one and only one continent.\n";
         return false;
     }
     else if (!tIsConnected && cIsConnected && !only1Cont)
     {
-        cout << "Map is not a connected graph.\nContinents are connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
+        std::cout << "Map is not a connected graph.\nContinents are connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
         return false;
     }
     else if (tIsConnected && !cIsConnected && !only1Cont)
     {
-        cout << "Map is a connected graph.\nContinents are not connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
+        std::cout << "Map is a connected graph.\nContinents are not connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
         return false;
     }
     else
     {
-        cout << "Map is not a connected graph.\nContinents are not connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
+        std::cout << "Map is not a connected graph.\nContinents are not connected subgraphs.\nEach territory does not belong to one and only one continent.\n";
         return false;
     }
 
@@ -727,7 +722,7 @@ bool Map::validate()
 /**
  * Output Stream for Maps.
  */
-ostream& operator << (ostream& out, const Map& m)
+std::ostream& operator << (std::ostream& out, const Map& m)
 {
     out << "The map name is '" << m.mapName << "'\n\n";
 
@@ -735,15 +730,15 @@ ostream& operator << (ostream& out, const Map& m)
 
     for (int i = 0; i < m.listOfContinents.size(); i++)
     {
-        out << m.listOfContinents.at(i)->getCIndex() << ", " << m.listOfContinents.at(i)->getContName() << endl;
+        out << m.listOfContinents.at(i)->getCIndex() << ", " << m.listOfContinents.at(i)->getContName() << std::endl;
 
-        out << "List of Territories of '" << m.listOfContinents.at(i)->getContName() << "'" << endl;
+        out << "List of Territories of '" << m.listOfContinents.at(i)->getContName() << "'" << std::endl;
         for (int j = 0; j < m.listOfContinents.at(i)->listOfTerritories.size(); j++)
         {
             out << "   " << j + 1 << ". " << m.listOfContinents.at(i)->listOfTerritories.at(j)->getTerrIndex() << ", " <<
-                m.listOfContinents.at(i)->listOfTerritories.at(j)->getTerrName() << endl;
+                m.listOfContinents.at(i)->listOfTerritories.at(j)->getTerrName() << std::endl;
         }
-        out << endl;
+        out << std::endl;
     }
 
     return out;
@@ -759,8 +754,8 @@ bool Map::operator==(const Map &map) const {
 /**
  * vector containing list of player territories
  */
-vector<Territory*> Map::getTerritoriesByPlayer(Player *player) {
-    vector<Territory*> territoriesByPlayer;
+std::vector<Territory*> Map::getTerritoriesByPlayer(Player *player) {
+    std::vector<Territory*> territoriesByPlayer;
     for (Territory* territory: this->listOfTerritories){
         if (territory->getOwner() == player)
             territoriesByPlayer.push_back(territory);
@@ -808,7 +803,7 @@ MapLoader::~MapLoader()
  * Parameterized constructor
  * @param mapFileName Name of the file that will be read to construct the map.
  */
-MapLoader::MapLoader(string mapFileName)
+MapLoader::MapLoader(std::string mapFileName)
 {
     this->mapFileName = mapFileName;
 }
@@ -823,12 +818,12 @@ void MapLoader::readMap(Map* map)
 {
     Continent* newContinent;
     Territory* newTerritory;
-    string line = "";
+    std::string line = "";
     bool hasContinent = false;
     bool hasTerritory = false;
     bool hasAdj = false;
 
-    ifstream inStream;
+    std::ifstream inStream;
     inStream.open(mapFileName);
 
     if (inStream.fail())
@@ -849,15 +844,15 @@ void MapLoader::readMap(Map* map)
                         break;
 
                     //Split line to access different attributes of continents
-                    vector<string> attributes = splitString(line);
+                    std::vector<std::string> attributes = splitString(line);
                     newContinent = new Continent(index /*stores continent id*/, attributes[0]/*stores continent name*/, stoi(attributes[1])/*stores army value as an integer*/);
                     map->addContinent(newContinent);
-                    cout << "New Continent: " << index << " " << attributes[0] << " " << attributes[1] << endl;
+                    std::cout << "New Continent: " << index << " " << attributes[0] << " " << attributes[1] << std::endl;
                     index++;
                     getline(inStream, line);
                 }
 
-                cout << endl;
+                std::cout << std::endl;
                 hasContinent = true;
             }
 
@@ -870,12 +865,12 @@ void MapLoader::readMap(Map* map)
                     if (line == "")
                         break;
 
-                    vector<string> attributes = splitString(line);
+                    std::vector<std::string> attributes = splitString(line);
                     newTerritory = new Territory(stoi(attributes[0])/*stores territory id as an integer*/, attributes[1] /*stores territory name*/, stoi(attributes[2])/*stores the continent id the territory belongs to as an integer*/);
                     map->listOfContinents[stoi(attributes[2]) - 1]->addTerritory(newTerritory); //adds the territory to a continent.
                     map->addTerritory(newTerritory); //adds the territory to list of all territories.
 
-                    cout << "New Territory: " << attributes[0] << " " << attributes[1] << " " << attributes[2] << endl;
+                    std::cout << "New Territory: " << attributes[0] << " " << attributes[1] << " " << attributes[2] << std::endl;
                     getline(inStream, line);
                 }
 
@@ -890,15 +885,15 @@ void MapLoader::readMap(Map* map)
                     if (line == "")
                         break;
 
-                    vector<string> adjTerritories = splitString(line);
+                    std::vector<std::string> adjTerritories = splitString(line);
                     Territory* t1 = map->getTerritory(stoi(adjTerritories[0]));
-                    cout << "\nNew Border: " << adjTerritories[0];
+                    std::cout << "\nNew Border: " << adjTerritories[0];
                     for (int i = 1; i < adjTerritories.size(); i++)
                     {
                         Territory* t2 = map->getTerritory(stoi(adjTerritories[i]));
                         map->addAdjTerritory(t1, t2);
 
-                        cout << " " << adjTerritories[i];
+                        std::cout << " " << adjTerritories[i];
                     }
 
 
@@ -925,24 +920,22 @@ void MapLoader::readMap(Map* map)
 
 /**
  * Split string read from the map file.
- * Code taken from ideone.com/R9RJCf
  */
-vector<string> MapLoader::splitString(string s)
+std::vector<std::string> MapLoader::splitString(std::string s)
 {
-    istringstream iss(s);
-    vector<string> v;
+    std::istringstream iss(s);
+    std::vector<std::string> v;
     while (iss >> s)
     {
         v.push_back(s);
     }
-
     return v;
 }
 
 /**
  * Output Stream for Map Loader.
  */
-ostream& operator << (std::ostream& o, const MapLoader& ml)
+std::ostream& operator << (std::ostream& o, const MapLoader& ml)
 {
     return o << "This is a domination map: " << ml.mapFileName;
 }
