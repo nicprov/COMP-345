@@ -2,6 +2,7 @@
 #include "PlayerStrategies.h"
 #include "Player.h"
 #include "Map.h"
+#include "Orders.h"
 
 const boost::unordered_map<PlayerStrategy::StrategyType, std::string> PlayerStrategy::strategyTypeMapping = boost::assign::map_list_of(PlayerStrategy::StrategyType::benevolent, "benevolent")
         (PlayerStrategy::StrategyType::aggressive, "aggressive") (PlayerStrategy::StrategyType::human, "human") (PlayerStrategy::StrategyType::cheater, "cheater") (PlayerStrategy::StrategyType::neutral, "neutral");
@@ -61,19 +62,18 @@ std::ostream &operator<<(std::ostream &stream, const NeutralPlayerStrategy &neut
     return stream << "NeutralPlayerStrategy(" << *neutralPlayerStrategy.player << ")";
 }
 
-void NeutralPlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Player*> players)
-{
-
-}
+void NeutralPlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Player*> players){} // Neutral player doesn't issue orders
 
 std::vector<Territory *> NeutralPlayerStrategy::toAttack(Map* map)
 {
-    return std::vector<Territory *>();
+    // Neutral player doesn't issue orders
+    return {};
 }
 
 std::vector<Territory *> NeutralPlayerStrategy::toDefend(Map* map)
 {
-    return std::vector<Territory *>();
+    // Neutral player doesn't issue orders
+    return {};
 }
 
 /* Cheater Player Strategy */
@@ -99,17 +99,28 @@ std::ostream &operator<<(std::ostream &stream, const CheaterPlayerStrategy &chea
 
 void CheaterPlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Player*> players)
 {
-
+    // Automatically conquer all neighbouring territories
+    for (Territory* territory: this->toAttack(map)){
+        territory->setOwner(this->player);
+    }
 }
 
 std::vector<Territory *> CheaterPlayerStrategy::toAttack(Map* map)
 {
-    return std::vector<Territory *>();
+    auto neighbouringTerritories = std::vector<Territory*>();
+    for (Territory* playerTerritory: map->getTerritoriesByPlayer(this->player)){
+        for (Territory* neighbouringTerritory: playerTerritory->listOfAdjTerr){
+            if (!(std::find(neighbouringTerritories.begin(), neighbouringTerritories.end(), neighbouringTerritory) != neighbouringTerritories.end())) // Check if territory is already in list
+                neighbouringTerritories.push_back(neighbouringTerritory);
+        }
+    }
+    return neighbouringTerritories;
 }
 
 std::vector<Territory *> CheaterPlayerStrategy::toDefend(Map* map)
 {
-    return std::vector<Territory *>();
+    // Never defends any territories
+    return {};
 }
 
 /* Human Player Strategy */
@@ -184,17 +195,41 @@ std::ostream &operator<<(std::ostream &stream, const AggressivePlayerStrategy &a
 
 void AggressivePlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Player*> players)
 {
+    // Get the strongest countries
+    std::vector<Territory*> strongTerritories = this->toAttack(map);
 
+    // Issue deploy orders by distributing army pool equally between all vulnerable countries
+    Order* deploy = new Deploy(this->player, strongTerritories.at(0), this->player->armyPool);
+    this->player->armyPool = 0;
+
+    // Issue advance orders
+    Territory* sourceTerritory = strongTerritories.at(0);
+    Territory* targetTerritory = sourceTerritory->listOfAdjTerr.at(0);
+    Order* advance = new Advance(deck, this->player, sourceTerritory, targetTerritory, sourceTerritory->getNumberOfArmies());
+
+    // Attach log observer to order
+    this->player->attachExistingObservers(deploy, this->player->orderList->getObservers());
+    this->player->attachExistingObservers(advance, this->player->orderList->getObservers());
+
+    // Add order to orderList
+    this->player->orderList->add(deploy);
+    this->player->orderList->add(advance);
 }
 
 std::vector<Territory *> AggressivePlayerStrategy::toAttack(Map* map)
 {
-    return std::vector<Territory *>();
+    std::vector<Territory*> playerTerritories = map->getTerritoriesByPlayer(this->player);
+    // Sort territories by number of armies in decreasing order
+    std::sort(playerTerritories.begin(), playerTerritories.end(),[](Territory* t1, Territory* t2){
+        return t1->getNumberOfArmies() > t2->getNumberOfArmies();
+    });
+    return playerTerritories;
 }
 
 std::vector<Territory *> AggressivePlayerStrategy::toDefend(Map* map)
 {
-    return std::vector<Territory *>();
+    // Always attacks
+    return {};
 }
 
 /* Benevolent Player Strategy */
@@ -220,20 +255,45 @@ std::ostream &operator<<(std::ostream &stream, const BenevolentPlayerStrategy &b
 
 void BenevolentPlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Player*> players)
 {
+    // Get the most vulnerable countries
+    std::vector<Territory*> weakTerritories = this->toDefend(map);
 
+    // Issue deploy orders by distributing army pool equally between all vulnerable countries
+    while (this->player->armyPool > 0){
+        for (Territory* territory: weakTerritories){
+            if (this->player->armyPool == 0)
+                break;
+            Order* order = new Deploy(this->player, territory, 1);
+            this->player->armyPool--;
+
+            // Attach log observer to order
+            this->player->attachExistingObservers(order, this->player->orderList->getObservers());
+
+            // Add order to orderList
+            this->player->orderList->add(order);
+        }
+    }
+
+    // TODO Check if issue advance orders is necessary
 }
 
 std::vector<Territory *> BenevolentPlayerStrategy::toAttack(Map* map)
 {
-    return std::vector<Territory *>();
+    // Never advances onto enemy territories
+    return {};
 }
 
-std::vector<Territory *> BenevolentPlayerStrategy::toDefend(Map* map)
+std::vector<Territory*> BenevolentPlayerStrategy::toDefend(Map* map)
 {
-    return std::vector<Territory *>();
+    std::vector<Territory*> playerTerritories = map->getTerritoriesByPlayer(this->player);
+    // Sort territories by number of armies in increasing order
+    std::sort(playerTerritories.begin(), playerTerritories.end(),[](Territory* t1, Territory* t2){
+                  return t1->getNumberOfArmies() < t2->getNumberOfArmies();
+    });
+    return playerTerritories;
 }
 
-PlayerStrategy::StrategyType getStrategyType(std::string _strategy)
+PlayerStrategy::StrategyType getStrategyType(const std::string& _strategy)
 {
     for (auto& it: PlayerStrategy::strategyTypeMapping){
         if (it.second == _strategy)
