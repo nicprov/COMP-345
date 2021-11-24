@@ -35,7 +35,7 @@ TEST_CASE("Game engine get available commands")
     auto* gameEngine = new GameEngine();
     std::vector<GameEngine::GameCommand> commands;
     gameEngine->getAvailableCommands(commands);
-    REQUIRE(commands.size() == 1);
+    REQUIRE(commands.size() == 2);
     REQUIRE(std::find(commands.begin(), commands.end(), GameEngine::GameCommand::load_map) != commands.end());
 }
 
