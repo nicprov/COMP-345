@@ -284,7 +284,7 @@ Command* CommandProcessor::validate(const std::string& command, const std::vecto
         auto* gameCommand = new GameEngine::GameCommand(GameEngine::gameCommandMapping.at(command));
         this->gameEngine.getAvailableCommands(validCommands);
         bool isValid = false;
-        if ((command == "loadmap" && params.size() != 1) or (command == "addplayer" && params.size() != 2))
+        if ((command == "loadmap" && params.size() != 1) or (command == "addplayer" && params.size() != 2) or (command == "tournament" && params.size() != 4))
             return nullptr;
         for (GameEngine::GameCommand validCommand: validCommands) {
             if (*gameCommand == validCommand)
@@ -316,22 +316,15 @@ Command* CommandProcessor::readCommand()
 {
     std::string inputCommand;
     std::string _command;
-    std::string _param;
+    std::vector<std::string> _params;
     bool isValid = false;
     while (!isValid) {
         std::cout << "Enter command: ";
         getline(std::cin, inputCommand);
-        std::vector<std::string> inputSplit;
-        boost::split(inputSplit, inputCommand, boost::is_any_of("\t "));
-        _command = boost::algorithm::to_lower_copy(inputSplit.at(0));
-        auto params = std::vector<std::string>();
-        if (_command == "loadmap" && inputSplit.size() == 2) // Get param only if command is loadmap or addplayer
-            params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
-        else if (_command == "addplayer" && inputSplit.size() == 3){
-            params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
-            params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(2)));
-        }
-        Command* command = this->validate(_command, params);
+        std::tuple<std::string, std::vector<std::string>> result = getCommandAndParamsFromString(inputCommand);
+        _command = std::get<0>(result);
+        _params = std::get<1>(result);
+        Command* command = this->validate(_command, _params);
         if (command == nullptr){
             std::cout << std::endl << "\x1B[31m" << "Invalid command, try again... " << "\033[0m" << std::endl << std::endl;
         } else {
@@ -419,10 +412,20 @@ std::ostream &operator<<(std::ostream &stream, const FileCommandProcessorAdapter
 */
 Command* FileCommandProcessorAdapter::readCommand()
 {
-    std::string _command;
     std::string inputCommand = this->fileLineReader->readLineFromFile();
+    std::tuple<std::string, std::vector<std::string>> result = getCommandAndParamsFromString(inputCommand);
+    std::string _command = std::get<0>(result);
+    std::vector<std::string> params = std::get<1>(result);
+    auto* command = this->validate(_command, params);
+    if (command == nullptr)
+        std::cout << std::endl << "\x1B[31m" << "Invalid command entered: " << inputCommand <<  "\033[0m" << std::endl << std::endl;
+    return command;
+}
+
+std::tuple<std::string, std::vector<std::string>> getCommandAndParamsFromString(std::string input){
     std::vector<std::string> inputSplit;
-    boost::split(inputSplit, inputCommand, boost::is_any_of("\t "));
+    std::string _command;
+    boost::split(inputSplit, input, boost::is_any_of("\t "));
     _command = boost::algorithm::to_lower_copy(inputSplit.at(0));
     auto params = std::vector<std::string>();
     if (_command == "loadmap" && inputSplit.size() == 2) // Get param only if command is loadmap or addplayer
@@ -430,9 +433,11 @@ Command* FileCommandProcessorAdapter::readCommand()
     else if (_command == "addplayer" && inputSplit.size() == 3){
         params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
         params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(2)));
+    } else if (_command == "tournament" && inputSplit.size() == 5){
+        params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
+        params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(2)));
+        params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(3)));
+        params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(4)));
     }
-    auto* command = this->validate(_command, params);
-    if (command == nullptr)
-        std::cout << std::endl << "\x1B[31m" << "Invalid command entered: " << inputCommand <<  "\033[0m" << std::endl << std::endl;
-    return command;
+    return {_command, params};
 }

@@ -52,7 +52,6 @@ Player::Player(const std::string &name, PlayerStrategy::StrategyType strategyTyp
             this->playerStrategy = new BenevolentPlayerStrategy(this);
             break;
     }
-    this->playerStrategy = new HumanPlayerStrategy(this);
     this->name = name;
     this->hand = new Hand();
     this->orderList = new OrderList();

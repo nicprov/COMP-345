@@ -61,12 +61,15 @@ private:
     std::vector<Player*> players;
     Map* map;
     Deck* deck;
+    bool tournamentMode;
     void attachExistingObservers(Subject*); // Attach all current observers to the passed subject
     void printAvailableCommands();  //prints available commands
     void startupPhase(CommandProcessor*);   //Startup phase of the game
     void reinforcementPhase();      //assign armies to reinforcement pool
     void issueOrdersPhase();        // call to issue order
     void executeOrdersPhase();      //executes order
+    void startTournament(const std::vector<std::string>&, std::vector<PlayerStrategy::StrategyType>*, int, int);
+    std::tuple<std::vector<std::string>, std::vector<PlayerStrategy::StrategyType>*, int, int> validateTournamentParameters(Command*);
     bool containsOrders(const std::map<Player*, bool>&);   //check if player contains orders
     void loadMap(const std::string& mapName);       //load map
     void validateMap(); // validate map based on conditions
