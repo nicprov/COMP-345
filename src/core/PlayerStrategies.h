@@ -88,4 +88,4 @@ public:
     std::vector<Territory*> toDefend(Map*);
 };
 
-PlayerStrategy::StrategyType getStrategyType(std::string);
+PlayerStrategy::StrategyType getStrategyType(const std::string&);

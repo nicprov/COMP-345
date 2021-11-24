@@ -66,3 +66,5 @@ private:
     Command* readCommand(); //Reads the commands
     FileLineReader* fileLineReader; // Pointer to lines from a file.
 };
+
+std::tuple<std::string, std::vector<std::string>> getCommandAndParamsFromString(std::string);
