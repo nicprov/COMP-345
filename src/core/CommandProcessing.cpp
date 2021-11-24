@@ -65,7 +65,6 @@ std::string FileLineReader::readLineFromFile()
     std::string command;
     if (this->stream->eof())
         throw std::runtime_error("Reached end of file, no new lines to read");
-
     if (this->stream->is_open()){
         getline(*this->stream, command);
         return command;
@@ -81,7 +80,7 @@ std::string FileLineReader::readLineFromFile()
 Command::Command(const GameEngine::GameCommand &gameCommand)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
-    this->param = "";
+    this->params = std::vector<std::string>();
     this->effect = "";
 }
 
@@ -90,10 +89,10 @@ Command::Command(const GameEngine::GameCommand &gameCommand)
  * @param gameCommand game command
  * @param param parameter
  */
-Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param)
+Command::Command(const GameEngine::GameCommand &gameCommand, const std::vector<std::string>& params)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
-    this->param = param;
+    this->params = params;
     this->effect = "";
 }
 
@@ -103,10 +102,10 @@ Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& 
  * @param param parameter
  * @param effect
 */
-Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& param, const std::string& effect)
+Command::Command(const GameEngine::GameCommand &gameCommand, const std::vector<std::string>& params, const std::string& effect)
 {
     this->command = new GameEngine::GameCommand(gameCommand);
-    this->param = param;
+    this->params = params;
     this->effect = effect;
 }
 
@@ -116,8 +115,8 @@ Command::Command(const GameEngine::GameCommand &gameCommand, const std::string& 
  */
 Command::Command(const Command &_command)
 {
-    this->command = _command.command;
-    this->param = _command.param;
+    this->command = new GameEngine::GameCommand(*_command.command);
+    this->params = _command.params;
     this->effect = _command.effect;
 }
 
@@ -127,8 +126,11 @@ Command::Command(const Command &_command)
 */
 Command &Command::operator= (const Command &_command)
 {
-    this->command = _command.command;
-    this->effect = _command.effect;
+    if (this != &_command){
+        this->command = new GameEngine::GameCommand(*_command.command);
+        this->params = _command.params;
+        this->effect = _command.effect;
+    }
     return *this;
 }
 
@@ -137,7 +139,16 @@ Command &Command::operator= (const Command &_command)
 */
 std::ostream &operator<<(std::ostream &stream, const Command &_command)
 {
-    return stream << "Command (" << *_command.command << "), Param (" << _command.param << ")";
+    stream << "Command (" << *_command.command << "), Params [";
+    int counter = 1;
+    for (const std::string& _param: _command.params){
+        if (counter++ < _command.params.size())
+            stream << _param << ",";
+        else
+            stream << _param;
+    }
+    stream << "]";
+    return stream;
 }
 
 /**
@@ -149,7 +160,16 @@ std::string Command::toString(){
         if (it.second == *this->command)
             strCommand = it.first;
     }
-    return "Command (" + strCommand + "), Param (" + this->param + ")";
+    std::string listOfCommands;
+    int counter = 1;
+    for (const std::string& _param: this->params){
+        if (counter++ < this->params.size())
+            listOfCommands += _param + ",";
+        else
+            listOfCommands += _param;
+    }
+    listOfCommands += "]";
+    return "Command (" + strCommand + "), Param (" + listOfCommands + ")";
 }
 
 /**
@@ -181,14 +201,16 @@ GameEngine::GameCommand* Command::getGameCommand()
 /**
 * Gets the param
 */
-std::string Command::getParam() {
-    return this->param;
+std::vector<std::string> Command::getParams()
+{
+    return this->params;
 }
 
 /**
 * Gets the effect
 */
-std::string Command::getEffect() {
+std::string Command::getEffect()
+{
     return this->effect;
 }
 
@@ -196,7 +218,8 @@ std::string Command::getEffect() {
 * Outputs to log
 * @return string with the effect of the command.
 */
-std::string Command::stringToLog() {
+std::string Command::stringToLog()
+{
     return "Command's Effect: " + this->getEffect();
 }
 
@@ -254,21 +277,21 @@ Command* CommandProcessor::getCommand()
 * @param command the command
 * @param param the parameter
 */
-Command* CommandProcessor::validate(const std::string& command, const std::string& param)
+Command* CommandProcessor::validate(const std::string& command, const std::vector<std::string>& params)
 {
     try {
         std::vector<GameEngine::GameCommand> validCommands;
         auto* gameCommand = new GameEngine::GameCommand(GameEngine::gameCommandMapping.at(command));
         this->gameEngine.getAvailableCommands(validCommands);
         bool isValid = false;
-        if ((command == "loadmap" || command == "addplayer") && param.empty())
+        if ((command == "loadmap" && params.size() != 1) or (command == "addplayer" && params.size() != 2))
             return nullptr;
         for (GameEngine::GameCommand validCommand: validCommands) {
             if (*gameCommand == validCommand)
                 isValid = true;
         }
         if (isValid)
-            return new Command(*gameCommand, param);
+            return new Command(*gameCommand, params);
     } catch (boost::wrapexcept<std::out_of_range>&) {}
     return nullptr;
 }
@@ -301,11 +324,14 @@ Command* CommandProcessor::readCommand()
         std::vector<std::string> inputSplit;
         boost::split(inputSplit, inputCommand, boost::is_any_of("\t "));
         _command = boost::algorithm::to_lower_copy(inputSplit.at(0));
-        if ((_command == "loadmap" || _command == "addplayer") && inputSplit.size() == 2) // Get param only if command is loadmap or addplayer
-            _param = boost::algorithm::to_lower_copy(inputSplit.at(1));
-        else
-            _param = "";
-        Command* command = this->validate(_command, _param);
+        auto params = std::vector<std::string>();
+        if (_command == "loadmap" && inputSplit.size() == 2) // Get param only if command is loadmap or addplayer
+            params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
+        else if (_command == "addplayer" && inputSplit.size() == 3){
+            params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
+            params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(2)));
+        }
+        Command* command = this->validate(_command, params);
         if (command == nullptr){
             std::cout << std::endl << "\x1B[31m" << "Invalid command, try again... " << "\033[0m" << std::endl << std::endl;
         } else {
@@ -394,17 +420,19 @@ std::ostream &operator<<(std::ostream &stream, const FileCommandProcessorAdapter
 Command* FileCommandProcessorAdapter::readCommand()
 {
     std::string _command;
-    std::string _effect;
     std::string inputCommand = this->fileLineReader->readLineFromFile();
     std::vector<std::string> inputSplit;
     boost::split(inputSplit, inputCommand, boost::is_any_of("\t "));
     _command = boost::algorithm::to_lower_copy(inputSplit.at(0));
-    if (_command == "loadmap" || _command == "addplayer") // Get effect only if command is loadmap or addplayer
-        _effect = boost::algorithm::to_lower_copy(inputSplit.at(1));
-    else
-        _effect = "";
-    auto* command = this->validate(_command, _effect);
+    auto params = std::vector<std::string>();
+    if (_command == "loadmap" && inputSplit.size() == 2) // Get param only if command is loadmap or addplayer
+        params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
+    else if (_command == "addplayer" && inputSplit.size() == 3){
+        params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(1)));
+        params.push_back(boost::algorithm::to_lower_copy(inputSplit.at(2)));
+    }
+    auto* command = this->validate(_command, params);
     if (command == nullptr)
-        std::cout << "Invalid command entered: " + _command;
+        std::cout << std::endl << "\x1B[31m" << "Invalid command entered: " << inputCommand <<  "\033[0m" << std::endl << std::endl;
     return command;
 }

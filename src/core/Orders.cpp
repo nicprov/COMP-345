@@ -1,4 +1,7 @@
 #include "Orders.h"
+#include "Map.h"
+#include "Player.h"
+#include "Cards.h"
 
 const boost::unordered_map<Order::OrderType, std::string> Order::orderTypeMapping = boost::assign::map_list_of(OrderType::deploy, "deploy")
     (OrderType::advance, "advance") (OrderType::bomb, "bomb") (OrderType::blockade, "blockade") (OrderType::airlift, "airlift") (OrderType::negotiate, "negotiate");
@@ -93,7 +96,7 @@ Deploy::~Deploy() = default;
  * @param territory territory to deploy armies to
  * @param numOfArmies number of armies to deploy
  */
-Deploy::Deploy(const Order::OrderType orderType, Player* player, Territory* territory, int numOfArmies) : Order(orderType)
+Deploy::Deploy(Player* player, Territory* territory, int numOfArmies) : Order(Order::OrderType::deploy)
 {
     this->player = player;
     this->territory = territory;
@@ -177,7 +180,7 @@ Blockade::~Blockade() = default;
  * @param player player issuing the blockade
  * @param target targetted territory
  */
-Blockade::Blockade(Order::OrderType orderType, Player* player, Territory* target) : Order(orderType)
+Blockade::Blockade(Player* player, Territory* target) : Order(Order::OrderType::blockade)
 {
     this->player = player;
     this->target = target;
@@ -229,7 +232,7 @@ void Blockade::execute()
     {
         notify(this);
         target->addTroops(target->getNumberOfArmies()); // Double players
-        target->setOwner(new Player("Neutral")); //neutral player, come back to this when neutral player implemented
+        target->setOwner(new Player("Neutral", PlayerStrategy::neutral)); //neutral player, come back to this when neutral player implemented
         std::cout << "Blockade order: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " \narmies and belongs to " << target->getOwner()->getName() << std::endl;
     }
 }
@@ -263,7 +266,7 @@ Advance::~Advance() = default;
  * @param target targetted territory
  * @param numOfArmies number of armies
  */
-Advance::Advance(Order::OrderType orderType, Deck* deck, Player* player, Territory* source, Territory* target, int numOfArmies) : Order(orderType)
+Advance::Advance(Deck* deck, Player* player, Territory* source, Territory* target, int numOfArmies) : Order(Order::OrderType::advance)
 {
     this->deck = deck;
     this->player = player;
@@ -388,7 +391,7 @@ Bomb::~Bomb() = default;
  * @param player Player of the Bomb Order
  * @param target Territory targetted by the Bomb Order
  */
-Bomb::Bomb(Order::OrderType orderType, Player* player, Territory* target) : Order(orderType)
+Bomb::Bomb(Player* player, Territory* target) : Order(Order::OrderType::bomb)
 {
     this->player = player;
     this->target = target;
@@ -480,7 +483,7 @@ Airlift::~Airlift() = default;
  * @param target targetted territory
  * @param numOfArmies number of armies
  */
-Airlift::Airlift(const Order::OrderType orderType, Player* player, Territory* source, Territory* target, int numOfArmies) : Order(orderType)
+Airlift::Airlift(Player* player, Territory* source, Territory* target, int numOfArmies) : Order(Order::OrderType::airlift)
 {
     this->player = player;
     this->source = source;
@@ -568,11 +571,12 @@ Negotiate::~Negotiate() = default;
  * @param player player issuing the negotiation
  * @param enemy player to negotiate with
  */
-Negotiate::Negotiate(Order::OrderType orderType, Player* player, Player* enemy) : Order(orderType)
+Negotiate::Negotiate(Player* player, Player* enemy) : Order(Order::OrderType::negotiate)
 {
     this->player = player;
     this->enemy = enemy;
 }
+
 /**
  * Negotiate copy constructor
  *

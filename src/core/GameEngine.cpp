@@ -3,11 +3,13 @@
 #include "CommandProcessing.h"
 #include "GameEngine.h"
 #include "Orders.h"
+#include "PlayerStrategies.h"
 
 const boost::unordered_map<std::string, GameEngine::GameCommand> GameEngine::gameCommandMapping = boost::assign::map_list_of("loadmap", GameEngine::GameCommand::load_map)
         ("validatemap", GameEngine::GameCommand::validate_map) ("addplayer", GameEngine::GameCommand::add_player) ("gamestart", GameEngine::GameCommand::game_start)
         ("issueorder", GameEngine::GameCommand::issue_order) ("issueorderend", GameEngine::GameCommand::end_issue_order) ("executeorder", GameEngine::GameCommand::execute_order)
-        ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit);
+        ("endexecuteorder", GameEngine::GameCommand::end_execute_order) ("win", GameEngine::GameCommand::win_game) ("replay", GameEngine::GameCommand::replay) ("quit", GameEngine::GameCommand::quit)
+        ("tournament", GameEngine::GameCommand::tournament);
 
 const boost::unordered_map<std::string, GameEngine::GameState> GameEngine::gameStateMapping = boost::assign::map_list_of("start", GameEngine::GameState::start)
         ("map loaded", GameEngine::GameState::map_loaded) ("map validated", GameEngine::GameState::map_validated) ("players added", GameEngine::GameState::players_added) ("assign reinforcement", GameEngine::GameState::assign_reinforcement)
@@ -148,7 +150,7 @@ void GameEngine::transition(Command* command)
             switch (gameCommand){
                 case load_map:
                     try {
-                        this->loadMap(command->getParam());
+                        this->loadMap(command->getParams()[0]);
                         effect = "Map loaded";
                         std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                         *current_state = map_loaded;
@@ -236,6 +238,8 @@ void GameEngine::transition(Command* command)
                     std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
                     command->saveEffect(effect);
                     exit(0);
+                case tournament:
+                    break;
             }
         }
     }
@@ -270,7 +274,7 @@ std::ostream &operator<< (std::ostream &stream, const GameEngine::GameCommand &g
             stream << "Validate Map (validatemap)";
             break;
         case GameEngine::GameCommand::add_player:
-            stream << "Add player (addplayer <playerName>)";
+            stream << "Add player (addplayer <playerName> <strategyType>)";
             break;
         case GameEngine::GameCommand::game_start:
             stream << "Game start (gamestart)";
@@ -318,13 +322,13 @@ bool GameEngine::operator==(const GameEngine &gameEngine) const
 void GameEngine::startupPhase(CommandProcessor* commandProcessor)
 {
     std::cout << std::endl << "*Startup Phase*" << std::endl << std::endl;
-    printAvailableCommands();
-    auto* command = commandProcessor->getCommand();
-    attachExistingObservers(command);
-    transition(command);
     while (*(this->current_state) != assign_reinforcement) {
         printAvailableCommands();
-        transition(commandProcessor->getCommand());
+        auto* command = commandProcessor->getCommand();
+        if (command != nullptr) {
+            attachExistingObservers(command);
+            transition(command);
+        }
     }
 }
 
@@ -361,6 +365,7 @@ void GameEngine::reinforcementPhase()
  */
 void GameEngine::issueOrdersPhase()
 {
+    std::cout << "*Issue Orders Phase*" << std::endl << std::endl;
     for (Player* player : this->players) {
         std::cout << player->getName() << "'s Turn!" << std::endl << std::endl;
         player->issueOrder(deck,map,players);
@@ -374,7 +379,6 @@ void GameEngine::issueOrdersPhase()
 void GameEngine::executeOrdersPhase()
 {
     std::cout << "*Execution Phase*" << std::endl << std::endl;
-
     std::map<Player*, bool> playerHasOrdersToExecute;
     for(Player* player: this->players) {
         playerHasOrdersToExecute[player] = true;   //orderList has content
@@ -477,18 +481,23 @@ void GameEngine::addPlayer(Command* command)
     else {
         bool found = false;
         for (Player* player: this->players){
-            if (player->getName() == command->getParam()) {
-                effect = "Player (" + command->getParam() + ") already exist";
+            if (player->getName() == command->getParams()[0]) {
+                effect = "Player (" + command->getParams()[0] + ") already exist";
                 std::cout << std::endl << "\x1B[31m" << effect << "\033[0m" << std::endl << std::endl;
                 found = true;
             }
         }
         if (!found) {
-            effect = "Player (" + command->getParam() + ") added";
+            effect = "Player (" + command->getParams()[0] + ") added";
             std::cout << std::endl << "\x1B[32m" << effect << "\033[0m" << std::endl << std::endl;
-            auto* player = new Player(command->getParam());
-            attachExistingObservers(player->orderList);
-            this->players.push_back(player);
+            try {
+                PlayerStrategy::StrategyType strategyType = getStrategyType(command->getParams()[1]);
+                auto* player = new Player(command->getParams()[0], strategyType);
+                attachExistingObservers(player->orderList);
+                this->players.push_back(player);
+            } catch (std::runtime_error&){
+                std::cout << std::endl << "\x1B[31m" << "Invalid strategy type" << "\033[0m" << std::endl << std::endl;
+            }
         }
     }
     command->saveEffect(effect);
@@ -547,7 +556,7 @@ void GameEngine::gameStart()
         player->hand->addCard(deck->draw());
 
         // Print player to show order
-        std::cout << *player;
+        std::cout << *player << std::endl;
     }
 }
 /**
@@ -562,6 +571,7 @@ void GameEngine::printAvailableCommands(){
         std::cout << counter++ << ". " << command << std::endl;
     }
 }
+
 /**
  * Game state to string
  * @return currentState of game

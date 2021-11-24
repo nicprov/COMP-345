@@ -8,14 +8,7 @@ workflows:
             branches:
               only: 
                 - master
-                - dev-adrienne
-                - dev-anita
-                - dev-jason
-                - dev-juhi
                 - dev-nick
-                - dev-rosie
-                - rosie_dev
-                - Comments
 jobs:
   build-and-test:
     docker:

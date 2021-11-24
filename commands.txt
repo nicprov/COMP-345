@@ -1,5 +1,5 @@
 loadmap ../solar.map
 validatemap
-addplayer nick
-addplayer john
+addplayer nick human
+addplayer john human
 gamestart
