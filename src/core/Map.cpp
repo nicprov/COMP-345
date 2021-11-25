@@ -82,13 +82,7 @@ Territory& Territory:: operator = (const Territory& t)
  * Destructor
  * Destroys the list of adjacent territories.
  */
-Territory::~Territory()
-{
-    for (int i = 0; i < this->listOfAdjTerr.size(); i++)
-    {
-        delete this->listOfAdjTerr[i];
-    }
-}
+Territory::~Territory()= default;
 
 /**
  * Get the territory index
@@ -337,15 +331,8 @@ Continent& Continent:: operator = (const Continent& c)
  */
 Continent::~Continent()
 {
-    for (int i = 0; i < this->listOfTerritories.size(); i++)
-    {
-        delete this->listOfTerritories[i];
-    }
-
-    for (int i = 0; i < this->listOfAdjCont.size(); i++)
-    {
-        delete this->listOfAdjCont[i];
-    }
+    for (Territory* territory: this->listOfTerritories)
+        delete territory;
 }
 
 /**
@@ -502,15 +489,8 @@ Map& Map:: operator = (const Map& m)
  */
 Map::~Map()
 {
-    for (int i = 0; i < this->listOfContinents.size(); i++)
-    {
-        delete this->listOfContinents[i];
-    }
-
-    for (int i = 0; i < this->listOfTerritories.size(); i++)
-    {
-        delete this->listOfTerritories[i];
-    }
+    for (Continent* continent: this->listOfContinents)
+        delete continent;
 }
 
 /**
