@@ -82,13 +82,7 @@ Territory& Territory:: operator = (const Territory& t)
  * Destructor
  * Destroys the list of adjacent territories.
  */
-Territory::~Territory()
-{
-    for (int i = 0; i < this->listOfAdjTerr.size(); i++)
-    {
-        delete this->listOfAdjTerr[i];
-    }
-}
+Territory::~Territory()= default;
 
 /**
  * Get the territory index
@@ -337,15 +331,8 @@ Continent& Continent:: operator = (const Continent& c)
  */
 Continent::~Continent()
 {
-    for (int i = 0; i < this->listOfTerritories.size(); i++)
-    {
-        delete this->listOfTerritories[i];
-    }
-
-    for (int i = 0; i < this->listOfAdjCont.size(); i++)
-    {
-        delete this->listOfAdjCont[i];
-    }
+    for (Territory* territory: this->listOfTerritories)
+        delete territory;
 }
 
 /**
@@ -502,15 +489,8 @@ Map& Map:: operator = (const Map& m)
  */
 Map::~Map()
 {
-    for (int i = 0; i < this->listOfContinents.size(); i++)
-    {
-        delete this->listOfContinents[i];
-    }
-
-    for (int i = 0; i < this->listOfTerritories.size(); i++)
-    {
-        delete this->listOfTerritories[i];
-    }
+    for (Continent* continent: this->listOfContinents)
+        delete continent;
 }
 
 /**
@@ -840,7 +820,7 @@ void MapLoader::readMap(Map* map)
 
                 while (line.find("[countries]") != 0)
                 {
-                    if (line == "")
+                    if (line.empty() or line == "\r" or line.starts_with(';'))
                         break;
 
                     //Split line to access different attributes of continents
@@ -862,7 +842,7 @@ void MapLoader::readMap(Map* map)
 
                 while (line.find("[borders]") != 0)
                 {
-                    if (line == "")
+                    if (line.empty() or line == "\r" or line.starts_with(';'))
                         break;
 
                     std::vector<std::string> attributes = splitString(line);
@@ -882,7 +862,7 @@ void MapLoader::readMap(Map* map)
                 getline(inStream, line);
                 while (!line.empty())
                 {
-                    if (line == "")
+                    if (line.empty() or line == "\r" or line.starts_with(';'))
                         break;
 
                     std::vector<std::string> adjTerritories = splitString(line);

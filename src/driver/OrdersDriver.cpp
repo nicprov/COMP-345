@@ -36,7 +36,7 @@ int main() {
     auto* player2 = new Player(PlayerStrategy::human, *hand2, *orderlist2, name2);
 
     // Load map to play with
-    std::string mapName = "../solar.map";
+    std::string mapName = "../maps/solar.map";
     auto* map = new Map(mapName);
     auto* mapLoader = new MapLoader(mapName);
     mapLoader->readMap(map);
