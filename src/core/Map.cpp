@@ -820,7 +820,7 @@ void MapLoader::readMap(Map* map)
 
                 while (line.find("[countries]") != 0)
                 {
-                    if (line == "")
+                    if (line.empty() or line == "\r" or line.starts_with(';'))
                         break;
 
                     //Split line to access different attributes of continents
@@ -842,7 +842,7 @@ void MapLoader::readMap(Map* map)
 
                 while (line.find("[borders]") != 0)
                 {
-                    if (line == "")
+                    if (line.empty() or line == "\r" or line.starts_with(';'))
                         break;
 
                     std::vector<std::string> attributes = splitString(line);
@@ -862,7 +862,7 @@ void MapLoader::readMap(Map* map)
                 getline(inStream, line);
                 while (!line.empty())
                 {
-                    if (line == "")
+                    if (line.empty() or line == "\r" or line.starts_with(';'))
                         break;
 
                     std::vector<std::string> adjTerritories = splitString(line);
