@@ -233,7 +233,7 @@ std::vector<Territory *> AggressivePlayerStrategy::toDefend(Map* map)
 }
 
 /* Benevolent Player Strategy */
-BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player *) : PlayerStrategy(player, StrategyType::benevolent){}
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player *player) : PlayerStrategy(player, StrategyType::benevolent){}
 
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(const BenevolentPlayerStrategy &benevolentPlayerStrategy): PlayerStrategy(benevolentPlayerStrategy.player, StrategyType::benevolent){}
 
