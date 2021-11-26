@@ -42,9 +42,9 @@ public:
     Order* getCardOrderDetails(Card*, Map*, std::vector<Player*>&);
     Hand* hand;
     OrderList* orderList;
+    PlayerStrategy* playerStrategy;
     int armyPool; //reinforcement pool
 private:
-    PlayerStrategy* playerStrategy;
     std::string name;
     Order* advance(Map*, Deck*);
 };

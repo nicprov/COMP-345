@@ -25,6 +25,7 @@ public:
         airlift = 4,
         diplomacy = 5
     };
+    ~Card();
     Card(CardType); //Card constructor
     Card(const Card&); // Copy constructor
     Card& operator= (const Card&); // Assignment operator

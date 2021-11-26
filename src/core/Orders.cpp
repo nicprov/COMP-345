@@ -247,7 +247,7 @@ bool Blockade::validate()
         std::cout << "Blockade order validated." << std::endl;
         return true;
     }
-    std::cout << "Blockade order is invalid. Player (" << player << ") does not own territory (" << target->getOwner() << ")." << std::endl;
+    std::cout << "Blockade order is invalid. Player (" << player->getName() << ") does not own territory (" << target->getTerrName() << ")." << std::endl;
     return false;
 }
 
@@ -330,7 +330,7 @@ void Advance::execute()
         // Check if neutral player is being attacked, change to aggressive player if so
         if (target->getOwner()->getStrategyType() == PlayerStrategy::neutral) {
             std::cout << "Neutral player got attacked, changing to aggressive player";
-            target->getOwner()->setStrategyType(PlayerStrategy::aggressive);
+            target->getOwner()->playerStrategy = new AggressivePlayerStrategy(this->player);
         }
 
         if (target->getOwner() == player)
@@ -380,7 +380,7 @@ bool Advance::validate()
         std::cout << "Advance order validated." << std::endl;
         return true;
     }
-    std::cout << "Advance order is invalid. Player (" << player << ") does not own source territory (" << source << "), or the source territory is not adjacent to the target (" << target << ")" << std::endl;
+    std::cout << "Advance order is invalid. Player (" << player->getName() << ") does not own source territory (" << source->getTerrName() << "), or the source territory is not adjacent to the target (" << target->getTerrName() << ")" << std::endl;
     return false;
 }
 
@@ -448,7 +448,7 @@ void Bomb::execute()
         // Check if neutral player is being attacked, change to aggressive player if so
         if (target->getOwner()->getStrategyType() == PlayerStrategy::neutral) {
             std::cout << "Neutral player got attacked, changing to aggressive player";
-            target->getOwner()->setStrategyType(PlayerStrategy::aggressive);
+            target->getOwner()->playerStrategy = new AggressivePlayerStrategy(this->player);
         }
 
         if (!player->hasNegotiationWith(target->getOwner())) {
@@ -477,7 +477,7 @@ bool Bomb::validate()
             }
         }
     }
-    std::cout << "Bomb order is invalid. Player (" << player << ") owns the target territory (" << target << "). You cannot attack your own territory." << std::endl;
+    std::cout << "Bomb order is invalid. Player (" << player->getName() << ") owns the target territory (" << target->getTerrName() << "). You cannot attack your own territory." << std::endl;
     return false;
 }
 

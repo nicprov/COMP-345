@@ -24,3 +24,5 @@ make install
 ```
 cmake --build . --target all
 ```
+
+tournament ../maps/solar.map aggressive,benevolent 5 10 -> not working

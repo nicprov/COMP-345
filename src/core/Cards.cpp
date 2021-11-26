@@ -3,6 +3,8 @@
 #include "Cards.h"
 
 // Card methods
+Card::~Card() = default;
+
 /**
  * Card constructor
  * @param type CardType enum
@@ -116,9 +118,8 @@ bool Card::operator==(const Card &card) const
 Hand::~Hand()
 {
     for (Card* card: this->cards)
-    {
         delete card;
-    }
+    this->cards.clear();
 }
 
 /**
@@ -229,9 +230,8 @@ bool Hand::operator==(const Hand &hand) const
 Deck::~Deck()
 {
     for (Card* card: this->cards)
-    {
         delete card;
-    }
+    this->cards.clear();
 }
 
 /**

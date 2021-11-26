@@ -18,6 +18,7 @@ public:
         aggressive = 4,
         benevolent = 5
     };
+    virtual ~PlayerStrategy();
     PlayerStrategy(Player*, StrategyType);
     PlayerStrategy(const PlayerStrategy&);
     PlayerStrategy& operator= (const PlayerStrategy&);
@@ -36,6 +37,7 @@ protected:
 
 class NeutralPlayerStrategy: public PlayerStrategy {
 public:
+    ~NeutralPlayerStrategy();
     NeutralPlayerStrategy(Player*);
     NeutralPlayerStrategy(const NeutralPlayerStrategy&);
     NeutralPlayerStrategy& operator= (const NeutralPlayerStrategy&);
@@ -47,6 +49,7 @@ public:
 
 class CheaterPlayerStrategy: public PlayerStrategy {
 public:
+    ~CheaterPlayerStrategy();
     CheaterPlayerStrategy(Player*);
     CheaterPlayerStrategy(const CheaterPlayerStrategy&);
     CheaterPlayerStrategy& operator= (const CheaterPlayerStrategy&);
@@ -58,6 +61,7 @@ public:
 
 class HumanPlayerStrategy: public PlayerStrategy {
 public:
+    ~HumanPlayerStrategy();
     HumanPlayerStrategy(Player*);
     HumanPlayerStrategy(const HumanPlayerStrategy&);
     HumanPlayerStrategy& operator= (const HumanPlayerStrategy&);
@@ -69,6 +73,7 @@ public:
 
 class AggressivePlayerStrategy: public PlayerStrategy {
 public:
+    ~AggressivePlayerStrategy();
     AggressivePlayerStrategy(Player*);
     AggressivePlayerStrategy(const AggressivePlayerStrategy&);
     AggressivePlayerStrategy& operator= (const AggressivePlayerStrategy&);
@@ -80,6 +85,7 @@ public:
 
 class BenevolentPlayerStrategy: public PlayerStrategy {
 public:
+    ~BenevolentPlayerStrategy();
     BenevolentPlayerStrategy(Player*);
     BenevolentPlayerStrategy(const BenevolentPlayerStrategy&);
     BenevolentPlayerStrategy& operator= (const BenevolentPlayerStrategy&);
