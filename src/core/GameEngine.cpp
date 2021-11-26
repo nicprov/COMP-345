@@ -557,7 +557,7 @@ void GameEngine::mainGameLoop(CommandProcessor* commandProcessor)
                 std::cout << std::endl << "\x1B[32m" << "Game Over! It was a draw" << "\033[0m" << std::endl << std::endl;
                 *this->current_state = GameState::start;
                 playing = false;
-                addWinnerToResults("Draw");
+                addWinnerToResults("draw");
                 resetGame();
             } else {
                 bool allContinents;
@@ -763,13 +763,12 @@ void GameEngine::attachExistingObservers(Subject *subject) {
 
 void GameEngine::resetGame()
 {
+    this->deck = new Deck();
     delete this->map;
     this->map = new Map();
     for (Player* player: this->players)
         delete player;
     this->players = std::vector<Player*>();
-    delete this->deck;
-    this->deck = new Deck();
     this->turnCounter = 0;
 }
 
@@ -799,9 +798,9 @@ void GameEngine::logTournamentResults()
     for (const auto& pair: this->tournamentResults) {
         this->toPrint += "Map (" + pair.first + "): ";
         counter = 0;
-        for (const std::string& winner: pair.second){
+        for (const auto& winner: pair.second){
             if (++counter == pair.second.size())
-                this->toPrint += "Game (" + std::to_string(counter) + "): " + winner + "\n";
+                this->toPrint += "Game (" + std::to_string(counter) + "): " + winner + " \n";
             else
                 this->toPrint += "Game (" + std::to_string(counter) + "): " + winner + " | ";
         }

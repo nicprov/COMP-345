@@ -158,12 +158,16 @@ void Deploy::execute()
  */
 bool Deploy::validate()
 {
-    if (territory->getOwner() == player)
+    if (territory->getOwner() == player && this->player->armyPool >= numOfArmies)
     {
         std::cout << "Deploy order validated." << std::endl;
         return true;
     }
-    std::cout << "Deploy order is invalid. Player (" << player << ") does not own territory (" << territory->getOwner() << ")." << std::endl;
+    if (this->player->armyPool < this->numOfArmies) {
+        std::cout << "Deploy order is invalid. Player (" << player->getName() << ") does not have sufficient armies to deploy to territory (" << this->territory->getTerrName() << ")." << std::endl;
+        return false;
+    }
+    std::cout << "Deploy order is invalid. Player (" << player->getName() << ") does not own territory (" << territory->getTerrName() << ")." << std::endl;
     return false;
 }
 
@@ -180,19 +184,22 @@ Blockade::~Blockade() = default;
  * @param player player issuing the blockade
  * @param target targetted territory
  */
-Blockade::Blockade(Player* player, Territory* target) : Order(Order::OrderType::blockade)
+Blockade::Blockade(Player* player, Territory* target, std::vector<Player*>& players) : Order(Order::OrderType::blockade)
 {
     this->player = player;
     this->target = target;
+    this->players = players;
 }
+
 /**
- * Blockage copy constructor
+ * Blockade copy constructor
  * @param blockage the blockade order to copy
  */
 Blockade::Blockade(const Blockade &blockade) : Order(blockade)
 {
     this->player = new Player(*blockade.player);
     this->target = new Territory(*blockade.target);
+    this->players = blockade.players;
 }
 
 /**
@@ -209,6 +216,7 @@ Blockade& Blockade::operator= (const Blockade &blockade)
         this->target = new Territory(*blockade.target);
         delete this->player;
         this->player = new Player(*blockade.player);
+        this->players = blockade.players;
     }
     return *this;
 }
@@ -232,7 +240,15 @@ void Blockade::execute()
     {
         notify(this);
         target->addTroops(target->getNumberOfArmies()); // Double players
-        target->setOwner(new Player("Neutral", PlayerStrategy::neutral)); //neutral player, come back to this when neutral player implemented
+        bool foundNeutral = false;
+        for (Player* _player: this->players)
+            if (_player->getStrategyType() == PlayerStrategy::neutral) {
+                target->setOwner(_player);
+                foundNeutral = true;
+                break;
+            }
+        if (!foundNeutral)
+            target->setOwner(new Player("Neutral", PlayerStrategy::neutral));
         std::cout << "Blockade order: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " \narmies and belongs to " << target->getOwner()->getName() << std::endl;
     }
 }
@@ -247,7 +263,7 @@ bool Blockade::validate()
         std::cout << "Blockade order validated." << std::endl;
         return true;
     }
-    std::cout << "Blockade order is invalid. Player (" << player << ") does not own territory (" << target->getOwner() << ")." << std::endl;
+    std::cout << "Blockade order is invalid. Player (" << player->getName() << ") does not own territory (" << target->getTerrName() << ")." << std::endl;
     return false;
 }
 
@@ -327,6 +343,12 @@ void Advance::execute()
     {
         notify(this);
 
+        // Check if neutral player is being attacked, change to aggressive player if so
+        if (target->getOwner()->getStrategyType() == PlayerStrategy::neutral) {
+            std::cout << "Neutral player got attacked, changing to aggressive player";
+            target->getOwner()->playerStrategy = new AggressivePlayerStrategy(this->player);
+        }
+
         if (target->getOwner() == player)
         {
             source->removeTroops(numOfArmies);
@@ -338,11 +360,11 @@ void Advance::execute()
         {
             srand(time(nullptr));
 
-            while (target->getNumberOfArmies() > 0 || source->getNumberOfArmies() > 0)
+            while (target->getNumberOfArmies() > 0 and source->getNumberOfArmies() > 0)
             {
-                if (rand() % 10 < 6)
+                if (((1 + rand()) % 10) <= 6)
                     target->removeTroops(1);
-                if (rand() % 10 < 7)
+                if (((1 + rand()) % 10) <= 7)
                     source->removeTroops(1);
             }
 
@@ -369,12 +391,16 @@ void Advance::execute()
  */
 bool Advance::validate()
 {
-    if (source->getOwner() == player && source->isAdjacent(target->getTerrName()))
+    if (source->getOwner() == player && source->isAdjacent(target->getTerrName()) && source->getNumberOfArmies() >= this->numOfArmies)
     {
         std::cout << "Advance order validated." << std::endl;
         return true;
     }
-    std::cout << "Advance order is invalid. Player (" << player << ") does not own source territory (" << source << "), or the source territory is not adjacent to the target (" << target << ")" << std::endl;
+    if (source->getNumberOfArmies() < this->numOfArmies){
+        std::cout << "Advance order is invalid. Source territory (" << source->getTerrName() << ") does not have enough armies to advance to target territory (" << target->getTerrName() << ")" << std::endl;
+        return false;
+    }
+    std::cout << "Advance order is invalid. Player (" << player->getName() << ") does not own source territory (" << source->getTerrName() << "), or the source territory is not adjacent to the target (" << target->getTerrName() << ")" << std::endl;
     return false;
 }
 
@@ -439,6 +465,12 @@ std::ostream& operator<<(std::ostream & stream, const Bomb & bomb)
 void Bomb::execute()
 {
     if (validate()) {
+        // Check if neutral player is being attacked, change to aggressive player if so
+        if (target->getOwner()->getStrategyType() == PlayerStrategy::neutral) {
+            std::cout << "Neutral player got attacked, changing to aggressive player";
+            target->getOwner()->playerStrategy = new AggressivePlayerStrategy(this->player);
+        }
+
         if (!player->hasNegotiationWith(target->getOwner())) {
             notify(this);
             std::cout << "Bomb order executed." << std::endl;
@@ -455,8 +487,7 @@ void Bomb::execute()
 */
 bool Bomb::validate()
 {
-    if (target->getOwner() != player)
-    {
+    if (target->getOwner() != player) {
         for (Territory* targetTerritory: this->target->listOfAdjTerr){
             if (targetTerritory->getOwner() == player)
             {
@@ -465,7 +496,7 @@ bool Bomb::validate()
             }
         }
     }
-    std::cout << "Bomb order is invalid. Player (" << player << ") owns the target territory (" << target << "). You cannot attack your own territory." << std::endl;
+    std::cout << "Bomb order is invalid. Player (" << player->getName() << ") owns the target territory (" << target->getTerrName() << "). You cannot attack your own territory." << std::endl;
     return false;
 }
 
@@ -550,11 +581,15 @@ void Airlift::execute()
  */
 bool Airlift::validate()
 {
-    if (source->getOwner() == player && target->getOwner() == player) {
+    if (source->getOwner() == player && target->getOwner() == player && source->getNumberOfArmies() >= this->numOfArmies) {
         std::cout << "Airlift order validated." << std::endl;
         return true;
     }
-    std::cout << "Airlift order is invalid. Player (" << player << ") is not the owner of either the source (" << source << "), or the target (" << target << ")." << std::endl;
+    if (source->getNumberOfArmies() < this->numOfArmies) {
+        std::cout << "Airlift order is invalid. Source territory (" << source->getTerrName() << ") does not have sufficient armies to deploy to target territory (" << target->getTerrName() << ")." << std::endl;
+        return false;
+    }
+    std::cout << "Airlift order is invalid. Player (" << player->getName() << ") is not the owner of either the source (" << source->getTerrName() << "), or the target (" << target->getTerrName() << ")." << std::endl;
     return false;
 }
 

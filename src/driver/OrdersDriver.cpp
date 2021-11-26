@@ -35,6 +35,10 @@ int main() {
     auto* name2 = "Janet";
     auto* player2 = new Player(PlayerStrategy::human, *hand2, *orderlist2, name2);
 
+    auto players = std::vector<Player*>();
+    players.push_back(player1);
+    players.push_back(player2);
+
     // Load map to play with
     std::string mapName = "../maps/solar.map";
     auto* map = new Map(mapName);
@@ -71,7 +75,7 @@ int main() {
     Order* deploy = new Deploy(player1, terr1_1, 2);
     Order* advance = new Advance(deck, player1, terr1_1, terr2_1, 2);
     Order* bomb = new Bomb(player1, terr2_1);
-    Order* blockade = new Blockade(player1, terr1_2);
+    Order* blockade = new Blockade(player1, terr1_2, players);
     Order* airlift = new Airlift(player1, terr1_1, terr1_3, 1);
     Order* negotiate = new Negotiate(player1, player2);
     Order* bomb2 = new Bomb(player1, terr2_2);
