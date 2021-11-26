@@ -158,10 +158,14 @@ void Deploy::execute()
  */
 bool Deploy::validate()
 {
-    if (territory->getOwner() == player)
+    if (territory->getOwner() == player && this->player->armyPool >= numOfArmies)
     {
         std::cout << "Deploy order validated." << std::endl;
         return true;
+    }
+    if (this->player->armyPool < this->numOfArmies) {
+        std::cout << "Deploy order is invalid. Player (" << player->getName() << ") does not have sufficient armies to deploy to territory (" << this->territory->getTerrName() << ")." << std::endl;
+        return false;
     }
     std::cout << "Deploy order is invalid. Player (" << player->getName() << ") does not own territory (" << territory->getTerrName() << ")." << std::endl;
     return false;
@@ -180,11 +184,13 @@ Blockade::~Blockade() = default;
  * @param player player issuing the blockade
  * @param target targetted territory
  */
-Blockade::Blockade(Player* player, Territory* target) : Order(Order::OrderType::blockade)
+Blockade::Blockade(Player* player, Territory* target, std::vector<Player*>& players) : Order(Order::OrderType::blockade)
 {
     this->player = player;
     this->target = target;
+    this->players = players;
 }
+
 /**
  * Blockade copy constructor
  * @param blockage the blockade order to copy
@@ -193,6 +199,7 @@ Blockade::Blockade(const Blockade &blockade) : Order(blockade)
 {
     this->player = new Player(*blockade.player);
     this->target = new Territory(*blockade.target);
+    this->players = blockade.players;
 }
 
 /**
@@ -209,6 +216,7 @@ Blockade& Blockade::operator= (const Blockade &blockade)
         this->target = new Territory(*blockade.target);
         delete this->player;
         this->player = new Player(*blockade.player);
+        this->players = blockade.players;
     }
     return *this;
 }
@@ -232,7 +240,15 @@ void Blockade::execute()
     {
         notify(this);
         target->addTroops(target->getNumberOfArmies()); // Double players
-        target->setOwner(new Player("Neutral", PlayerStrategy::neutral)); //neutral player, come back to this when neutral player implemented
+        bool foundNeutral = false;
+        for (Player* _player: this->players)
+            if (_player->getStrategyType() == PlayerStrategy::neutral) {
+                target->setOwner(_player);
+                foundNeutral = true;
+                break;
+            }
+        if (!foundNeutral)
+            target->setOwner(new Player("Neutral", PlayerStrategy::neutral));
         std::cout << "Blockade order: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " \narmies and belongs to " << target->getOwner()->getName() << std::endl;
     }
 }
@@ -375,10 +391,14 @@ void Advance::execute()
  */
 bool Advance::validate()
 {
-    if (source->getOwner() == player && source->isAdjacent(target->getTerrName()))
+    if (source->getOwner() == player && source->isAdjacent(target->getTerrName()) && source->getNumberOfArmies() >= this->numOfArmies)
     {
         std::cout << "Advance order validated." << std::endl;
         return true;
+    }
+    if (source->getNumberOfArmies() < this->numOfArmies){
+        std::cout << "Advance order is invalid. Source territory (" << source->getTerrName() << ") does not have enough armies to advance to target territory (" << target->getTerrName() << ")" << std::endl;
+        return false;
     }
     std::cout << "Advance order is invalid. Player (" << player->getName() << ") does not own source territory (" << source->getTerrName() << "), or the source territory is not adjacent to the target (" << target->getTerrName() << ")" << std::endl;
     return false;
@@ -467,8 +487,7 @@ void Bomb::execute()
 */
 bool Bomb::validate()
 {
-    if (target->getOwner() != player)
-    {
+    if (target->getOwner() != player) {
         for (Territory* targetTerritory: this->target->listOfAdjTerr){
             if (targetTerritory->getOwner() == player)
             {

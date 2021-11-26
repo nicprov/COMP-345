@@ -264,7 +264,7 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Play
                 break;
             case Card::CardType::blockade:
                 if (!this->toDefend(map).empty()) {
-                    order = new Blockade(this->player, this->toDefend(map).at(0));
+                    order = new Blockade(this->player, this->toDefend(map).at(0), players);
                     this->player->attachExistingObservers(order, this->player->orderList->getObservers());
                     card->play(deck, this->player, order);
                 }
@@ -388,7 +388,7 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Play
             }
             case Card::CardType::blockade: {
                 if (!this->toDefend(map).empty()){
-                    order = new Blockade(this->player, this->toDefend(map).at(0));
+                    order = new Blockade(this->player, this->toDefend(map).at(0), players);
                     this->player->attachExistingObservers(order, this->player->orderList->getObservers());
                     card->play(deck, this->player, order);
                 }

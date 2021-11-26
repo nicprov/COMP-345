@@ -424,7 +424,7 @@ Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& p
             getValidatedInput(territoryToBlockadeIndex, 1, this->toDefend(map).size());
             territoryToBlockade = this->toDefend(map).at(territoryToBlockadeIndex-1);
 
-            order = new Blockade(this, territoryToBlockade);
+            order = new Blockade(this, territoryToBlockade, players);
             attachExistingObservers(order, this->orderList->getObservers());
             this->orderList->add(order);
             break;

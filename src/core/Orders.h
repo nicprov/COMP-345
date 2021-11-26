@@ -86,7 +86,7 @@ private:
 class Blockade : public Order {
 public:
     ~Blockade();
-    Blockade(Player*, Territory*); //parameterized constructor
+    Blockade(Player*, Territory*, std::vector<Player*>& players); //parameterized constructor
     Blockade(const Blockade&); //copy constructors
     Blockade& operator= (const Blockade&); //assignment operator
     friend std::ostream& operator<< (std::ostream&, const Blockade&); // Stream output operator
@@ -95,6 +95,7 @@ public:
 private:
     Territory* target; //pointer to target territory
     Player* player; //pointer to the player of the order
+    std::vector<Player*> players;
 };
 
 class Airlift : public Order {
