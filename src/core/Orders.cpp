@@ -562,11 +562,15 @@ void Airlift::execute()
  */
 bool Airlift::validate()
 {
-    if (source->getOwner() == player && target->getOwner() == player) {
+    if (source->getOwner() == player && target->getOwner() == player && source->getNumberOfArmies() >= this->numOfArmies) {
         std::cout << "Airlift order validated." << std::endl;
         return true;
     }
-    std::cout << "Airlift order is invalid. Player (" << player << ") is not the owner of either the source (" << source << "), or the target (" << target << ")." << std::endl;
+    if (source->getNumberOfArmies() < this->numOfArmies) {
+        std::cout << "Airlift order is invalid. Source territory (" << source->getTerrName() << ") does not have sufficient armies to deploy to target territory (" << target->getTerrName() << ")." << std::endl;
+        return false;
+    }
+    std::cout << "Airlift order is invalid. Player (" << player->getName() << ") is not the owner of either the source (" << source->getTerrName() << "), or the target (" << target->getTerrName() << ")." << std::endl;
     return false;
 }
 
