@@ -233,7 +233,6 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Play
     // Issue deploy orders by focusing army pool on strongest territory
     if (!strongTerritories.empty()){
         Order* deploy = new Deploy(this->player, strongTerritories.at(0), this->player->armyPool);
-        this->player->armyPool = 0;
         this->player->attachExistingObservers(deploy, this->player->orderList->getObservers());
         this->player->orderList->add(deploy);
     }
@@ -344,12 +343,13 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Play
 
     // Issue deploy orders by distributing army pool equally between all vulnerable countries
     if (!weakTerritories.empty()){
-        while (this->player->armyPool > 0){
+        int armyCount = 0;
+        while (armyCount < this->player->armyPool){
             for (Territory* territory: weakTerritories){
-                if (this->player->armyPool == 0)
+                if (this->player->armyPool == armyCount)
                     break;
                 Order* order = new Deploy(this->player, territory, 1);
-                this->player->armyPool--;
+                armyCount++;
 
                 // Attach log observer to order
                 this->player->attachExistingObservers(order, this->player->orderList->getObservers());

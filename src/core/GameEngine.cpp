@@ -763,7 +763,6 @@ void GameEngine::attachExistingObservers(Subject *subject) {
 
 void GameEngine::resetGame()
 {
-    delete this->deck;
     this->deck = new Deck();
     delete this->map;
     this->map = new Map();
