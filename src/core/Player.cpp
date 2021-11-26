@@ -482,6 +482,7 @@ Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& p
             std::cout << "Playing reinforcement card..." << std::endl;
             // Immediately adds 5 armies in the reinforcement pool
             this->armyPool += 5;
+            this->hand->removeCard(card);
             break;
     }
     return order;
@@ -493,10 +494,15 @@ void Player::attachExistingObservers(Subject *subject, const std::vector<Observe
         subject->attach(observer);
 }
 
-PlayerStrategy::StrategyType Player::getStrategyType() {
+PlayerStrategy::StrategyType Player::getStrategyType()
+{
     return this->playerStrategy->getStrategy();
 }
 
+void Player::setStrategyType(PlayerStrategy::StrategyType strategyType)
+{
+    this->playerStrategy->setStrategy(strategyType);
+}
 
 void getValidatedInput(int& choice, int min, int max)
 {

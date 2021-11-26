@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Orders.h"
+#include "Cards.h"
 
 const boost::unordered_map<PlayerStrategy::StrategyType, std::string> PlayerStrategy::strategyTypeMapping = boost::assign::map_list_of(PlayerStrategy::StrategyType::benevolent, "benevolent")
         (PlayerStrategy::StrategyType::aggressive, "aggressive") (PlayerStrategy::StrategyType::human, "human") (PlayerStrategy::StrategyType::cheater, "cheater") (PlayerStrategy::StrategyType::neutral, "neutral");
@@ -39,6 +40,11 @@ std::ostream &operator<<(std::ostream &stream, const PlayerStrategy &playerStrat
 PlayerStrategy::StrategyType PlayerStrategy::getStrategy()
 {
     return *this->strategyType;
+}
+
+void PlayerStrategy::setStrategy(PlayerStrategy::StrategyType strategy)
+{
+    this->strategyType = new StrategyType(strategy);
 }
 
 /* Neutral Player Strategy */
@@ -198,38 +204,77 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Play
     // Get the strongest countries
     std::vector<Territory*> strongTerritories = this->toAttack(map);
 
-    // Issue deploy orders by distributing army pool equally between all vulnerable countries
+    // Issue deploy orders by focusing army pool on strongest territory
     Order* deploy = new Deploy(this->player, strongTerritories.at(0), this->player->armyPool);
     this->player->armyPool = 0;
-
-    // Issue advance orders
-    Territory* sourceTerritory = strongTerritories.at(0);
-    Territory* targetTerritory = sourceTerritory->listOfAdjTerr.at(0);
-    Order* advance = new Advance(deck, this->player, sourceTerritory, targetTerritory, sourceTerritory->getNumberOfArmies());
-
-    // Attach log observer to order
     this->player->attachExistingObservers(deploy, this->player->orderList->getObservers());
-    this->player->attachExistingObservers(advance, this->player->orderList->getObservers());
-
-    // Add order to orderList
     this->player->orderList->add(deploy);
-    this->player->orderList->add(advance);
+
+    // Issue advance orders if possible
+    Territory* sourceTerritory = strongTerritories.at(0);
+    for (Territory* targetTerritory: strongTerritories.at(0)->listOfAdjTerr){
+        if (targetTerritory->getOwner() != this->player){
+            Order* advance = new Advance(deck, this->player, sourceTerritory, targetTerritory, sourceTerritory->getNumberOfArmies());
+            this->player->attachExistingObservers(advance, this->player->orderList->getObservers());
+            this->player->orderList->add(advance);
+            break;
+        }
+    }
+
+    // Play first card in hand
+    Order* order = nullptr;
+    if (!this->player->hand->getCards().empty()){
+        Card* card = this->player->hand->getCards().at(0);
+        switch (card->getType()) {
+            case Card::CardType::bomb:
+                order = new Bomb(this->toAttack(map).at(0)->getOwner(), this->toAttack(map).at(0));
+                this->player->attachExistingObservers(order, this->player->orderList->getObservers());
+                card->play(deck, this->player, order);
+                break;
+            case Card::CardType::blockade:
+                order = new Blockade(this->player, this->toDefend(map).at(0));
+                this->player->attachExistingObservers(order, this->player->orderList->getObservers());
+                card->play(deck, this->player, order);
+                break;
+            case Card::CardType::airlift:
+            case Card::CardType::diplomacy:
+                // Nothing to airlift, all armies are already concentrated in one area
+                // No time for diplomacy when you're aggressive
+                this->player->hand->removeCard(card);
+                break;
+            case Card::CardType::reinforcement:
+                this->player->armyPool += 5;
+                this->player->hand->removeCard(card);
+                break;
+        }
+    }
 }
 
 std::vector<Territory *> AggressivePlayerStrategy::toAttack(Map* map)
 {
+    auto neighbouringTerritories = std::vector<Territory*>();
+    for (Territory* playerTerritory: map->getTerritoriesByPlayer(this->player)){
+        for (Territory* neighbouringTerritory: playerTerritory->listOfAdjTerr){
+            if (!(std::find(neighbouringTerritories.begin(), neighbouringTerritories.end(), neighbouringTerritory) != neighbouringTerritories.end())) // Check if territory is already in list
+                neighbouringTerritories.push_back(neighbouringTerritory);
+        }
+    }
+    // Sort by weakest territories
+    std::sort(neighbouringTerritories.begin(), neighbouringTerritories.end(),[](Territory* t1, Territory* t2){
+        return t1->getNumberOfArmies() < t2->getNumberOfArmies();
+    });
+    return neighbouringTerritories;
+}
+
+std::vector<Territory *> AggressivePlayerStrategy::toDefend(Map* map)
+{
+    // Always attacks, but useful for reinforcements
     std::vector<Territory*> playerTerritories = map->getTerritoriesByPlayer(this->player);
     // Sort territories by number of armies in decreasing order
     std::sort(playerTerritories.begin(), playerTerritories.end(),[](Territory* t1, Territory* t2){
         return t1->getNumberOfArmies() > t2->getNumberOfArmies();
     });
     return playerTerritories;
-}
-
-std::vector<Territory *> AggressivePlayerStrategy::toDefend(Map* map)
-{
-    // Always attacks
-    return {};
 }
 
 /* Benevolent Player Strategy */
@@ -274,7 +319,54 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck, Map* map, std::vector<Play
         }
     }
 
-    // TODO Check if issue advance orders is necessary
+    // Issue advance order from the strongest territory, to the weakest
+    Territory* from = this->toDefend(map).at(this->toDefend(map).size()-1); // strongest territory
+    Territory* to = this->toDefend(map).at(0); // weakest territory
+    Order* advance = new Advance(deck, this->player, from, to, from->getNumberOfArmies() % 5);
+    this->player->attachExistingObservers(advance, this->player->orderList->getObservers());
+    this->player->orderList->add(advance);
+
+    // Play card
+    Order* order = nullptr;
+    if (!this->player->hand->getCards().empty()){
+        Card* card = this->player->hand->getCards().at(0);
+        switch (card->getType()) {
+            case Card::CardType::bomb: {
+                // Benevolent player does not attack enemy
+                this->player->hand->removeCard(card);
+                break;
+            }
+            case Card::CardType::blockade: {
+                order = new Blockade(this->player, this->toDefend(map).at(0));
+                this->player->attachExistingObservers(order, this->player->orderList->getObservers());
+                card->play(deck, this->player, order);
+                break;
+            }
+            case Card::CardType::airlift: {
+                from = this->toDefend(map).at(this->toDefend(map).size()-1);
+                to = this->toDefend(map).at(0);
+                order = new Airlift(this->player, from, to, from->getNumberOfArmies() % 5);
+                this->player->attachExistingObservers(order, this->player->orderList->getObservers());
+                card->play(deck, this->player, order);
+                break;
+            }
+            case Card::CardType::reinforcement: {
+                this->player->armyPool += 5;
+                this->player->hand->removeCard(card);
+                break;
+            }
+            case Card::CardType::diplomacy: {
+                Player *enemy = nullptr;
+                do {
+                    player = players.at(rand()%(players.size()-1));
+                } while (enemy == this->player); // Ensure that random player isn't yourself
+                order = new Negotiate(this->player, enemy);
+                this->player->attachExistingObservers(order, this->player->orderList->getObservers());
+                card->play(deck, this->player, new Negotiate(this->player, enemy));
+                break;
+            }
+        }
+    }
 }
 
 std::vector<Territory *> BenevolentPlayerStrategy::toAttack(Map* map)

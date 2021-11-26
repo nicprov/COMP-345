@@ -32,6 +32,7 @@ public:
     void issueOrder(Deck*, Map*, std::vector<Player*>&); // Adds order to order list
     std::string& getName(); //get name of player
     PlayerStrategy::StrategyType getStrategyType();
+    void setStrategyType(PlayerStrategy::StrategyType);
     OrderList& getOrderList(); //get the order list
     OrderList* getOrders(); //get the orders
     void attachExistingObservers(Subject*, const std::vector<Observer*>&);

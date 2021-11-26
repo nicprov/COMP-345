@@ -23,6 +23,7 @@ public:
     PlayerStrategy& operator= (const PlayerStrategy&);
     friend std::ostream& operator<< (std::ostream&, const PlayerStrategy&);
     StrategyType getStrategy();
+    void setStrategy(StrategyType);
     virtual void issueOrder(Deck*, Map*, std::vector<Player*>)=0;
     virtual std::vector<Territory*> toAttack(Map*)=0;
     virtual std::vector<Territory*> toDefend(Map*)=0;

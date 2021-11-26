@@ -163,7 +163,7 @@ bool Deploy::validate()
         std::cout << "Deploy order validated." << std::endl;
         return true;
     }
-    std::cout << "Deploy order is invalid. Player (" << player << ") does not own territory (" << territory->getOwner() << ")." << std::endl;
+    std::cout << "Deploy order is invalid. Player (" << player->getName() << ") does not own territory (" << territory->getTerrName() << ")." << std::endl;
     return false;
 }
 
@@ -186,7 +186,7 @@ Blockade::Blockade(Player* player, Territory* target) : Order(Order::OrderType::
     this->target = target;
 }
 /**
- * Blockage copy constructor
+ * Blockade copy constructor
  * @param blockage the blockade order to copy
  */
 Blockade::Blockade(const Blockade &blockade) : Order(blockade)
@@ -327,6 +327,12 @@ void Advance::execute()
     {
         notify(this);
 
+        // Check if neutral player is being attacked, change to aggressive player if so
+        if (target->getOwner()->getStrategyType() == PlayerStrategy::neutral) {
+            std::cout << "Neutral player got attacked, changing to aggressive player";
+            target->getOwner()->setStrategyType(PlayerStrategy::aggressive);
+        }
+
         if (target->getOwner() == player)
         {
             source->removeTroops(numOfArmies);
@@ -338,11 +344,11 @@ void Advance::execute()
         {
             srand(time(nullptr));
 
-            while (target->getNumberOfArmies() > 0 || source->getNumberOfArmies() > 0)
+            while (target->getNumberOfArmies() > 0 and source->getNumberOfArmies() > 0)
             {
-                if (rand() % 10 < 6)
+                if (((1 + rand()) % 10) <= 6)
                     target->removeTroops(1);
-                if (rand() % 10 < 7)
+                if (((1 + rand()) % 10) <= 7)
                     source->removeTroops(1);
             }
 
@@ -439,6 +445,12 @@ std::ostream& operator<<(std::ostream & stream, const Bomb & bomb)
 void Bomb::execute()
 {
     if (validate()) {
+        // Check if neutral player is being attacked, change to aggressive player if so
+        if (target->getOwner()->getStrategyType() == PlayerStrategy::neutral) {
+            std::cout << "Neutral player got attacked, changing to aggressive player";
+            target->getOwner()->setStrategyType(PlayerStrategy::aggressive);
+        }
+
         if (!player->hasNegotiationWith(target->getOwner())) {
             notify(this);
             std::cout << "Bomb order executed." << std::endl;
