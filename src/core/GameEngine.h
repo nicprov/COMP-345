@@ -24,7 +24,8 @@ public:
         assign_reinforcement=5,
         issue_orders=6,
         execute_orders=7,
-        win=8
+        win=8,
+        end=9
     };
     //list of game commands
     enum GameCommand{
@@ -62,14 +63,26 @@ private:
     Map* map;
     Deck* deck;
     bool tournamentMode;
+    int numberOfGames;
+    int gameCounter;
+    int turnCounter;
+    int maxNumberOfTurns;
+    int mapCounter;
+    std::string toPrint;
+    std::vector<PlayerStrategy::StrategyType>* listOfPlayerStrategies;
+    std::vector<std::string> listOfMapFileNames;
+    std::map<std::string, std::vector<std::string>> tournamentResults;
+    void addWinnerToResults(const std::string&);
+    void logTournamentResults();
+    void resetGame();
     void attachExistingObservers(Subject*); // Attach all current observers to the passed subject
     void printAvailableCommands();  //prints available commands
     void startupPhase(CommandProcessor*);   //Startup phase of the game
     void reinforcementPhase();      //assign armies to reinforcement pool
     void issueOrdersPhase();        // call to issue order
     void executeOrdersPhase();      //executes order
-    void startTournament(const std::vector<std::string>&, std::vector<PlayerStrategy::StrategyType>*, int, int);
-    std::tuple<std::vector<std::string>, std::vector<PlayerStrategy::StrategyType>*, int, int> validateTournamentParameters(Command*);
+    void setupTournamentGame();
+    void validateTournamentParameters(Command*);
     bool containsOrders(const std::map<Player*, bool>&);   //check if player contains orders
     void loadMap(const std::string& mapName);       //load map
     void validateMap(); // validate map based on conditions
