@@ -422,6 +422,11 @@ Command* FileCommandProcessorAdapter::readCommand()
     return command;
 }
 
+/**
+ * Helper free function which is used to validate the commands for both the CommandProcessor and adapter
+ * @param input line passed as command
+ * @return validated commands as tuple
+ */
 std::tuple<std::string, std::vector<std::string>> getCommandAndParamsFromString(std::string input){
     std::vector<std::string> inputSplit;
     std::string _command;

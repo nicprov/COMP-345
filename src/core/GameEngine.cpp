@@ -115,7 +115,8 @@ GameEngine::GameState& GameEngine::getGameState()
  * Get list of current players in the game
  * @return list of players
  */
-std::vector<Player*> &GameEngine::getPlayers() {
+std::vector<Player*> &GameEngine::getPlayers()
+{
     return players;
 }
 
@@ -602,7 +603,8 @@ void GameEngine::mainGameLoop(CommandProcessor* commandProcessor)
  * @param playerHasOrdersToExecute hash map of player and boolean value
  * @return true if player has orders, else false
  */
-bool GameEngine::containsOrders(const std::map<Player*, bool>& playerHasOrdersToExecute) {
+bool GameEngine::containsOrders(const std::map<Player*, bool>& playerHasOrdersToExecute)
+{
     for (auto & it : playerHasOrdersToExecute) {
         if(it.second)
             return true;    //there is a true value
@@ -727,10 +729,12 @@ void GameEngine::gameStart()
         std::cout << *player << std::endl;
     }
 }
+
 /**
  * Prints available commands
  */
-void GameEngine::printAvailableCommands(){
+void GameEngine::printAvailableCommands()
+{
     std::cout << "Available commands:" << std::endl;
     std::vector<GameEngine::GameCommand> commands;
     getAvailableCommands(commands);
@@ -756,11 +760,18 @@ std::string GameEngine::stringToLog() {
         return toPrint;
 }
 
+/**
+ * Add the current observers to the passed subject
+ * @param subject
+ */
 void GameEngine::attachExistingObservers(Subject *subject) {
     for (Observer* observer: this->getObservers())
         subject->attach(observer);
 }
 
+/**
+ * Reset all game engine variables to start a new game
+ */
 void GameEngine::resetGame()
 {
     this->deck = new Deck();
@@ -772,6 +783,9 @@ void GameEngine::resetGame()
     this->turnCounter = 0;
 }
 
+/**
+ * Add tournament results table to game log file
+ */
 void GameEngine::logTournamentResults()
 {
     // Get table
@@ -808,6 +822,10 @@ void GameEngine::logTournamentResults()
     this->toPrint += "============================\n";
 }
 
+/**
+ * Store game winner for tournament
+ * @param winner
+ */
 void GameEngine::addWinnerToResults(const std::string& winner)
 {
     this->tournamentResults.at(this->map->getMapName()).push_back(winner);

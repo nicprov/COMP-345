@@ -78,7 +78,6 @@ int main() {
     Order* blockade = new Blockade(player1, terr1_2, players);
     Order* airlift = new Airlift(player1, terr1_1, terr1_3, 1);
     Order* negotiate = new Negotiate(player1, player2);
-    Order* bomb2 = new Bomb(player1, terr2_2);
     orderList.add(deploy);
     orderList.add(advance);
     orderList.add(bomb);

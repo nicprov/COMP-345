@@ -13,8 +13,7 @@ class Player;
 class Map;
 
 //Card class and function declarations
-class Card
-{
+class Card {
 public:
     // CardType enum. list of cards
     enum CardType
@@ -35,10 +34,10 @@ public:
     bool operator== (const Card&) const; //Comparison of player
     void play(Deck*, Player*, Order*); //Play card
     CardType& getType();    //get card type
-    void attachExistingObservers(Subject*, const std::vector<Observer*>&);
+    void attachExistingObservers(Subject*, const std::vector<Observer*>&); // Add observers to subject
     static constexpr std::initializer_list<CardType> ALL_Card_Type = { bomb, reinforcement, blockade, airlift, diplomacy }; //initialize card type
 private:
-    CardType* type;
+    CardType* type; // card type enum value
 };
 
 //Hand class and function declarations
@@ -55,7 +54,7 @@ public:
     void removeCard(Card*); //remove card from hand
     std::vector<Card*> getCards();  //vector of cards
 private:
-    std::vector<Card*> cards;
+    std::vector<Card*> cards; // List of cards
 };
 
 //Deck class and function declarations
@@ -73,5 +72,5 @@ public:
     std::vector<Card*> getCards();  // Get cards
     static constexpr int NUM_CARDS_PER_TYPE = 10; //constant number of cards per type
 private:
-    std::vector<Card*> cards;
+    std::vector<Card*> cards; // List of cards
 };

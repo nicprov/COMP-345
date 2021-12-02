@@ -18,6 +18,7 @@ Order::Order(Order::OrderType orderType)
 {
     this->orderType = new OrderType(orderType);
 }
+
 /**
  *  Copy constructor for Order
  * @param order Order to copy
@@ -25,6 +26,7 @@ Order::Order(Order::OrderType orderType)
 Order::Order(const Order& order): Subject(order) {
     this->orderType = new OrderType(*order.orderType);
 }
+
 /**
  * Assignment operator for Order
  *
@@ -39,6 +41,7 @@ Order& Order::operator= (const Order& order)
     }
     return *this;
 }
+
 /**
  * output stream operator
  * @param stream stream to output
@@ -49,6 +52,7 @@ std::ostream& operator<<(std::ostream& stream, const Order& order)
 {
     return stream << "Order(" << *order.orderType << ")";
 }
+
 /**
  * Accessor to get OrderType of an order
  *
@@ -79,7 +83,12 @@ bool Order::operator==(const Order& order) const
     return *this->orderType == *order.orderType;
 }
 
-std::string Order::stringToLog() {
+/**
+ * Defines what is being logged
+ * @return
+ */
+std::string Order::stringToLog()
+{
     return "Order Executed: " + Order::orderTypeMapping.at(this->getOrderType());
 }
 
@@ -89,6 +98,7 @@ std::string Order::stringToLog() {
  * Deploy destructor (overwrites Order destructor)
  */
 Deploy::~Deploy() = default;
+
 /**
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Deploy Order
@@ -102,6 +112,7 @@ Deploy::Deploy(Player* player, Territory* territory, int numOfArmies) : Order(Or
     this->territory = territory;
     this->numOfArmies = numOfArmies;
 }
+
 /**
  * Deploy copy constructor
  *
@@ -112,6 +123,7 @@ Deploy::Deploy(const Deploy& deploy) : Order(deploy)
     this->territory = new Territory(*deploy.territory);
     this->numOfArmies = deploy.numOfArmies;
 }
+
 /**
  * Assignment operator for Deploy
  * @param deploy Deploy Order to copy
@@ -128,6 +140,7 @@ Deploy& Deploy::operator= (const Deploy& deploy)
     }
     return *this;
 }
+
 /**
  * Deploy Output Stream Operator
  * @param stream Output stream to display
@@ -138,6 +151,7 @@ std::ostream& operator<<(std::ostream& stream, const Deploy& deploy)
 {
     return stream << "Deploy(" << *deploy.orderType << ")";
 }
+
 /**
  * Execute if validate returns true
  * Deploy a number of armies from reinforcements to a desired territory owned by the player
@@ -152,6 +166,7 @@ void Deploy::execute()
         std::cout << "Deploy Order: Deploying " << numOfArmies << " armies to " << territory->getTerrName() << "." << std::endl;
     }
 }
+
 /**
  * Validate method for Deploy
  * @return True if OrderType is Deploy, false otherwise
@@ -220,6 +235,7 @@ Blockade& Blockade::operator= (const Blockade &blockade)
     }
     return *this;
 }
+
 /**
  * Blockage Output Stream Operator
  * @param stream Output stream to display
@@ -230,6 +246,7 @@ std::ostream& operator<<(std::ostream & stream, const Blockade & blockade)
 {
     return stream << "Deploy(" << *blockade.orderType << ")";
 }
+
 /**
  * Execute method if validate() returns true
  * Doubles the amount of armies in a territory chosen by the player and makae the owner a neutral player
@@ -252,6 +269,7 @@ void Blockade::execute()
         std::cout << "Blockade order: Blockading " << target->getTerrName() << " territory, doubling its forces and making it neutral. " << target->getTerrName() << " now has " << target->getNumberOfArmies() << " \narmies and belongs to " << target->getOwner()->getName() << std::endl;
     }
 }
+
 /**
  * Validate method for Blockade class, validating the owner of the target territory is myself
  * @return true if player owns the territory and if palyer has the blocked card
@@ -273,6 +291,7 @@ bool Blockade::validate()
  * Advance destructor (overwrites Order destructor)
  */
 Advance::~Advance() = default;
+
 /**
  * Parameterized constructor that calls superclass constructor
  * @param orderType ordertype of the Advance Order
@@ -290,6 +309,7 @@ Advance::Advance(Deck* deck, Player* player, Territory* source, Territory* targe
     this->target = target;
     this->numOfArmies = numOfArmies;
 }
+
 /**
  * Advance copy constructor
  * @param advance the advance order to copy
@@ -332,6 +352,7 @@ std::ostream& operator<<(std::ostream & stream, const Advance & advance)
 {
     return stream << "Advance(" << *advance.orderType << ")";
 }
+
 /**
  * Excutes if player has no negotiations and validate returns true
  * If player owns territory advancing to then armies are moved from one territory to the next.
@@ -422,6 +443,7 @@ Bomb::Bomb(Player* player, Territory* target) : Order(Order::OrderType::bomb)
     this->player = player;
     this->target = target;
 }
+
 /**
  * Bomb copy constructor
  * @param bomb the bomb order to copy
@@ -458,6 +480,7 @@ std::ostream& operator<<(std::ostream & stream, const Bomb & bomb)
 {
     return stream << "Deploy(" << *bomb.orderType << ")";
 }
+
 /**
 * Execute if player has no negotiations and validate returns true
 * Removes half the armies from the targetted territory
@@ -521,6 +544,7 @@ Airlift::Airlift(Player* player, Territory* source, Territory* target, int numOf
     this->target = target;
     this->numOfArmies = numOfArmies;
 }
+
 /**
  * Airlift copy constructor
  * @param airlift the airlift order to copy
@@ -562,6 +586,7 @@ std::ostream& operator<<(std::ostream & stream, const Airlift & airlift)
 {
     return stream << "Airlift(" << *airlift.orderType << ")";
 }
+
 /**
  * Execute if validate returns true
  * Adds a number of armies to a territory owned by the player from another one of their territories
@@ -575,6 +600,7 @@ void Airlift::execute()
         std::cout << "Airlift order: Airlifting " << numOfArmies << " armies from " << source->getTerrName() << " to " << target->getTerrName() << ". " << source->getTerrName() << " has " << source->getNumberOfArmies() << " armies and " << target->getTerrName() << "has " << target->getNumberOfArmies() << " armies." << std::endl;
     }
 }
+
 /**
  * Validates the airlift order
  * @return true if the player has the airlift card abd both the source and target territories are owned by the player, false otherwise
@@ -640,6 +666,7 @@ Negotiate& Negotiate::operator= (const Negotiate & negotiate)
     }
     return *this;
 }
+
 /**
  * Negotiate Output Stream Operator
  * @param stream Output stream to display
@@ -661,6 +688,7 @@ void Negotiate::execute()
         std::cout << "Negotiate order: Negotiating... No attack is being performed this turn. (do nothing)" << std::endl;
     }
 }
+
 /**
  * Validate method for Negotiate
  * @return True if player has the diplomacy card and if enemy is not the player, false otherwise
@@ -675,6 +703,7 @@ bool Negotiate::validate()
     std::cout << "Negotiate order is invalid. You cannot negotiate with yourself." << std::endl;
     return false;
 }
+
 /**
  * get the eneny
  * @return the enemy with who player has negotiations 
@@ -811,6 +840,7 @@ OrderList& OrderList::operator=(const OrderList &orderList)
     }
     return *this;
 }
+
 /**
  * Stream output operator for OrderList
  * @param stream stream to be output
@@ -830,6 +860,7 @@ std::ostream& operator<<(std::ostream & stream, const OrderList & orderList)
     stream << "]";
     return stream;
 }
+
 /**
  * Add method to add an Order to the OrderList
  * @param order order to be added to the OrderList
@@ -908,6 +939,7 @@ void OrderList::move(Order* order, int newIndex, int oldIndex)
     else
         throw std::runtime_error("Invalid index");
 }
+
 /**
  * Accessor for OrderList
  * @return vector of order pointers
@@ -915,6 +947,7 @@ void OrderList::move(Order* order, int newIndex, int oldIndex)
 std::vector<Order*> OrderList::getOrders() {
     return this->orders;
 }
+
 /**
  * Compare operator for OrderList
  * @param orderList orderlist to compare
@@ -927,6 +960,7 @@ bool OrderList::operator==(const OrderList &orderList) const {
             return false;
     return true;
 }
+
 /**
  * get size
  * @return size of orderlist
@@ -935,6 +969,10 @@ int OrderList::getSize() {
     return this->orders.size();
 }
 
+/**
+ * Specified what wil be logged for the order list
+ * @return log string
+ */
 std::string OrderList::stringToLog()
 {
     return "Order Issued: " + Order::orderTypeMapping.at(orders.at(this->orders.size()-1)->getOrderType());

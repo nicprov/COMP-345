@@ -348,11 +348,20 @@ void Deck::returnCard(Card *card)
     this->cards.push_back(card);
 }
 
+/**
+ * Assign new vector cards to deck
+ * @param _cards
+ */
 void Deck::setCards(std::vector<Card*>& _cards)
 {
     this->cards = _cards;
 }
 
+/**
+ * Add all the observers from the passed observer list to the passed subject
+ * @param subject
+ * @param observerList
+ */
 void Card::attachExistingObservers(Subject *subject, const std::vector<Observer*>& observerList) {
     for (Observer* observer: observerList)
         subject->attach(observer);

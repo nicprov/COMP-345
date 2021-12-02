@@ -18,7 +18,9 @@ Player::~Player()
     orderList = nullptr;
 }
 
-
+/**
+ * Player constructor
+ */
 Player::Player()
 {
     this->playerStrategy = new HumanPlayerStrategy(this);
@@ -256,6 +258,12 @@ bool Player::hasNegotiationWith(Player* enemy)
     return false;
 }
 
+/**
+ * Prompts human player to enter information for a particular advance order
+ * @param map current map
+ * @param deck current deck of cards
+ * @return created order
+ */
 Order* Player::advance(Map* map, Deck* deck)
 {
     Order* order;
@@ -307,6 +315,10 @@ Order* Player::advance(Map* map, Deck* deck)
     return order;
 }
 
+/**
+ * Prompts the human player to issue deploy orders and validates them
+ * @param map current map
+ */
 void Player::issueDeployOrders(Map* map)
 {
     Order* order;
@@ -344,6 +356,12 @@ void Player::issueDeployOrders(Map* map)
     }
 }
 
+/**
+ * Prompts the user to issue advance orders and validates them
+ * @param map current map
+ * @param deck current deck of card
+ * @param players list of current players
+ */
 void Player::issueAdvanceOrders(Map* map, Deck* deck, std::vector<Player*> players){
     Order* order;
     bool isCardPlayed = false;
@@ -378,6 +396,13 @@ void Player::issueAdvanceOrders(Map* map, Deck* deck, std::vector<Player*> playe
     }
 }
 
+/**
+ * Prompts the human player to enter the information to create an order from a card
+ * @param card Card being played
+ * @param map current map
+ * @param players list of players
+ * @return created order from card
+ */
 Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& players) {
     Order *order = nullptr;
     Territory* territoryTo;
@@ -488,22 +513,41 @@ Order* Player::getCardOrderDetails(Card* card, Map* map, std::vector<Player*>& p
     return order;
 }
 
+/**
+ * Add observers to subject from the passed list of observers
+ * @param subject
+ * @param observerList
+ */
 void Player::attachExistingObservers(Subject *subject, const std::vector<Observer*>& observerList)
 {
     for (Observer* observer: observerList)
         subject->attach(observer);
 }
 
+/**
+ * Get the current strategy type object
+ * @return
+ */
 PlayerStrategy::StrategyType Player::getStrategyType()
 {
     return this->playerStrategy->getStrategy();
 }
 
+/**
+ * Set the strategy type
+ * @param strategyType
+ */
 void Player::setStrategyType(PlayerStrategy::StrategyType strategyType)
 {
     this->playerStrategy->setStrategy(strategyType);
 }
 
+/**
+ * Helper function to validate a choice in a given rance
+ * @param choice Choice being selected
+ * @param min Minimum value
+ * @param max Maximum value
+ */
 void getValidatedInput(int& choice, int min, int max)
 {
     while (choice < min or choice > max){
