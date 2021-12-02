@@ -1,5 +1,1 @@
-loadmap ../solar.map
-validatemap
-addplayer nick human
-addplayer john human
-gamestart
+tournament ../maps/small.map aggressive,benevolent 5 10

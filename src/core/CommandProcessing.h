@@ -67,4 +67,4 @@ private:
     FileLineReader* fileLineReader; // Pointer to lines from a file.
 };
 
-std::tuple<std::string, std::vector<std::string>> getCommandAndParamsFromString(std::string);
+std::tuple<std::string, std::vector<std::string>> getCommandAndParamsFromString(std::string); // Helper function to validate incoming params

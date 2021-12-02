@@ -31,15 +31,15 @@ public:
     std::vector<Territory*> toAttack(Map*); // Territories to Attack
     void issueOrder(Deck*, Map*, std::vector<Player*>&); // Adds order to order list
     std::string& getName(); //get name of player
-    PlayerStrategy::StrategyType getStrategyType();
-    void setStrategyType(PlayerStrategy::StrategyType);
+    PlayerStrategy::StrategyType getStrategyType(); // get the strategy type
+    void setStrategyType(PlayerStrategy::StrategyType); //set the strategy type
     OrderList& getOrderList(); //get the order list
     OrderList* getOrders(); //get the orders
-    void attachExistingObservers(Subject*, const std::vector<Observer*>&);
+    void attachExistingObservers(Subject*, const std::vector<Observer*>&); // attach the observers to the passed subject
     bool hasNegotiationWith(Player* enemy); // checks if players have negotiations with each-other
-    void issueDeployOrders(Map*);
-    void issueAdvanceOrders(Map*, Deck*, std::vector<Player*>);
-    Order* getCardOrderDetails(Card*, Map*, std::vector<Player*>&);
+    void issueDeployOrders(Map*); // prompts player to issue deploy orders
+    void issueAdvanceOrders(Map*, Deck*, std::vector<Player*>); // prompts player to issue advance orders
+    Order* getCardOrderDetails(Card*, Map*, std::vector<Player*>&); // prompts player to create order from card
     Hand* hand;
     OrderList* orderList;
     PlayerStrategy* playerStrategy;
@@ -49,4 +49,4 @@ private:
     Order* advance(Map*, Deck*);
 };
 
-void getValidatedInput(int&, int, int);
+void getValidatedInput(int&, int, int); // helper function to validate input while making a choice

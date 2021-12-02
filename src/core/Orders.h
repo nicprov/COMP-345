@@ -30,7 +30,7 @@ public:
     OrderType& getOrderType(); //accessor for OrderType
     virtual void execute() = 0; //execute order method, virtual to avoid ambiguity with subclass methods
     virtual bool validate() = 0; //validate order method, virtual to avoid ambiguity with subclass methods
-    std::string stringToLog();
+    std::string stringToLog(); // gets string value to be logged
     static constexpr std::initializer_list<OrderType> ALL_ORDER_TYPES = { deploy, advance, bomb, blockade, airlift, negotiate };
     static const boost::unordered_map<OrderType, std::string> orderTypeMapping;
 protected:
@@ -39,7 +39,7 @@ protected:
 
 class Deploy : public Order {
 public:
-    ~Deploy();
+    ~Deploy(); // deploy destructor
     Deploy(Player*, Territory*, int); //parameterized constructor
     Deploy(const Deploy&); //copy constructor
     Deploy& operator= (const Deploy&); //assignment operator
@@ -54,7 +54,7 @@ private:
 
 class Advance : public Order {
 public:
-    ~Advance();
+    ~Advance(); // advance destructor
     Advance(Deck*, Player*, Territory*, Territory*, int); //parameterized constructor
     Advance(const Advance&); //copy constructor
     Advance& operator= (const Advance&); //assignment operator
@@ -71,7 +71,7 @@ private:
 
 class Bomb : public Order {
 public:
-    ~Bomb();
+    ~Bomb(); // bomb destructor
     Bomb(Player*, Territory*); //parameterized constructor
     Bomb(const Bomb&); //copy constructor
     Bomb& operator= (const Bomb&); //assignment operator
@@ -85,7 +85,7 @@ private:
 
 class Blockade : public Order {
 public:
-    ~Blockade();
+    ~Blockade(); // blockade destructor
     Blockade(Player*, Territory*, std::vector<Player*>& players); //parameterized constructor
     Blockade(const Blockade&); //copy constructors
     Blockade& operator= (const Blockade&); //assignment operator
@@ -95,12 +95,12 @@ public:
 private:
     Territory* target; //pointer to target territory
     Player* player; //pointer to the player of the order
-    std::vector<Player*> players;
+    std::vector<Player*> players; // list of players
 };
 
 class Airlift : public Order {
 public:
-    ~Airlift();
+    ~Airlift(); // airlist destructor
     Airlift(Player*, Territory*, Territory*, int); //parameterized constructor
     Airlift(const Airlift&); //copy constructor
     Airlift& operator= (const Airlift&); //assignment operator
@@ -116,7 +116,7 @@ private:
 
 class Negotiate : public Order {
 public:
-    ~Negotiate();
+    ~Negotiate(); //negotiate destructor
     Negotiate(Player*, Player*);  //parameterized constructor
     Negotiate(const Negotiate&); //copy constructor
     Negotiate& operator= (const Negotiate&); //assignment operator
@@ -141,8 +141,8 @@ public:
     void remove(int); //remove method to remove an Order from an index
     void move(Order*, int newIndex, int oldIndex); //move method to move a specific order from one index to another
     std::vector<Order*> getOrders(); //accessor method for order list
-    int getSize();
-    std::string stringToLog();
+    int getSize(); // get the number orders in the order list
+    std::string stringToLog(); // gets string value to be logged
 private:
     std::vector<Order*> orders; //pointer to list of order pointers
 };

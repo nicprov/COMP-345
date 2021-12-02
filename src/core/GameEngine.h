@@ -72,17 +72,17 @@ private:
     std::vector<PlayerStrategy::StrategyType>* listOfPlayerStrategies;
     std::vector<std::string> listOfMapFileNames;
     std::map<std::string, std::vector<std::string>> tournamentResults;
-    void addWinnerToResults(const std::string&);
-    void logTournamentResults();
-    void resetGame();
+    void addWinnerToResults(const std::string&); // save winner for tournament game
+    void logTournamentResults(); // format tournament results to be logged
+    void resetGame(); // reset all game engine variables
     void attachExistingObservers(Subject*); // Attach all current observers to the passed subject
     void printAvailableCommands();  //prints available commands
     void startupPhase(CommandProcessor*);   //Startup phase of the game
     void reinforcementPhase();      //assign armies to reinforcement pool
     void issueOrdersPhase();        // call to issue order
     void executeOrdersPhase();      //executes order
-    void setupTournamentGame();
-    void validateTournamentParameters(Command*);
+    void setupTournamentGame(); // sets up the current tournament game
+    void validateTournamentParameters(Command*); // validate the parameters passed to the tournament
     bool containsOrders(const std::map<Player*, bool>&);   //check if player contains orders
     void loadMap(const std::string& mapName);       //load map
     void validateMap(); // validate map based on conditions
